@@ -1,0 +1,96 @@
+﻿@page "/Auth/login"
+@using Microsoft.AspNetCore.Components.Authorization
+@layout SecondaryLayout
+@inject IAuthService _IAuth
+@inject IAuthRepository _authRep
+@inject NavigationManager _nav
+@inject CustomAuthStateProvider AuthStateProvider
+@inject IJSRuntime JS
+
+<div class="login-body">
+    <div class="login-container">
+        <div>
+            @if (showMessage)
+            {
+                if (dBResult.rv != null)
+                {
+                    <div style="z-index:1" class="alert @(dBResult.rv == "1" ? "alert-success" : "alert-danger")">
+                        @(dBResult.rv=="1"?"Redirecting..." : dBResult.Msg)
+                    </div>
+                }
+            }
+        </div>
+        
+        <h2>Login to Your Account</h2>
+        <EditForm Model="LoginModel" OnValidSubmit="UserLoginAsync" FormName="Login">
+            <div class="mb-3">
+                <InputText @bind-Value="LoginModel.UserName" class="form-control" placeholder="Email or Username" required></InputText>
+            </div>
+            <div class="mb-3">
+                <InputText @bind-Value="LoginModel.Password" type="password" class="form-control" placeholder="Password" required></InputText>
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+        </EditForm>
+        <p class="signup-link">Don't have an account? <NavLink href="/Auth/SignUp">Sign up here</NavLink></p>
+    </div>
+</div>
+
+@code {
+    bool showMessage = false;
+
+    [SupplyParameterFromForm]
+    private TokenRequestModel LoginModel { get; set; } = new TokenRequestModel();
+    private DBResult dBResult { get; set; } = new DBResult();
+
+    // protected override async Task OnAfterRenderAsync(){
+
+    //     // var customAuthStateProvider = (CustomAuthStateProvider)AuthStateProvider;
+
+    //         await Task.Delay(500);
+    //         AuthStateProvider.token = await JS.InvokeAsync<string>("localStorage.getItem", "Token");
+    //         AuthStateProvider.userType = await JS.InvokeAsync<string>("localStorage.getItem", "UserType");
+        
+ 
+    // }
+
+    private async Task UserLoginAsync()
+    {
+        var result = await _IAuth.GetTokenAsync(LoginModel);
+
+        dBResult = result;
+        if (result != null)
+        {
+            // dBResult = Newtonsoft.Json.JsonConvert.DeserializeObject<DBResult>(result.ToString());
+
+            if (int.Parse(dBResult.rv) > 0)
+            {
+                if (dBResult.data[0].IsAuthenticated)
+                {
+
+                    AuthStateProvider.SetUserAsync(dBResult.data[0].Token, dBResult.data[0].UserType);
+                    await Task.Delay(500);
+                    await JS.InvokeVoidAsync("localStorage.setItem", "Token", dBResult.data[0].Token);
+                    await JS.InvokeVoidAsync("localStorage.setItem", "UserType", dBResult.data[0].UserType);
+
+                    await _authRep.SaveTokenAsync(dBResult.data.FirstOrDefault());
+
+                    showMessage = true;
+                    StateHasChanged();
+                    await Task.Delay(3000);
+
+                    _nav.NavigateTo("/MainWebsite/Index");
+                }
+            }
+            else
+            {
+                showMessage = true; // Show the failure message
+                StateHasChanged(); // Update the UI to display the failure message
+            }
+        }
+        else
+        {
+            showMessage = true; // Show the failure message
+            StateHasChanged(); // Update the UI to display the error
+        }
+    }
+}

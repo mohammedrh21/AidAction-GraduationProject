@@ -1,0 +1,17 @@
+﻿@typeparam TMessage
+<div class="alert @MessageTypeClass" role="alert" style="display: @(IsVisible ? "block" : "none")">
+    @Message
+</div>
+
+@code {
+    [Parameter]
+    public bool IsVisible { get; set; }
+
+    [Parameter]
+    public string Message { get; set; }
+
+    [Parameter]
+    public string MessageType { get; set; } // "success" or "danger"
+
+    private string MessageTypeClass => MessageType == "success" ? "alert-success" : "alert-danger";
+}

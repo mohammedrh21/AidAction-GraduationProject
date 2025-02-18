@@ -1,0 +1,19 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@using System.Security.Claims
+@inherits ComponentBase
+
+@code {
+    [Parameter] public string Role { get; set; }
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    [CascadingParameter] private Task<AuthenticationState> AuthenticationState { get; set; }
+
+    private bool IsAuthorized => User?.IsInRole(Role) ?? false;
+
+    private ClaimsPrincipal User => (AuthenticationState.Result?.User) ?? new ClaimsPrincipal();
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        StateHasChanged();
+    }
+}

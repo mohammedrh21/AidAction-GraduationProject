@@ -1,0 +1,106 @@
+﻿@page "/Auth/Signup"
+@layout SecondaryLayout
+@inject IMainWebsite _mainWebsite
+@inject IAuthService _auth
+@inject IAuthRepository _authRep
+@inject NavigationManager _nav
+@inject IJSRuntime JS
+
+@using Microsoft.AspNetCore.Components.Forms
+@rendermode InteractiveServer
+
+<div class="signup-body">
+    @if (showMessage)
+    {
+
+        if (dBResult.rv != null)
+        {
+            if (dBResult.rv != null)
+            {
+                <div style="z-index:1" class="alert @(dBResult.rv == "1" ? "alert-success" : "alert-danger")">
+                    @(dBResult.rv == "1" ? "Registration success, Redirecting..." : dBResult.Msg)
+                </div>
+            }
+        }
+    }
+<div class="signup-container">
+    <h2>Become a donor</h2>
+     <EditForm Model="Donor" OnValidSubmit="DonorSaveAsync" FormName="FormName">
+         <div>
+              <InputText @bind-Value="Donor.FirstName" placeholder="First Name" required></InputText>
+              <InputText @bind-Value="Donor.LastName" placeholder="Last Name" required></InputText>
+          </div>
+          <div>
+                <InputText @bind-Value="Donor.Email" placeholder="Email Address" required></InputText>
+                <InputText @bind-Value="Donor.Password" onclick="Toggle" type="password" placeholder="Password" required></InputText>
+                <InputDate @bind-Value="Donor.DOB" required></InputDate>
+          </div>
+          <button type="submit" class="btn btn-primary">Sign Up</button>
+          </EditForm>
+     <p>Already have an account? <NavLink href="/Auth/login">Login here</NavLink></p>
+</div>
+</div>
+
+@code {
+    bool showMessage = false;
+    [SupplyParameterFromForm]
+    public DonorSaveDTO Donor { get; set; } = new DonorSaveDTO() { DOB = DateTime.Now };
+
+    DBResult dBResult = new DBResult();
+
+    private async Task DonorSaveAsync()
+    {
+        DonorModel _donor = new DonorModel()
+            {
+                DOB = Donor.DOB,
+                FirstName = Donor.FirstName,
+                LastName = Donor.LastName,
+                Email = Donor.Email,
+                Password = Donor.Password
+            };
+
+        var result = await _mainWebsite.DonorSaveAsync(_donor);
+        if (result != null)
+        {
+            dBResult = Newtonsoft.Json.JsonConvert.DeserializeObject<DBResult>(result.ToString());
+
+            if (int.Parse(dBResult.rv) > 0)
+            {
+                var authResult = await AuthenticateAsync(dBResult);
+                if (authResult.IsAuthenticated)
+                {
+                    showMessage = true;
+                    StateHasChanged();
+                    await Task.Delay(200);
+                    JS.InvokeVoidAsync("localStorage.setItem", "Token", authResult.Token);
+                    await Task.Delay(500);
+
+                    _nav.NavigateTo("/MainWebsite/Index");
+                }
+            }
+            else
+            {
+                showMessage = true; // Show the failure message
+                StateHasChanged(); // Update the UI to display the failure message
+            }
+        }
+        else
+        {
+            dBResult.rv = "-1";
+            dBResult.Msg = "Internal Server Error";
+            showMessage = true; // Show the failure message
+            StateHasChanged(); // Update the UI to display the error
+        }
+    }
+
+
+    private async Task<AuthModel> AuthenticateAsync(DBResult _dBResult)
+    {
+        var result = await _auth.AuthenticateAsync(_dBResult);
+        if (result.IsAuthenticated)
+        {
+            await _authRep.SaveTokenAsync(new { result.UserId, result.UserType, result.Token });
+        }
+        return result;
+    }
+}
