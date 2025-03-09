@@ -26,6 +26,17 @@
 }
 
 
+document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("click", function (event) {
+        var dropdowns = document.querySelectorAll(".dropdown-menu.show");
+        dropdowns.forEach(function (dropdown) {
+            if (!dropdown.parentElement.contains(event.target)) {
+                bootstrap.Dropdown.getInstance(dropdown.parentElement.querySelector(".dropdown-toggle"))?.hide();
+            }
+        });
+    });
+});
+
  window.onload = function () {
         console.log("JavaScript ready for Blazor!");
     };

@@ -203,3 +203,86 @@ h1:focus {
             text-decoration: underline;
         }
 
+    /***** nav bar ******/
+/* Navbar Custom Styling */
+.navbar-custom {
+    background-color: #3b2f2f; /* Slightly warm dark brown */
+    padding: 15px 20px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Navbar Brand */
+.navbar-brand {
+    color: #f8e4c3 !important; /* Warm beige */
+    font-weight: bold;
+    font-size: 1.4rem;
+}
+
+/* Navbar Links */
+.navbar-custom .nav-link {
+    color: #f1d6b8 !important; /* Warm light wheat */
+    font-weight: 500;
+    transition: color 0.3s ease-in-out;
+}
+
+    .navbar-custom .nav-link:hover {
+        color: #ffc107 !important; /* Golden warm color */
+    }
+
+/* Dropdown Menu */
+.dropdown-menu {
+    background-color: #4a3a3a; /* Warmer brown */
+    border: none;
+}
+
+    .dropdown-menu .dropdown-item {
+        color: #f1d6b8;
+    }
+
+        .dropdown-menu .dropdown-item:hover {
+            background-color: #5a4545; /* Slightly darker brown */
+            color: #ffc107;
+        }
+
+/* Buttons */
+.btn-warning {
+    background-color: #ffc107;
+    color: #3b2f2f;
+    font-weight: bold;
+    border-radius: 8px;
+}
+
+    .btn-warning:hover {
+        background-color: #e0a800;
+    }
+
+/* Login Button */
+.btn-outline-light {
+    border: 1px solid #f1d6b8;
+    color: #f1d6b8;
+    font-weight: bold;
+    border-radius: 8px;
+}
+
+    .btn-outline-light:hover {
+        background-color: #f1d6b8;
+        color: #3b2f2f;
+    }
+
+/* Layout Styling */
+.layout-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-content {
+    flex-grow: 1;
+    padding: 20px;
+}
+
+.profile-img{
+    max-width:5rem;
+    max-height:5rem;
+}
+/******** end of nav bar *******/

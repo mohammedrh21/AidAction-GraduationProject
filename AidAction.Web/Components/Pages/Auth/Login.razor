@@ -49,8 +49,8 @@
     //         await Task.Delay(500);
     //         AuthStateProvider.token = await JS.InvokeAsync<string>("localStorage.getItem", "Token");
     //         AuthStateProvider.userType = await JS.InvokeAsync<string>("localStorage.getItem", "UserType");
-        
- 
+
+
     // }
 
     private async Task UserLoginAsync()
@@ -68,6 +68,7 @@
                 {
 
                     AuthStateProvider.SetUserAsync(dBResult.data[0].Token, dBResult.data[0].UserType);
+                    AuthStateProvider.token = dBResult.data[0].Token;
                     await Task.Delay(500);
                     await JS.InvokeVoidAsync("localStorage.setItem", "Token", dBResult.data[0].Token);
                     await JS.InvokeVoidAsync("localStorage.setItem", "UserType", dBResult.data[0].UserType);
@@ -76,9 +77,9 @@
 
                     showMessage = true;
                     StateHasChanged();
-                    await Task.Delay(3000);
+                    await Task.Delay(1000);
 
-                    _nav.NavigateTo("/MainWebsite/Index");
+                    _nav.NavigateTo("/");
                 }
             }
             else

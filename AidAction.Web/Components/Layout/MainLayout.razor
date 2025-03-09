@@ -3,17 +3,124 @@
 @inject IJSRuntime JS
 @inject NavigationManager _Nav
 <div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+
+
+
 
     <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-            <NavLink href="/Auth/Login" class="nav-link">Login</NavLink>
-            <NavLink href="/Auth/Signup" class="nav-link">Sign Up</NavLink>
-            <span @onclick="Logout" class="btn btn-dark">Logout</span>
-        </div>
+        @if (isAuthenticated)
+        {
+            <nav class="navbar navbar-expand-xxl navbar-custom">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="/">MyBrand</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarContent">
+                        <ul class="navbar-nav me-auto">
+                            <li class="nav-item">
+                                <NavLink href="/" class="nav-link">Home</NavLink>
+                            </li>
+                            <li class="nav-item">
+                                <NavLink href="/MainWebsite/About" class="nav-link">About</NavLink>
+                            </li>
+                            <li class="nav-item">
+                                <NavLink href="/MainWebsite/About" class="nav-link">About</NavLink>
+                            </li>
+                            <li class="nav-item">
+                                <NavLink href="/MainWebsite/Needs_Campaign" class="nav-link">Needs & Fundraiser Campaigns</NavLink>
+                            </li>
+                            <li class="nav-item">
+                                <NavLink href="/MainWebsite/DonationCenter" class="nav-link">Donation Center</NavLink>
+                            </li>
+                            <li class="nav-item">
+                                <NavLink href="/MainWebsite/About" class="nav-link">FAQs</NavLink>
+                            </li>
+                            <li class="nav-item">
+                                <NavLink href="/MainWebsite/About" class="nav-link">Contact Us</NavLink>
+                            </li>
+                        </ul>
+
+                        <!-- Right-aligned login/register buttons -->
+                        <div class="d-flex">
+                                 @* <ul class="dropdown-menu" aria-labelledby="dropdownMenu">
+                                     <li>
+                                         <div class="dropdown-item">
+                                             <img src="/images/about-1-660x495.jpg" class="profile-img"/>
+                                         </div>
+                                     </li>
+                                     <li><a class="dropdown-item" href="/careers">Careers</a></li>
+                                     <li><hr class="dropdown-divider"></li>
+                                     <li>
+                                         <span @onclick="Logout" class="btn">Logout</span>
+                                     </li>
+                                 </ul> *@
+                                 <p>mohammed</p>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        }
+        else
+        {
+            <!-- Navigation Bar -->
+            <nav class="navbar navbar-expand-xxl navbar-custom">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="/">MyBrand</a>
+                    <button class="navbar-toggler btn-warning" @onclick:preventDefault type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+                            aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon btn btn-warning"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarContent">
+                        <ul class="navbar-nav me-auto ">
+                            <li class="nav-item">
+                                <NavLink href="/" class="nav-link">Home</NavLink>
+                            </li>
+                            <li class="nav-item">
+                                <NavLink href="/MainWebsite/About" class="nav-link">About</NavLink>
+                            </li>
+                            <li class="nav-item">
+                                <NavLink href="/MainWebsite/About" class="nav-link">About</NavLink>
+                            </li>
+                            <li class="nav-item">
+                                <NavLink href="/MainWebsite/Needs_Campaign" class="nav-link">Needs & Fundraiser Campaigns</NavLink>
+                            </li>
+                            <li class="nav-item">
+                                <NavLink href="/MainWebsite/DonationCenter" class="nav-link">Donation Center</NavLink>
+                            </li>
+                            <li class="nav-item">
+                                <NavLink href="/MainWebsite/About" class="nav-link">FAQs</NavLink>
+                            </li>
+                            <li class="nav-item">
+                                <NavLink href="/MainWebsite/About" class="nav-link">Contact Us</NavLink>
+                            </li>
+
+                            <!-- Dropdown Menu -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" @onclick:preventDefault id="dropdownMenu" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="true">
+                                    More
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenu">
+                                    <li><a class="dropdown-item" href="/blog">Blog</a></li>
+                                    <li><a class="dropdown-item" href="/careers">Careers</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="/faq">FAQ</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <!-- Right-aligned login/register buttons -->
+                        <div class="d-flex">
+                            <NavLink href="/Auth/login" class="btn btn-outline-light me-2">Login</NavLink>
+                            <NavLink href="/Auth/Signup" class="btn btn-warning ">Sign Up</NavLink>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+        }
+
+        
 
         <article class="content px-4">
             @Body
@@ -22,13 +129,28 @@
 </div>
 
 @code{
+    private bool isAuthenticated;
+
+    protected override async Task OnInitializedAsync()
+    {
+        string token = AuthStateProvider.token;
+        if (!string.IsNullOrEmpty(AuthStateProvider.token))
+        {
+            isAuthenticated = true;
+        }
+
+    }
+
     private async Task Logout()
     {
         await JS.InvokeVoidAsync("localStorage.removeItem", "Token");
         await Task.Delay(200);
         await AuthStateProvider.LogoutAsync();
+        isAuthenticated = false;
         StateHasChanged();
-        _Nav.NavigateTo("/MainWebsite/Index", forceLoad: true);
+        _Nav.Refresh();
+        StateHasChanged();
+
     }
 
 }
