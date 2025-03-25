@@ -7,7 +7,8 @@
 @inject CustomAuthStateProvider AuthStateProvider
 @inject IJSRuntime JS
 
-<div class="login-body">
+
+@* <div class="login-body">
     <div class="login-container">
         <div>
             @if (showMessage)
@@ -20,7 +21,7 @@
                 }
             }
         </div>
-        
+
         <h2>Login to Your Account</h2>
         <EditForm Model="LoginModel" OnValidSubmit="UserLoginAsync" FormName="Login">
             <div class="mb-3">
@@ -33,8 +34,45 @@
         </EditForm>
         <p class="signup-link">Don't have an account? <NavLink href="/Auth/SignUp">Sign up here</NavLink></p>
     </div>
-</div>
+</div> *@
 
+<div class="login-body">
+    <div class="login-wrapper">
+        <div class="login-container">
+            <span class="login-msg">
+                @if (showMessage)
+                {
+                    if (dBResult.rv != null)
+                    {
+                        <div style="z-index:1" class="alert @(dBResult.rv == "1" ? "alert-success" : "alert-danger")">
+                            @(dBResult.rv == "1" ? "Redirecting..." : dBResult.Msg)
+                        </div>
+                    }
+                }
+            </span>
+            <h2>Aid Action</h2>
+
+            <!-- Using Blazor's EditForm and binding the data to LoginModel -->
+            <EditForm Model="LoginModel" OnValidSubmit="UserLoginAsync" FormName="Login">
+                <div class="input-group">
+                    <label for="username"><i class="fas fa-user"></i> Username or Email</label>
+                    <InputText @bind-Value="LoginModel.UserName" class="" placeholder="Enter your username or email" required />
+                </div>
+                <div class="input-group">
+                    <label for="password"><i class="fas fa-lock"></i> Password</label>
+                    <InputText @bind-Value="LoginModel.Password" type="password" class="" placeholder="Enter your password" required />
+                </div>
+                <button type="submit" class="login-btn">Login</button>
+            </EditForm>
+
+            <div class="links">
+                <NavLink href="/Auth/ForgotPassword" class="forgot-password"><i class="fas fa-question-circle"></i> Forgot password?</NavLink>
+                <NavLink href="/Auth/SignUp" class="signup-link"><i class="fas fa-user-plus"></i> Sign Up</NavLink>
+            </div>
+
+        </div>
+    </div>
+</div>
 @code {
     bool showMessage = false;
 
@@ -78,8 +116,15 @@
                     showMessage = true;
                     StateHasChanged();
                     await Task.Delay(1000);
+                    if (dBResult.data[0].UserType == "Donor")
+                    {
+                        _nav.NavigateTo("/");
 
-                    _nav.NavigateTo("/");
+                    }
+                    else if (dBResult.data[0].UserType == "Admin")
+                    {
+                        _nav.NavigateTo("/ControlPanel/");
+                    }
                 }
             }
             else

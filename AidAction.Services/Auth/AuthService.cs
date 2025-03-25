@@ -58,21 +58,29 @@ namespace AidAction.Services.Auth
                 return Log[0];
             }
 
-            var jwtSecurityToken = await CreateJwtToken(Log[0].data[0]);
+            try {
+                var jwtSecurityToken = await CreateJwtToken(Log[0].data[0]);
+                authModel.IsAuthenticated = true;
+                authModel.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
+                authModel.UserType = Log[0].data[0].UserType;
+                authModel.Email = Log[0].data[0].Email;
+                authModel.Username = Log[0].data[0].Username;
+                authModel.UserId = Log[0].data[0].UserId;
+                authModel.FullName = Log[0].data[0].FullName;
+                authModel.ExpiresOn = jwtSecurityToken.ValidTo;
+
+                Log[0].data.Clear();
+                Log[0].data.Add(authModel);
+            }
+            catch (Exception ex) {
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.TargetSite);
+
+            }
             //var rolesList = await _authRepository.GetRolesAsync(Log.UserId);
 
-            authModel.IsAuthenticated = true;
-            authModel.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
-            authModel.UserType = Log[0].data[0].UserType;
-            authModel.Email = Log[0].data[0].Email;
-            authModel.Username = Log[0].data[0].Username;
-            authModel.UserId = Log[0].data[0].UserId;
-            authModel.FullName = Log[0].data[0].FullName;
-            authModel.ExpiresOn = jwtSecurityToken.ValidTo;
 
-            Log[0].data.Clear();
-            Log[0].data.Add(authModel);
-          
+
             return Log[0];
         }
 
@@ -81,16 +89,26 @@ namespace AidAction.Services.Auth
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_configuration["JwtSettings:Key"]); // _appSettings.Secret
+            var claims = new List<Claim>();
+
+            if (!string.IsNullOrEmpty(user.Username))
+                claims.Add(new Claim("UserName", user.Username));
+
+            if (!string.IsNullOrEmpty(user.Email))
+                claims.Add(new Claim("Email", user.Email));
+
+            if (!string.IsNullOrEmpty(user.UserId.ToString()))
+                claims.Add(new Claim("UserId", user.UserId.ToString()));
+
+            if (!string.IsNullOrEmpty(user.FullName))
+                claims.Add(new Claim("FullName", user.FullName));
+
+            if (!string.IsNullOrEmpty(user.UserType))
+                claims.Add(new Claim("UserType", user.UserType));
+
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new Claim[]
-               {
-                   new Claim("UserName", user.Username),
-                   new Claim("Email", user.Email),
-                   new Claim("UserID", user.UserId.ToString(), null),
-                   new Claim("UserType", user.UserType, null),
-                   new Claim("FullName", user.FullName, null)
-               }),
+                Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.UtcNow.AddMinutes(double.Parse(_configuration["JwtSettings:ExpiryMinutes"])),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };

@@ -13,7 +13,7 @@ a, .btn-link {
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 .content {
@@ -50,166 +50,314 @@ h1:focus {
     border-color: #929292;
 }
 
+/* Start of SignUp Page */
 
-.signup-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background: url('/StaticPics/SignUp.jpg') no-repeat center center fixed;
-    background-size: cover; /* Ensures the image covers the entire screen */
-    color: #fff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-}
-
+/* Background and body styles */
 .signup-body::before {
-    content: '';
+    content: "";
+    background: url('https://static01.nyt.com/images/2024/02/10/multimedia/10egypt-gaza-01-lcjw/10egypt-gaza-01-lcjw-superJumbo.jpg?quality=75&auto=webp') no-repeat center center fixed;
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.65); /* Adjust transparency (0.5 = 50%) */
-    z-index: 0; /* Ensures the overlay stays behind the main content */
+    right: 0;
+    bottom: 0;
+    background-size: cover;
+    background-position: center center;
+    background-attachment: fixed;
+    opacity: 0.6;
+    z-index: -1;
+    filter: brightness(0.6);
 }
 
-.signup-container {
-    background: rgba(255, 255, 255, 0.64);
-    padding: 20px 40px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    max-width: 400px;
-    width: 100%;
-    text-align: center;
-    z-index:1;
+body {
+    background-color: rgba(255, 160, 0, 0.7);
 }
 
-    .signup-container h2 {
-        margin-bottom: 20px;
-        font-size: 24px;
-    }
-
-
-.signup-container input {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-}
-
-
-.signup-container button {
-    background-color: #4CAF50;
-    color: white;
-    padding: 12px;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-    width: 100%;
-}
-
-        .signup-container button:hover {
-            background-color: #45a049;
-        }
-
-    .signup-container p {
-        margin-top: 15px;
-    }
-
-    .signup-container a {
-        color: #ffd700;
-        text-decoration: none;
-    }
-
-        .signup-container a:hover {
-            text-decoration: underline;
-        }
-
-        
-.login-body {
-    background: url('/StaticPics/LoginPage.jpg') no-repeat center center fixed;
-    background-size: cover; /* Ensures the image covers the entire screen */
-    position: relative; /* Allows adding an overlay or additional layers */
+.signup-body {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    margin: 0;
-    font-family: Arial, sans-serif;
-    color: #fff; /* Adjust text color for readability */
+    font-family: 'Poppins', sans-serif;
 }
 
-    /* Optional: Transparent overlay for better readability */
-    .login-body::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.8); /* Adjust transparency (0.5 = 50%) */
-        z-index: 0; /* Ensures the overlay stays behind the main content */
-    }
-
-.login-container {
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 30px;
-    border-radius: 15px;
+.signup-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 100%;
-    max-width: 400px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    height: 100%;
+}
+
+.signup-container {
+    background: rgba(255, 255, 255, 0.85);
+    width: 450px;
+    padding: 30px 40px;
+    border-radius: 10px;
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
     text-align: center;
-    position: relative; /* Keeps the login form above the overlay */
-    z-index: 1;
-    color:black;
+    border: 1px solid #e4d9b4;
 }
 
-    .login-container h2 {
-        margin-bottom: 20px;
-        color: #333;
+h2 {
+    color: #5c4033;
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 30px;
+}
+
+/* Form Layout */
+.input-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.input-group {
+    flex: 1;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+}
+
+    .input-group label {
+        font-size: 14px;
+        color: #5c4033;
+        margin-bottom: 5px;
+        font-weight: 500;
     }
 
-.form-control {
-    border-radius: 8px;
-}
+    .input-group input,
+    .input-group select {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        border-radius: 8px;
+        border: 1px solid #b7956b;
+        outline: none;
+        transition: all 0.3s ease;
+    }
 
-.btn-primary {
-    background-color: #28a745;
-    border: none;
+        .input-group input:focus,
+        .input-group select:focus {
+            border-color: #ffc107;
+            box-shadow: 0 0 5px rgba(255, 193, 7, 0.6);
+        }
+
+/* Sign-up button */
+.signup-btn {
     width: 100%;
+    padding: 15px;
+    background-color: #ffc107;
+    color: white;
+    border: none;
     border-radius: 8px;
-    font-weight: bold;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-    .btn-primary:hover {
-        background-color: #218838;
+    .signup-btn:hover {
+        background-color: #e0a800;
     }
 
-.signup-link {
-    margin-top: 15px;
+/* Links section */
+.links {
+    margin-top: 20px;
+    font-size: 14px;
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
 }
 
-    .signup-link a {
-        color: #007bff;
+    .links a {
+        color: #5c4033;
         text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
     }
 
-        .signup-link a:hover {
+        .links a:hover {
+            color: #ffc107;
             text-decoration: underline;
         }
 
-    /***** nav bar ******/
-/* Navbar Custom Styling */
-.navbar-custom {
-    background-color: #3b2f2f; /* Slightly warm dark brown */
-    padding: 15px 20px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+/* End of SignUp Page*/
+
+/* Start of Login Page*/
+/* General body setup */
+.login-msg{
+    background-color:rgb(245, 243, 209, 0.31);
 }
+
+.login-body::before {
+    content: "";
+    background: url('StaticPics/LoginPage (2).jpg') no-repeat center center fixed !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:; /* Replace with your image path */
+    background-size: cover;
+    background-position: center center;
+    background-attachment: fixed;
+    opacity: 0.6; /* Adjust this for the intensity of the effect */
+    z-index: -1; /* Ensure the image stays behind content */
+    filter: brightness(0.6); /* Adjust the brightness of the image */
+}
+
+/* Optional: Color overlay with transparency */
+body {
+    background-color: rgba(255, 160, 0, 0.7); /* Semi-transparent orange overlay */
+}
+
+.login-body {
+    background-size: cover !important;
+    background-color: rgba(73, 58, 14, 0.3) !important; /* Semi-transparent white background */
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    background: #f7f0e1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Wrapper for positioning */
+.login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+/* The login container */
+.login-container {
+    background: rgba(255, 255, 255, 0.85) !important; /* Semi-transparent white background for the container */
+    background: #ffffff;
+    width: 400px;
+    padding: 30px 40px;
+    border-radius: 10px;
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    border: 1px solid #e4d9b4; /* Soft brown border */
+}
+
+/* Heading */
+h2 {
+    color: #5c4033; /* Deep brown for a grounded feel */
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 30px;
+}
+
+/* Input group styles */
+.input-group {
+    margin-bottom: 20px;
+    text-align: left;
+    display:flex;
+    flex-direction:column;
+}
+
+
+    .input-group label {
+        display: block;
+        font-size: 14px;
+        color: #5c4033; /* Deep brown for labels */
+        margin-bottom: 5px;
+        font-weight: 500;
+    }
+
+.input-text {
+    border: none; /* Remove all borders */
+    border-bottom: 2px solid #ccc; /* Add a bottom border */
+    outline: none; /* Remove the outline when focused */
+    padding: 8px 0; /* Adjust padding for better spacing */
+    width: 100%; /* Ensure it takes full width */
+    font-size: 16px; /* Set font size */
+    transition: border-color 0.3s ease; /* Smooth transition on focus */
+}
+
+
+    .input-group input {
+        width: 20rem !important;
+        padding: 12px !important;
+        margin:unset;
+        font-size: 16px;
+        border-radius: 8px;
+        border: 1px solid #b7956b; /* Light brown border for input fields */
+        outline: none;
+        transition: all 0.3s ease;
+    }
+
+        .input-group input:focus {
+            border-color: #ffc107; /* Amber focus border for emphasis */
+            box-shadow: 0 0 5px rgba(255, 193, 7, 0.6); /* Amber glow */
+        }
+
+/* Submit button styling */
+.login-btn {
+    width: 100%;
+    padding: 15px;
+    background-color: #ffc107; /* Amber yellow for the login button */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+    .login-btn:hover {
+        background-color: #e0a800; /* Slightly darker amber for hover */
+    }
+
+/* Links section */
+.links {
+    margin-top: 20px;
+    font-size: 14px;
+    display:flex;
+    flex-direction:row;
+}
+
+.links :first-child{
+    margin-right:0.75rem;
+}
+
+.links :last-child{
+    margin-left:0.75rem;
+
+}
+
+    .links a {
+        display: inline-block;
+        color: #5c4033; /* Deep brown for text links */
+        margin: 10px 0;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+        .links a:hover {
+            color: #ffc107; /* Amber yellow on hover */
+            text-decoration: underline;
+        }
+
+/* Icon styling */
+.fas {
+    margin-right: 10px;
+}
+/* End of Login Page*/
+
+
+
+/***** nav bar ******/
+/* Navbar Custom Styling */
+
 
 /* Navbar Brand */
 .navbar-brand {
@@ -218,11 +366,14 @@ h1:focus {
     font-size: 1.4rem;
 }
 
+.navbar-custom{
+    background-color:rgb(88, 33, 19, 0.90);
+}
 /* Navbar Links */
 .navbar-custom .nav-link {
     color: #f1d6b8 !important; /* Warm light wheat */
-    font-weight: 500;
-    transition: color 0.3s ease-in-out;
+    font-weight: 600 !important;
+    transition: color 0.3s ease-in-out !important;
 }
 
     .navbar-custom .nav-link:hover {
@@ -231,17 +382,17 @@ h1:focus {
 
 /* Dropdown Menu */
 .dropdown-menu {
-    background-color: #4a3a3a; /* Warmer brown */
+    background-color: #4a3a3a !important; /* Warmer brown */
     border: none;
 }
 
     .dropdown-menu .dropdown-item {
-        color: #f1d6b8;
+        color: #f1d6b8 !important;
     }
 
         .dropdown-menu .dropdown-item:hover {
-            background-color: #5a4545; /* Slightly darker brown */
-            color: #ffc107;
+            background-color: #5a4545 !important; /* Slightly darker brown */
+            color: #ffc107 !important;
         }
 
 /* Buttons */
@@ -281,8 +432,184 @@ h1:focus {
     padding: 20px;
 }
 
-.profile-img{
-    max-width:5rem;
-    max-height:5rem;
+.profile-img {
+    max-width: 5rem;
+    max-height: 5rem;
 }
+
+.nav-button {
+    color: #ffd800 !important;
+    background-color: #ffc107 !important;
+    z-index: 1;
+}
+
+.account{
+    display: flex;
+    flex-direction:row;
+    gap:1rem;
+}
+
+.custom-nav-item {
+    margin-left: 0.5rem !important;
+}
+
+.user-menu {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.user-menu img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    }
+
+
+
+
+
+/* Ensure the dropdown menu background matches the navbar */
+.dropdown-menu {
+    background-color: #2a1e1e !important; /* Match navbar background */
+    border: none !important;
+}
+
+/* Style dropdown items */
+.dropdown-item {
+    color: #efe1d2 !important; /* Match text color */
+    font-weight: 300 !important;
+    transition: background-color 0.3s ease-in-out !important; /* Smooth effect */
+    z-index: 1 !important;
+}
+
+    /* Ensure hover and focus states match navbar theme */
+    .dropdown-item:hover,
+    .dropdown-item:focus,
+    .dropdown-item:active {
+        background-color: #ffc107 !important; /* Match navbar button hover effect */
+        color: antiquewhite !important; /* Dark text for contrast */
+        outline: none !important; /* Remove focus outline */
+    }
+
+
 /******** end of nav bar *******/
+
+/************ start of mainwebsite index ***********/
+
+.hero {
+    padding-top: 10rem !important;
+    padding-bottom: 10rem !important;
+    background: url('images/bg-img-1.jpg') no-repeat center center !important;
+    background-size: cover !important;
+}
+
+/************ end of mainwebsite index ***********/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Admin Control Panel */
+/* Base Layout */
+
+/* Base Layout */
+.controlpanel-content main {
+    display: flex;
+    flex-direction: row;
+}
+
+/* Sidebar Styles */
+.controlpanel-sidebar {
+    width: 280px;
+    height: 100vh; /* Full viewport height */
+    background: linear-gradient(to bottom, rgb(5, 3, 44), rgb(19, 18, 18));
+    color: #FFFFFF;
+}
+
+    .controlpanel-sidebar a,
+    .controlpanel-sidebar button {
+        transition: 0.2s ease-in-out;
+    }
+
+        .controlpanel-sidebar button:hover {
+            background-color: #38386d;
+            color: #ffd800 !important;
+        }
+
+.controlpanel-logo a:hover,
+.controlpanel-logo :hover {
+    color: unset !important;
+}
+
+.controlpanel-sidebar a.nav-link:hover,
+.controlpanel-sidebar .btn-toggle:hover,
+.controlpanel-sidebar .btn-toggle-nav a:hover,
+.controlpanel-sidebar .dropdown-menu a:hover {
+    background-color: #38386d;
+    color: #ffd800 !important;
+    text-decoration: none;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .controlpanel-content main {
+        flex-direction: column;
+    }
+
+    .controlpanel-sidebar {
+        width: 100%;
+        height: auto;
+    }
+
+    .content {
+        padding: 1rem;
+    }
+}
+
+
+
+
+
+
+
+
+

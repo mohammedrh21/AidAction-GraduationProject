@@ -22,7 +22,7 @@
                 </div>
             }
         }
-    }
+    }@* 
 <div class="signup-container">
     <h2>Become a donor</h2>
      <EditForm Model="Donor" OnValidSubmit="DonorSaveAsync" FormName="FormName">
@@ -38,7 +38,57 @@
           <button type="submit" class="btn btn-primary">Sign Up</button>
           </EditForm>
      <p>Already have an account? <NavLink href="/Auth/login">Login here</NavLink></p>
-</div>
+</div> *@
+
+    <div class="signup-body">
+        <div class="signup-wrapper">
+            <div class="signup-container">
+                <h2>Sign Up - Aid Action</h2>
+
+                <!-- Using Blazor's EditForm and binding the data to SignUpModel -->
+                <EditForm Model="Donor" OnValidSubmit="DonorSaveAsync" FormName="SignUpForm">
+                    <!-- First Name Field -->
+                    <div class="input-group">
+                        <label for="firstName"><i class="fas fa-user"></i> First Name</label>
+                        <InputText @bind-Value="Donor.FirstName" placeholder="Enter your first name" required />
+                    </div>
+
+                    <!-- Last Name Field -->
+                    <div class="input-group">
+                        <label for="lastName"><i class="fas fa-user"></i> Last Name</label>
+                        <InputText @bind-Value="Donor.LastName" placeholder="Enter your last name" required />
+                    </div>
+
+                    <!-- Email Field -->
+                    <div class="input-group">
+                        <label for="email"><i class="fas fa-envelope"></i> Email</label>
+                        <InputText @bind-Value="Donor.Email" type="email" placeholder="Enter your email" required />
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="input-group">
+                        <label for="password"><i class="fas fa-lock"></i> Password</label>
+                        <InputText @bind-Value="Donor.Password" type="password" placeholder="Enter your password" required />
+                    </div>
+
+                    <!-- Date of Birth Field -->
+                    <div class="input-group">
+                        <label for="dob"><i class="fas fa-calendar-alt"></i> Date of Birth</label>
+                        <InputDate @bind-Value="Donor.DOB" required />
+                    </div>
+
+                    <button type="submit" class="signup-btn">Sign Up</button>
+                </EditForm>
+
+                <!-- Links section -->
+                <div class="links">
+                    <NavLink href="/Auth/Login" class="login-link"><i class="fas fa-sign-in-alt"></i> Already have an account?</NavLink>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 </div>
 
 @code {

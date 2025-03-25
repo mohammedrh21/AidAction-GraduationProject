@@ -1,116 +1,117 @@
-﻿@page "/weather"
-@inject NavigationManager _Nav
-@inject CustomAuthStateProvider AuthStateProvider
-@inject IJSRuntime JS
+﻿ @* @page "/weather"
+ @inject NavigationManager _Nav
+ @inject CustomAuthStateProvider AuthStateProvider
+ @inject IJSRuntime JS
 
-<div>
-    @if (isAuthorized != true)
-    {
-        <div>
-            <p>You are not authorzied buddy</p>
-        </div>
-    }
-</div>
+ <div>
+     @if (isAuthorized != true)
+     {
+         <div>
+             <p>You are not authorzied buddy</p>
+         </div>
+     }
+ </div>
 
-@if (role == "Donor")
-{
-    <h1>Weather</h1>
-    <p>This component demonstrates showing data from a database.</p>
+ @if (role == "Donor")
+ {
+     <h1>Weather</h1>
+     <p>This component demonstrates showing data from a database.</p>
 
-    @if (forecasts != null)
-    {
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Temp (C)</th>
-                    <th>Temp (F)</th>
-                    <th>Summary</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var forecast in forecasts)
-                {
-                    <tr>
-                        <td>@forecast.Date</td>
-                        <td>@forecast.TemperatureC</td>
-                        <td>@forecast.TemperatureF</td>
-                        <td>@forecast.Summary</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    }
-    else
-    {
-        <p>Loading weather data...</p>
-    }
-}
-
-
-@code {
-    private List<WeatherForecast>? forecasts;
-    private bool isAuthorized = false;
-    private string role = "";
-    private bool isFirstRender = true;
-    private AuthenticationState authState;
+     @if (forecasts != null)
+     {
+         <table class="table">
+             <thead>
+                 <tr>
+                     <th>Date</th>
+                     <th>Temp (C)</th>
+                     <th>Temp (F)</th>
+                     <th>Summary</th>
+                 </tr>
+             </thead>
+             <tbody>
+                 @foreach (var forecast in forecasts)
+                 {
+                     <tr>
+                         <td>@forecast.Date</td>
+                         <td>@forecast.TemperatureC</td>
+                         <td>@forecast.TemperatureF</td>
+                         <td>@forecast.Summary</td>
+                     </tr>
+                 }
+             </tbody>
+         </table>
+     }
+     else
+     {
+         <p>Loading weather data...</p>
+     }
+ }
 
 
-    protected override async Task OnInitializedAsync()
-    {
-        LoadWeatherData();
-        StateHasChanged(); // Ensure UI updates
-                           // OnAfterRenderAsync(true);
-        AuthStateProvider.AuthenticationStateChanged += async (task) =>
-        {
-            authState = await task;
-            StateHasChanged();
-        };
-    }
+ @code {
+     private List<WeatherForecast>? forecasts;
+     private bool isAuthorized = false;
+     private string role = "";
+     private bool isFirstRender = true;
+     private AuthenticationState authState;
 
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender && isFirstRender)
-        {
-            isFirstRender = false; // Prevent multiple calls
+     protected override async Task OnInitializedAsync()
+     {
+         LoadWeatherData();
+         StateHasChanged(); // Ensure UI updates
+                            // OnAfterRenderAsync(true);
+         AuthStateProvider.AuthenticationStateChanged += async (task) =>
+         {
+             authState = await task;
+             StateHasChanged();
+         };
+     }
 
-            AuthStateProvider.token = await JS.InvokeAsync<string?>("localStorage.getItem", "Token");
-            AuthStateProvider.userType = await JS.InvokeAsync<string?>("localStorage.getItem", "UserType");
-            if (!string.IsNullOrEmpty(AuthStateProvider.token) && !string.IsNullOrEmpty(AuthStateProvider.userType))
-            {
-                AuthStateProvider.SetUserAsync(AuthStateProvider.token, AuthStateProvider.userType);
-            }
 
-            if (!string.IsNullOrEmpty(AuthStateProvider.token))
-            {
-                AuthModel user = await AuthStateProvider.GetUserAsync();
-                isAuthorized = user != null;
-                role = user.UserType;
-            }
+     protected override async Task OnAfterRenderAsync(bool firstRender)
+     {
+         if (firstRender && isFirstRender)
+         {
+             isFirstRender = false; // Prevent multiple calls
 
-            StateHasChanged(); // Ensure UI updates
-        }
-    }
+             AuthStateProvider.token = await JS.InvokeAsync<string?>("localStorage.getItem", "Token");
+             AuthStateProvider.userType = await JS.InvokeAsync<string?>("localStorage.getItem", "UserType");
+             if (!string.IsNullOrEmpty(AuthStateProvider.token) && !string.IsNullOrEmpty(AuthStateProvider.userType))
+             {
+                 AuthStateProvider.SetUserAsync(AuthStateProvider.token, AuthStateProvider.userType);
+             }
 
-    private void LoadWeatherData()
-    {
-        var startDate = DateOnly.FromDateTime(DateTime.Now);
-        var summaries = new[] { "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" };
+             if (!string.IsNullOrEmpty(AuthStateProvider.token))
+             {
+                 AuthModel user = await AuthStateProvider.GetUserAsync();
+                 isAuthorized = user != null;
+                 role = user.UserType;
+             }
 
-        forecasts = Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = startDate.AddDays(index),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = summaries[Random.Shared.Next(summaries.Length)]
-            }).ToList();
-    }
+             StateHasChanged(); // Ensure UI updates
+         }
+     }
 
-    private class WeatherForecast
-    {
-        public DateOnly Date { get; set; }
-        public int TemperatureC { get; set; }
-        public string? Summary { get; set; }
-        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-    }
-}
+     private void LoadWeatherData()
+     {
+         var startDate = DateOnly.FromDateTime(DateTime.Now);
+         var summaries = new[] { "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" };
+
+         forecasts = Enumerable.Range(1, 5).Select(index => new WeatherForecast
+             {
+                 Date = startDate.AddDays(index),
+                 TemperatureC = Random.Shared.Next(-20, 55),
+                 Summary = summaries[Random.Shared.Next(summaries.Length)]
+             }).ToList();
+     }
+
+     private class WeatherForecast
+     {
+         public DateOnly Date { get; set; }
+         public int TemperatureC { get; set; }
+         public string? Summary { get; set; }
+         public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+     }
+ }
+ *@

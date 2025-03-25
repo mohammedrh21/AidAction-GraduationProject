@@ -20,8 +20,4 @@
     <ProjectReference Include="..\AidAction.Services\AidAction.Services.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="wwwroot\css\" />
-  </ItemGroup>
-
 </Project>

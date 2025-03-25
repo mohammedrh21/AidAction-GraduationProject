@@ -1,18 +1,90 @@
 ﻿@inherits LayoutComponentBase
+@inject NavigationManager _Nav
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+<div class="page controlpanel-content">
+    <!-- Mobile Header: Visible only on small screens -->
+    <header class="d-flex d-md-none align-items-center p-3 bg-dark text-white">        
+        <!-- Logo: Aid Action with Icon -->
+        <a href="/ControlPanel/" class="d-flex align-items-center text-white text-decoration-none ms-3">
+            <img src="https://img.icons8.com/ios11/512w/FFFFFF/admin-settings-male.png" alt="Admin Icon" width="40" height="40" class="me-2">
+            <span class="fs-4">Aid Action</span>
+        </a>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+        <!-- Sidebar Toggler Button -->
+        <button class="btn btn-dark" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar"
+                aria-controls="sidebar" aria-expanded="false" aria-label="Toggle sidebar">
+            <i class="bi bi-list"></i>
+        </button>
+    </header>
+
+    <main class="d-flex flex-column flex-md-row">
+        <!-- Sidebar: Collapsible on mobile, always visible on md and up -->
+        <div class="collapse d-md-block controlpanel-sidebar text-white p-4" id="sidebar">
+            <!-- Desktop Logo: Hidden on mobile -->
+            <div class="d-none d-md-flex align-items-center mb-4">
+                <a href="/ControlPanel/" class="d-flex align-items-center text-white text-decoration-none controlpanel-logo">
+                    <img src="https://img.icons8.com/ios11/512w/FFFFFF/admin-settings-male.png" alt="Admin Icon" width="40" height="40" class="me-3">
+                    <span class="fs-4">Aid Action</span>
+                </a>
+            </div>
+            <hr class="mb-4">
+
+            <!-- Sidebar Navigation Items -->
+            <ul class="nav nav-pills flex-column gap-3 controlpanel-ul controlpanel-sidebar-list">
+                <li class="nav-link text-white px-0">
+                    <button class="text-white nav-link py-2 px-3 rounded d-flex align-items-center text-start w-100 flex-fill controlpanel-home-li-n"
+                            data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true">
+                        <i class="bi bi-house-fill me-2"></i> Home
+                    </button>
+                    <div class="collapse show mt-2 w-100 flex-fill" id="home-collapse">
+                        <ul class="btn-toggle-nav list-unstyled fw-normal small ps-3">
+                            <li class="mb-2">
+                                <NavLink class="text-white link-dark rounded d-block py-2 px-3" href="/ControlPanel/">Overview</NavLink>
+                            </li>
+                            <li>
+                                <NavLink class="text-white link-dark rounded d-block py-2 px-3" href="/ControlPanel/DonationRecords">Donation Records</NavLink>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a href="#" class="nav-link text-white py-2 px-3 rounded d-flex align-items-center">
+                        <i class="bi bi-people me-2"></i> Customers
+                    </a>
+                </li>
+                <!-- Add additional sidebar items as needed -->
+            </ul>
+
+            <hr class="my-4">
+
+            <!-- Sidebar User Menu -->
+            <div class="dropdown">
+                <ul>
+                    <li class="nav-link text-white">
+                        <button class="btn btn-toggle w-100 text-white align-items-center rounded py-2 px-3 text-start"
+                                data-bs-toggle="collapse" data-bs-target="#user-collapse" aria-expanded="true">
+                            User Menu
+                        </button>
+                        <div class="collapse show mt-2" id="user-collapse">
+                            <ul class="btn-toggle-nav list-unstyled fw-normal small ps-3">
+                                <li class="mb-2">
+                                    <a href="#" class="text-white link-dark rounded d-block py-1 px-2">Overview</a>
+                                </li>
+                                <li class="mb-2">
+                                    <a href="#" class="text-white link-dark rounded d-block py-1 px-2">Updates</a>
+                                </li>
+                                <li>
+                                    <a href="#" class="text-white link-dark rounded d-block py-1 px-2">Reports</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </div>
         </div>
-        <div class="top-row px-4">
-            <NavLink href="/Auth/Signup" class="nav-link">Sign Up</NavLink>
-        </div>
-        <article class="content px-4">
+
+        <!-- Main Content Area -->
+        <article class="content flex-grow-1 p-4">
             @Body
         </article>
     </main>
