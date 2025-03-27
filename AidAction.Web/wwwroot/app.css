@@ -494,11 +494,18 @@ h2 {
         outline: none !important; /* Remove focus outline */
     }
 
+/*    a:active {
+        color: white !important;
+        background-color: white !important;
+        text-decoration: none !important;
+    }*/
+    
+    a{
+        text-decoration: none !important;   
+    }
 
 /******** end of nav bar *******/
-
 /************ start of mainwebsite index ***********/
-
 .hero {
     padding-top: 10rem !important;
     padding-bottom: 10rem !important;
@@ -549,8 +556,9 @@ h2 {
 
 
 /* Admin Control Panel */
-/* Base Layout */
-
+.controlpanel-content header {
+    background-color: rgb(5, 3, 44) !important;
+}
 /* Base Layout */
 .controlpanel-content main {
     display: flex;
@@ -560,7 +568,7 @@ h2 {
 /* Sidebar Styles */
 .controlpanel-sidebar {
     width: 280px;
-    height: 100vh; /* Full viewport height */
+    height: auto; /* Full viewport height */
     background: linear-gradient(to bottom, rgb(5, 3, 44), rgb(19, 18, 18));
     color: #FFFFFF;
 }
@@ -583,6 +591,7 @@ h2 {
 .controlpanel-sidebar a.nav-link:hover,
 .controlpanel-sidebar .btn-toggle:hover,
 .controlpanel-sidebar .btn-toggle-nav a:hover,
+.controlpanel-sidebar .btn-toggle-nav a:focus,
 .controlpanel-sidebar .dropdown-menu a:hover {
     background-color: #38386d;
     color: #ffd800 !important;
@@ -605,11 +614,20 @@ h2 {
     }
 }
 
+.chart-box canvas {
+    width: 25rem !important;
+    height: 19rem !important; /* 4:3 ratio (25 * 0.75) */
+    max-width: 100%;
+}
+#linechart canvas{
+    width:100% !important;
+}
+/* End of ControlPanel Layout */
 
 
-
-
-
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.5);
+}
 
 
 

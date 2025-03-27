@@ -1,7 +1,147 @@
 ﻿@page "/ControlPanel/"
 @layout ControlPanelLayout
-<h3>Control Panel</h3>
+@inject IJSRuntime JS
+
+<div class="controlpanel-body">
+        <div class="container my-4">
+            <div class="row g-3">
+                <!-- Summary Cards -->
+                <div class="col-md-3">
+                    <div class="card text-bg-light">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Needs</h5>
+                            <p class="display-6">120</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-bg-warning">
+                        <div class="card-body">
+                            <h5 class="card-title">Urgent Needs</h5>
+                            <p class="display-6">30</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-bg-primary">
+                        <div class="card-body">
+                            <h5 class="card-title">Monthly Needs</h5>
+                            <p class="display-6">90</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-bg-success">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Funds</h5>
+                            <p class="display-6">$24,000</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="row mt-4 g-3">
+                <div class="col-lg-6">
+                    <div class="card">
+                    <div class="card-body chart-box">
+                            <h5 class="card-title">Top Funded Needs</h5>
+                            <canvas id="topNeedsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card">
+                    <div class="card-body chart-box">
+                            <h5 class="card-title">Campaign Status</h5>
+                            <canvas id="campaignStatusChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <!-- Table -->
+        <div class="row mt-4">
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Recent Needs</h5>
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Type</th>
+                                    <th>Target</th>
+                                    <th>Collected</th>
+                                    <th>Progress</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Water Tanks</td>
+                                    <td><span class="badge bg-danger">Urgent</span></td>
+                                    <td>$5000</td>
+                                    <td>$4200</td>
+                                    <td>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-success" style="width: 84%">84%</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>School Supplies</td>
+                                    <td><span class="badge bg-primary">Monthly</span></td>
+                                    <td>$2000</td>
+                                    <td>$800</td>
+                                    <td>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-warning" style="width: 40%">40%</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <!-- Add more rows as needed -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Line Chart -->
+            <div class="row mt-4">
+                <div class="col">
+                    <div class="card">
+                    <div class="card-body chart-box" id="linechart">
+                            <h5 class="card-title">Donations Over Time</h5>
+                            <canvas id="donationTrendsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+           </div>
+        </div>
 
 @code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var topNeedsData = new
+            {
+                labels = new[] { "Water", "Food", "Shelter", "Medical", "Hygiene" },
+                values = new[] { 4200, 3800, 3300, 2500, 2000 }
+            };
 
+            var campaignStatus = new[] { 10, 5, 3 }; // Approved, Pending, Rejected
+
+            var donationTrends = new
+            {
+                labels = new[] { "Jan", "Feb", "Mar", "Apr", "May" },
+                values = new[] { 1000, 1800, 1500, 2200, 2700 }
+            };
+
+            await JS.InvokeVoidAsync("renderDashboardCharts", topNeedsData, campaignStatus, donationTrends);
+        }
+    }
 }
+

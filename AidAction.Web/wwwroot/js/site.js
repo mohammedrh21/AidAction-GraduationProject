@@ -1,43 +1,56 @@
-﻿function displayMessage(message, isSuccess, duration) {
-    let messageContainer = document.getElementById('message-container');
-    if (!messageContainer) {
-        messageContainer = document.createElement('div');
-        messageContainer.id = 'message-container';
-        document.body.appendChild(messageContainer);
+﻿window.renderDashboardCharts = (topNeedsData, campaignStatusData, donationTrendData) => {
+    // --- Top Needs Chart ---
+    const topNeedsCtx = document.getElementById('topNeedsChart');
+    if (topNeedsCtx) {
+        new Chart(topNeedsCtx, {
+            type: 'bar',
+            data: {
+                labels: topNeedsData.labels,
+                datasets: [{
+                    label: 'Funds Collected ($)',
+                    data: topNeedsData.values,
+                    backgroundColor: '#aed581',
+                    borderRadius: 2
+                }]
+            },
+            options: { responsive: true, plugins: { legend: { display: false } } }
+        });
     }
 
-    messageContainer.style.position = 'fixed';
-    messageContainer.style.top = '20px';
-    messageContainer.style.left = '50%';
-    messageContainer.style.transform = 'translateX(-50%)';
-    messageContainer.style.padding = '15px';
-    messageContainer.style.color = '#fff';
-    messageContainer.style.fontSize = '16px';
-    messageContainer.style.zIndex = '1000';
-    messageContainer.style.borderRadius = '5px';
-    messageContainer.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
-    messageContainer.style.backgroundColor = isSuccess ? 'green' : 'red';
-    messageContainer.innerText = message;
-
-    messageContainer.style.display = 'block';
-    setTimeout(() => {
-        messageContainer.style.display = 'none';
-    }, duration);
-}
-
-
-document.addEventListener("DOMContentLoaded", function () {
-    document.addEventListener("click", function (event) {
-        var dropdowns = document.querySelectorAll(".dropdown-menu.show");
-        dropdowns.forEach(function (dropdown) {
-            if (!dropdown.parentElement.contains(event.target)) {
-                bootstrap.Dropdown.getInstance(dropdown.parentElement.querySelector(".dropdown-toggle"))?.hide();
-            }
+    // --- Campaign Status Chart ---
+    const campaignStatusCtx = document.getElementById('campaignStatusChart');
+    if (campaignStatusCtx) {
+        new Chart(campaignStatusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Approved', 'Pending', 'Rejected'],
+                datasets: [{
+                    data: campaignStatusData,
+                    backgroundColor: ['#81c784', '#ffeb3b', '#e57373'],
+                    hoverOffset: 10
+                }]
+            },
+            options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
         });
-    });
-});
+    }
 
- window.onload = function () {
-        console.log("JavaScript ready for Blazor!");
-    };
-
+    // --- Donation Trends Line Chart ---
+    const donationTrendsCtx = document.getElementById('donationTrendsChart');
+    if (donationTrendsCtx) {
+        new Chart(donationTrendsCtx, {
+            type: 'line',
+            data: {
+                labels: donationTrendData.labels,
+                datasets: [{
+                    label: 'Total Donations ($)',
+                    data: donationTrendData.values,
+                    borderColor: '#4fc3f7',
+                    backgroundColor: 'rgba(79,195,247,0.2)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: { responsive: true }
+        });
+    }
+};

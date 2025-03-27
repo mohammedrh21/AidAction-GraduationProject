@@ -3,7 +3,7 @@
 
 <div class="page controlpanel-content">
     <!-- Mobile Header: Visible only on small screens -->
-    <header class="d-flex d-md-none align-items-center p-3 bg-dark text-white">        
+    <header class="d-flex d-md-none justify-content-between p-3 text-white">        
         <!-- Logo: Aid Action with Icon -->
         <a href="/ControlPanel/" class="d-flex align-items-center text-white text-decoration-none ms-3">
             <img src="https://img.icons8.com/ios11/512w/FFFFFF/admin-settings-male.png" alt="Admin Icon" width="40" height="40" class="me-2">
@@ -11,9 +11,10 @@
         </a>
 
         <!-- Sidebar Toggler Button -->
-        <button class="btn btn-dark" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar"
+        <button class="btn btn-dark px-3 border-light" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar"
                 aria-controls="sidebar" aria-expanded="false" aria-label="Toggle sidebar">
             <i class="bi bi-list"></i>
+
         </button>
     </header>
 
@@ -31,18 +32,39 @@
 
             <!-- Sidebar Navigation Items -->
             <ul class="nav nav-pills flex-column gap-3 controlpanel-ul controlpanel-sidebar-list">
-                <li class="nav-link text-white px-0">
+                <li class="nav-link text-white px-0 py-1">
                     <button class="text-white nav-link py-2 px-3 rounded d-flex align-items-center text-start w-100 flex-fill controlpanel-home-li-n"
                             data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true">
-                        <i class="bi bi-house-fill me-2"></i> Home
+                        <i class="fas fa-hand-holding-usd" style="color: white;"></i>
+                        Donation
                     </button>
                     <div class="collapse show mt-2 w-100 flex-fill" id="home-collapse">
                         <ul class="btn-toggle-nav list-unstyled fw-normal small ps-3">
                             <li class="mb-2">
-                                <NavLink class="text-white link-dark rounded d-block py-2 px-3" href="/ControlPanel/">Overview</NavLink>
+                                <NavLink class="text-white link-light rounded d-block py-2 px-3" href="/ControlPanel/">
+                                    <i class="bi bi-bar-chart-fill me-2"></i>Donation Statistics
+                                </NavLink>
                             </li>
                             <li>
-                                <NavLink class="text-white link-dark rounded d-block py-2 px-3" href="/ControlPanel/DonationRecords">Donation Records</NavLink>
+                                <NavLink class="text-white link-light rounded d-block py-2 px-3" href="/ControlPanel/DonationRecords">
+                                    <i class="bi bi-receipt me-2"></i>Donation Records
+                                </NavLink>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="nav-link text-white px-0 py-1">
+                    <button class="text-white nav-link py-2 px-3 rounded d-flex align-items-center text-start w-100 flex-fill controlpanel-home-li-n"
+                            data-bs-toggle="collapse" data-bs-target="#need-collapse" aria-expanded="true">
+                        <i class="bi bi-house-fill me-2"></i> Needs
+                    </button>
+                    <div class="collapse show mt-2 w-100 flex-fill" id="need-collapse">
+                        <ul class="btn-toggle-nav list-unstyled fw-normal small ps-3">
+                            <li class="mb-2">
+                                <NavLink class="text-white link-light rounded d-block py-2 px-3" href="/ControlPanel/">Overview</NavLink>
+                            </li>
+                            <li>
+                                <NavLink class="text-white link-light rounded d-block py-2 px-3" href="/ControlPanel/DonationRecords">Donation Records</NavLink>
                             </li>
                         </ul>
                     </div>
@@ -68,13 +90,13 @@
                         <div class="collapse show mt-2" id="user-collapse">
                             <ul class="btn-toggle-nav list-unstyled fw-normal small ps-3">
                                 <li class="mb-2">
-                                    <a href="#" class="text-white link-dark rounded d-block py-1 px-2">Overview</a>
+                                    <a href="#" class="text-white link-light rounded d-block py-1 px-2">Overview</a>
                                 </li>
                                 <li class="mb-2">
-                                    <a href="#" class="text-white link-dark rounded d-block py-1 px-2">Updates</a>
+                                    <a href="#" class="text-white link-light rounded d-block py-1 px-2">Updates</a>
                                 </li>
                                 <li>
-                                    <a href="#" class="text-white link-dark rounded d-block py-1 px-2">Reports</a>
+                                    <a href="#" class="text-white link-light rounded d-block py-1 px-2">Reports</a>
                                 </li>
                             </ul>
                         </div>
