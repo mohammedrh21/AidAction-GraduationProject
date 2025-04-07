@@ -36,6 +36,7 @@ builder.Services.AddScoped<IMainWebsite,MainWebsiteRepository>();
 builder.Services.AddScoped<IControlPanel, ControlPanelRepository>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+
 builder.Services.AddTransient<GenericRepository>();
 
 builder.Services.AddScoped<CustomAuthStateProvider>();

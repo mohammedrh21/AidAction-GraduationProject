@@ -1,0 +1,173 @@
+﻿ @* @page "/ControlPanel/WebDetails"
+ @layout ControlPanelLayout
+ @inject IControlPanel _IControl
+
+ <h3>Upload Photo</h3>
+
+ <InputFile OnChange="HandleFileSelected" />
+
+ @if (isFileSelected)
+ {
+     <button @onclick="UploadFile">Upload</button>
+ }
+
+ @code {
+     private bool isFileSelected = false;
+     private IBrowserFile selectedFile; // Holds the selected file
+
+     // List of allowed file types (you can add more types as needed)
+     private readonly string[] allowedFileTypes = new[] { "image/jpeg", "image/png", "image/gif" };
+
+     // Handle file selection using InputFile component
+     private void HandleFileSelected(InputFileChangeEventArgs e)
+     {
+         var fileInput = e.File; // This is the IBrowserFile object
+
+         if (fileInput != null)
+         {
+             // Check the file type
+             if (!allowedFileTypes.Contains(fileInput.ContentType))
+             {
+                 Console.WriteLine("Invalid file type selected.");
+                 isFileSelected = false;
+                 return; // Exit the method if the file type is invalid
+             }
+
+             selectedFile = fileInput;
+             isFileSelected = true;
+         }
+         else
+         {
+             // Log or handle any issues with the file selection
+             Console.WriteLine("Selected file is not valid.");
+             isFileSelected = false;
+         }
+     }
+
+     // Upload the file
+     private async Task UploadFile()
+     {
+         if (selectedFile != null)
+         {
+             var fileName = selectedFile.Name;
+             var fileSize = selectedFile.Size;
+
+             var fileBytes = new byte[fileSize];
+             await selectedFile.OpenReadStream().ReadAsync(fileBytes);
+
+             // Create the ContentModel to send to the server
+             var contentModel = new ContentModel
+                 {
+                     FileName = fileName,
+                     FileBytes = fileBytes
+                 };
+
+             // Call the ContentSaveAsync method of the injected IControlPanel service
+             JObject response = await _IControl.ContentSaveAsync(contentModel);
+
+             // Handle the response from the service
+             if (response["success"].Value<bool>())
+             {
+                 Console.WriteLine("File uploaded successfully: " + response["fileName"]);
+             }
+             else
+             {
+                 Console.WriteLine("Error during file upload: " + response["message"]);
+             }
+         }
+     }
+ }
+ *@
+ @page "/ControlPanel/WebDetails"
+@layout ControlPanelLayout 
+@inject IControlPanel _IControl
+
+<h3>Upload Photo</h3>
+
+<InputFile OnChange="HandleFileSelected" />
+
+@if (isFileSelected)
+{
+    <button @onclick="UploadFile">Upload</button>
+}
+
+@if (!string.IsNullOrEmpty(base64Image))
+{
+    <div>
+        <h4>Uploaded Image:</h4>
+        <img src="@base64Image" alt="Uploaded Image" width="300" />
+    </div>
+}
+
+@code {
+    private bool isFileSelected = false;
+    private IBrowserFile selectedFile; // Holds the selected file
+    private string base64Image; // Holds the Base64 string for the uploaded image
+
+    // List of allowed file types (you can add more types as needed)
+    private readonly string[] allowedFileTypes = new[] { "image/jpeg", "image/png", "image/gif" };
+
+    // Handle file selection using InputFile component
+    private void HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        var fileInput = e.File; // This is the IBrowserFile object
+
+        if (fileInput != null)
+        {
+            // Check the file type
+            if (!allowedFileTypes.Contains(fileInput.ContentType))
+            {
+                Console.WriteLine("Invalid file type selected.");
+                isFileSelected = false;
+                return; // Exit the method if the file type is invalid
+            }
+
+            selectedFile = fileInput;
+            isFileSelected = true;
+
+            // Convert the selected file to a Base64 string to display it
+            ConvertToBase64(fileInput);
+        }
+        else
+        {
+            // Log or handle any issues with the file selection
+            Console.WriteLine("Selected file is not valid.");
+            isFileSelected = false;
+        }
+    }
+
+    // Convert the uploaded file (byte[]) to a Base64 string
+    private async Task ConvertToBase64(IBrowserFile file)
+    {
+        var fileSize = file.Size;
+        var fileBytes = new byte[fileSize];
+        await file.OpenReadStream().ReadAsync(fileBytes);
+
+        // Convert byte[] to Base64 string
+        base64Image = $"data:{file.ContentType};base64,{Convert.ToBase64String(fileBytes)}";
+    }
+
+    // Upload the file
+    private async Task UploadFile()
+    {
+        if (selectedFile != null)
+        {
+            var fileName = selectedFile.Name;
+            var fileSize = selectedFile.Size;
+
+            var fileBytes = new byte[fileSize];
+            await selectedFile.OpenReadStream().ReadAsync(fileBytes);
+
+            // Create the ContentModel to send to the server
+            var contentModel = new ContentModel
+                {
+                    FileName = fileName,
+                    FileBytes = fileBytes
+                };
+
+            // Call the ContentSaveAsync method of the injected IControlPanel service
+            JObject response = await _IControl.ContentSaveAsync(contentModel);
+            
+        }
+    }
+}

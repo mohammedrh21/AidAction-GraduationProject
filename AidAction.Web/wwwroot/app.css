@@ -187,8 +187,8 @@ h2 {
 
 /* Start of Login Page*/
 /* General body setup */
-.login-msg{
-    background-color:rgb(245, 243, 209, 0.31);
+.login-msg {
+    background-color: rgb(245, 243, 209, 0.31);
 }
 
 .login-body::before {
@@ -259,8 +259,8 @@ h2 {
 .input-group {
     margin-bottom: 20px;
     text-align: left;
-    display:flex;
-    flex-direction:column;
+    display: flex;
+    flex-direction: column;
 }
 
 
@@ -283,21 +283,21 @@ h2 {
 }
 
 
-    .input-group input {
-        width: 20rem !important;
-        padding: 12px !important;
-        margin:unset;
-        font-size: 16px;
-        border-radius: 8px;
-        border: 1px solid #b7956b; /* Light brown border for input fields */
-        outline: none;
-        transition: all 0.3s ease;
-    }
+.input-group input {
+    width: 20rem !important;
+    padding: 12px !important;
+    margin: unset;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 1px solid #b7956b; /* Light brown border for input fields */
+    outline: none;
+    transition: all 0.3s ease;
+}
 
-        .input-group input:focus {
-            border-color: #ffc107; /* Amber focus border for emphasis */
-            box-shadow: 0 0 5px rgba(255, 193, 7, 0.6); /* Amber glow */
-        }
+    .input-group input:focus {
+        border-color: #ffc107; /* Amber focus border for emphasis */
+        box-shadow: 0 0 5px rgba(255, 193, 7, 0.6); /* Amber glow */
+    }
 
 /* Submit button styling */
 .login-btn {
@@ -320,18 +320,17 @@ h2 {
 .links {
     margin-top: 20px;
     font-size: 14px;
-    display:flex;
-    flex-direction:row;
+    display: flex;
+    flex-direction: row;
 }
 
-.links :first-child{
-    margin-right:0.75rem;
-}
+    .links :first-child {
+        margin-right: 0.75rem;
+    }
 
-.links :last-child{
-    margin-left:0.75rem;
-
-}
+    .links :last-child {
+        margin-left: 0.75rem;
+    }
 
     .links a {
         display: inline-block;
@@ -366,19 +365,19 @@ h2 {
     font-size: 1.4rem;
 }
 
-.navbar-custom{
-    background-color:rgb(88, 33, 19, 0.90);
+.navbar-custom {
+    background-color: rgb(88, 33, 19, 0.90);
 }
-/* Navbar Links */
-.navbar-custom .nav-link {
-    color: #f1d6b8 !important; /* Warm light wheat */
-    font-weight: 600 !important;
-    transition: color 0.3s ease-in-out !important;
-}
-
-    .navbar-custom .nav-link:hover {
-        color: #ffc107 !important; /* Golden warm color */
+    /* Navbar Links */
+    .navbar-custom .nav-link {
+        color: #f1d6b8 !important; /* Warm light wheat */
+        font-weight: 600 !important;
+        transition: color 0.3s ease-in-out !important;
     }
+
+        .navbar-custom .nav-link:hover {
+            color: #ffc107 !important; /* Golden warm color */
+        }
 
 /* Dropdown Menu */
 .dropdown-menu {
@@ -443,10 +442,10 @@ h2 {
     z-index: 1;
 }
 
-.account{
+.account {
     display: flex;
-    flex-direction:row;
-    gap:1rem;
+    flex-direction: row;
+    gap: 1rem;
 }
 
 .custom-nav-item {
@@ -460,11 +459,11 @@ h2 {
     cursor: pointer;
 }
 
-.user-menu img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
+    .user-menu img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
     }
 
 
@@ -499,10 +498,10 @@ h2 {
         background-color: white !important;
         text-decoration: none !important;
     }*/
-    
-    a{
-        text-decoration: none !important;   
-    }
+
+a {
+    text-decoration: none !important;
+}
 
 /******** end of nav bar *******/
 /************ start of mainwebsite index ***********/
@@ -556,6 +555,11 @@ h2 {
 
 
 /* Admin Control Panel */
+.controlpanel-body {
+    height: 100%;
+    width: 100%;
+}
+
 .controlpanel-content header {
     background-color: rgb(5, 3, 44) !important;
 }
@@ -566,8 +570,15 @@ h2 {
 }
 
 /* Sidebar Styles */
+@media (min-width: 641px) {
+    article {
+        min-height: 100vh !important;
+    }
+}
+
 .controlpanel-sidebar {
     width: 280px;
+    min-width:280px !important;
     height: auto; /* Full viewport height */
     background: linear-gradient(to bottom, rgb(5, 3, 44), rgb(19, 18, 18));
     color: #FFFFFF;
@@ -619,8 +630,9 @@ h2 {
     height: 19rem !important; /* 4:3 ratio (25 * 0.75) */
     max-width: 100%;
 }
-#linechart canvas{
-    width:100% !important;
+
+#linechart canvas {
+    width: 100% !important;
 }
 /* End of ControlPanel Layout */
 
@@ -629,5 +641,98 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     filter: invert(0.5);
 }
 
+/* Change Password Page */
+/* Custom styling for the card */
+.card {
+    border-radius: 10px;
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #ddd;
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+h3 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.form-group label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+button {
+    font-size: 1rem;
+    padding: 0.75rem;
+}
+
+input.form-control {
+    border-radius: 5px;
+}
+
+@media (max-width: 768px) {
+    .card {
+        margin-top: 20px;
+    }
+}
+
+.about-donation-section {
+    background-color: #f9fdfb;
+}
+
+    .about-donation-section h2 {
+        color: #111;
+    }
+
+.stat-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+
+.campaigns-body {
+    background-color: #f9f9f9;
+    font-family: "Segoe UI", sans-serif;
+}
+
+.campaign-card {
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    padding: 1.5rem;
+    transition: transform 0.2s ease-in-out;
+}
+
+    .campaign-card:hover {
+        transform: translateY(-5px);
+    }
+
+.progress {
+    height: 18px;
+}
+
+.load-more-btn {
+    margin-top: 2rem;
+    border-radius: 12px;
+    padding: 0.6rem 1.5rem;
+}
+
+.card-wrapper {
+    display: none;
+}
+
+    .card-wrapper.visible {
+        display: block;
+    }
+/*End of ControlPanel*/
 
 

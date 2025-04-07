@@ -1,0 +1,63 @@
+body {
+    font-family: "Inter", sans-serif;
+}
+
+.faqs-section h2 {
+    font-weight: 700;
+    font-size: 2rem;
+    color: #111;
+    margin-bottom: 1rem;
+}
+
+.accordion-button {
+    background-color: white !important;
+    color: #222 !important;
+    font-weight: 600;
+    font-size: 1.1rem;
+    border: none;
+    box-shadow: none;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #eee;
+    /*  transition: all 0.3s ease;*/
+}
+
+    .accordion-button::after {
+        content: "+";
+        font-size: 1.5rem;
+        background-image: none !important;
+        color: #111;
+        transition: none !important;
+    }
+
+    .accordion-button:focus {
+        box-shadow: none;
+        border-color: transparent;
+    }
+
+    .accordion-button:not(.collapsed) {
+        color: #a7ebc3;
+        background-color: #f0fff4;
+        box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.125);
+        border-bottom: 2px solid #adf2ca;
+    }
+
+        .accordion-button:not(.collapsed)::after {
+            content: "-";
+            font-size: 1.5rem;
+            transition: none !important;
+        }
+
+.accordion-item {
+    border: none;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.accordion-body {
+    background-color: #fafafa;
+    color: #444;
+    font-size: 0.95rem;
+    padding: 1.25rem 1.5rem;
+}

@@ -1,0 +1,58 @@
+﻿@page "/CreateCampaign"
+@inject IJSRuntime JS
+@inject IMainWebsite _Main
+
+<h3>Create Campaign</h3>
+
+<EditForm Model="@campaign" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <!-- Campaign Title -->
+    <InputText id="Title" class="form-control" @bind-Value="campaign.Title" />
+
+    <!-- Campaign Image Upload -->
+    <InputFile OnChange="HandleFileSelected" />
+
+    <button class="btn btn-success" type="submit">Submit</button>
+</EditForm>
+
+@code {
+    private CampaignModel campaign = new CampaignModel();
+    private IBrowserFile selectedFile;
+
+    // Handle file selected
+    private void HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+    }
+
+    // Handle form submission and upload the image
+    private async Task HandleValidSubmit()
+    {
+        if (selectedFile != null)
+        {
+            var imagePath = await SaveImageAsync(selectedFile);
+            campaign.ImagePath = imagePath;
+        }
+
+        // Now save the campaign along with the imagePath (you can save this to your database)
+        // await _Main.SaveCampaignAsync(campaign);
+    }
+
+    // Save image to wwwroot/images and return the relative URL
+    private async Task<string> SaveImageAsync(IBrowserFile file)
+    {
+        // Generate unique file name
+        var fileName = Path.Combine("wwwroot", "images", Guid.NewGuid().ToString() + Path.GetExtension(file.Name));
+
+        // Open a stream to write the image
+        using (var fileStream = new FileStream(fileName, FileMode.Create))
+        {
+            await file.OpenReadStream().CopyToAsync(fileStream);
+        }
+
+        // Return the relative path to store in the database
+        return $"/images/{Path.GetFileName(fileName)}";
+    }
+}

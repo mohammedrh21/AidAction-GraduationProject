@@ -1,0 +1,150 @@
+﻿@page "/ControlPanel/FundraiserCampaigns"
+@layout ControlPanelLayout
+@inject IControlPanel _Control
+@inject IJSRuntime _JS
+<PageTitle>Fundraiser Campaign</PageTitle>
+
+<div class="container py-5">
+    <h2 class="fw-bold text-success text-center mb-2">All Campaigns</h2>
+    <p class="text-muted text-center mb-5">
+        Discover active campaigns you can support today.
+    </p>
+
+    <!-- Filter Buttons (All, Active, Archived) -->
+    <div class="d-flex justify-content-center mb-4">
+        <div class="btn-group w-50" role="group" aria-label="Campaign Filter">
+            <button type="button" class="btn btn-outline-primary w-33" @onclick="FilterAll"><strong>All</strong></button>
+            <button type="button" class="btn btn-outline-success w-33" @onclick="FilterActive"><strong>Active</strong></button>
+            <button type="button" class="btn btn-outline-warning w-33" @onclick="FilterArchived"><strong>Archived</strong></button>
+        </div>
+    </div>
+
+    <div class="row g-4" id="campaignContainer">
+        @foreach (var campaign in FilteredCampaignModels)
+        {
+            <div class="col-md-4 card-wrapper visible">
+                <div class="campaign-card d-flex flex-column h-100"
+                     id="CampaignId"
+                     data-campaign-id="@campaign.CampaignId"
+                     data-title="@campaign.Title"
+                     data-description="@campaign.Description"
+                     data-target-amount="@campaign.TargetAmount"
+                     data-creation-date="@campaign.ApprovalDate?.ToString("yyyy-MM-dd")"
+                     data-total-fund-collected="@campaign.TotalFundCollected"
+                     data-image-path="@campaign.ImagePath">
+
+                    @if (!string.IsNullOrEmpty(campaign.ImagePath))
+                    {
+                        <div class="campaign-image-container mb-2" style="position: relative; width: 100%; padding-top: 75%; overflow: hidden; border-radius: 0.5rem;">
+                            <img src="@campaign.ImagePath" alt="Campaign Image" loading="lazy"
+                                 style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;" />
+                        </div>
+                    }
+                    <h5>@campaign.Title</h5>
+
+                    <div class="d-flex flex-row justify-content-between gap-5">
+                        <p class="text-success">
+                            @((campaign.TotalFundCollected ?? 0)) Raised
+                        </p>
+                        <p class="text-success">
+                            @((campaign.TargetAmount ?? 0)) Funds Target
+                        </p>
+                    </div>
+
+                   
+                    <div class="progress mb-2">
+                        <div class="progress-bar bg-success"
+                             style="width: @(campaign.TotalFundCollected / (campaign.TargetAmount ?? 1) * 100)%"
+                             id="Progress">
+                            @(campaign.TotalFundCollected / (campaign.TargetAmount ?? 1) * 100)%
+                        </div>
+                    </div>
+                    <p class="text-muted small">
+                        Approved Date: @(campaign.ApprovalDate?.ToString("MMMM dd, yyyy"))
+                    </p>
+
+                    <!-- Conditional Buttons Display -->
+                    <div class="d-flex justify-content-between mt-auto">
+                        <NavLink href="@GetCampaignDetailsUrl(campaign.CampaignId)" class="btn btn-success w-30">
+                            Go for Details
+                        </NavLink>
+                        @if (campaign.TotalFundCollected >= campaign.TargetAmount)
+                        {
+                            <button @onclick="() => CampaignArchiveAsync(campaign.CampaignId)" class="btn btn-warning w-40">Archive</button>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    public List<CampaignModel> CampaignModels { get; set; } = new List<CampaignModel>();
+    public List<CampaignModel> FilteredCampaignModels { get; set; } = new List<CampaignModel>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CampaignSelectAsync();
+        FilteredCampaignModels = CampaignModels.Where(c => c.IsArchived != true).ToList(); ; // Initially show all campaigns
+    }
+
+    // Method to generate the URL with campaignId
+    private string GetCampaignDetailsUrl(int campaignId)
+    {
+        return $"/ControlPanel/CampaignDetails/?campaignId={campaignId}";
+    }
+
+    private async Task CampaignSelectAsync()
+    {
+        // Fetch the JSON response from the backend
+        var result = await _Control.CampaignsSelectAsync();
+
+        // Deserialize the JSON into a list of Result objects containing a list of CampaignsModel
+        var resultData = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Result<List<CampaignModel>>>>(result.ToString());
+
+        if (resultData != null && resultData.Any())
+        {
+            // Access the first item in the array and assign its Data field (list of Campaigns) to CampaignModels
+            CampaignModels = resultData.FirstOrDefault()?.Data;
+        }
+    }
+
+    private async Task CampaignArchiveAsync(int campaignId)
+    {
+        CampaignModel model = new CampaignModel();
+        var userId = await _JS.InvokeAsync<string>("localStorage.getItem", "UserId");
+        // Fetch the JSON response from the backend
+        var result = await _Control.CampaignsArchiveAsync(new {CampaignId= campaignId,AdminId = userId});
+
+        // Deserialize the JSON into a list of Result objects containing a list of CampaignsModel
+        var resultData = Newtonsoft.Json.JsonConvert.DeserializeObject<Result<List<CampaignModel>>>(result.ToString());
+
+        if (resultData != null)
+        {
+            // Access the first item in the array and assign its Data field (list of Campaigns) to CampaignModels
+            model = resultData.Data.FirstOrDefault();
+        }
+        StateHasChanged();
+    }
+
+    // Filter methods
+    private void FilterAll()
+    {
+        FilteredCampaignModels = CampaignModels; // Show all campaigns
+    }
+
+    private void FilterActive()
+    {
+        // Filter active campaigns where the campaign is not archived
+        FilteredCampaignModels = CampaignModels.Where(c => c.IsArchived != true).ToList();
+    }
+
+
+    private void FilterArchived()
+    {
+        // Filter archived campaigns where the total fund collected is equal or greater than the target amount
+        FilteredCampaignModels = CampaignModels.Where(c => c.IsArchived == true).ToList();
+    }
+
+}

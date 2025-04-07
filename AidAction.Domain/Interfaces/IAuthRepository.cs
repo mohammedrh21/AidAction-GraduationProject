@@ -1,4 +1,5 @@
-﻿using AidAction.Domain.DomainModels.Auth;
+﻿using AidAction.Domain.DomainModels;
+using AidAction.Domain.DomainModels.Auth;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -12,5 +13,6 @@ namespace AidAction.Domain.Interfaces
     {
         Task<JObject> UserLoginAsync(TokenRequestModel model);
          Task<JObject> SaveTokenAsync(object o);   
+        Task<JObject> ChangePasswordAsync(ChangePasswordModel model);
     }
 }

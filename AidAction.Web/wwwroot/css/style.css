@@ -1,0 +1,47 @@
+/* general */
+body {
+  font-family: "Poppins", sans-serif;
+}
+
+/* Navbar */
+
+.navbar-brand {
+  font-size: x-large;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.navbar-brand img {
+  padding-right: 3px;
+}
+
+.navbar-nav li a:hover {
+  color: #28a745;
+}
+
+/* hero Section */
+
+.hero-section {
+  background: url("../resources/images/hero.webp") no-repeat center center/cover;
+  min-height: 70vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.6);
+}
+
+.features-section .col-md-4 {
+  background: #fff;
+  border-radius: 10px;
+  transition: transform 0.3s ease-in-out;
+}
+
+.features-section .col-md-4:hover {
+  transform: translateY(-5px);
+}
+
+.urgent-fundraising img {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+}

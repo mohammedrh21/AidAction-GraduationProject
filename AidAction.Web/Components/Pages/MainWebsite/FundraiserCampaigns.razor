@@ -1,0 +1,328 @@
+﻿@* @page "/MainWebsite/FundraiserCampaigns"
+ @layout MainLayout
+ @inject IMainWebsite _Main
+ @inject IJSRuntime _JS
+ <PageTitle>Fundraiser Campaigns</PageTitle>
+
+ <div class="container py-5">
+     <h2 class="fw-bold text-success text-center mb-2">Campaigns</h2>
+     <p class="text-muted text-center mb-5">
+         Discover active campaigns you can support today.
+     </p>
+
+     <!-- Container with filter buttons centered and dropdown at the right -->
+     <div class="d-flex justify-content-around mb-4">
+         <!-- Filter Buttons (centered) -->
+         <div class="btn-group" role="group" aria-label="Campaign Filter">
+             <button type="button" class="btn btn-outline-primary fw-bold border-2 me-2" @onclick="ShowAllCampaigns">All Campaigns</button>
+             <button type="button" class="btn btn-outline-warning fw-bold border-2" @onclick="ShowMyCampaigns">My Campaigns</button>
+         </div>
+
+         <!-- Sort Dropdown (right side) -->
+         <div class="dropdown">
+             <button class="btn btn-outline-primary dropdown-toggle fw-bold" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                 Sort By <i class="fas fa-sort"></i> <!-- Sort Icon -->
+             </button>
+             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                 <li><a class="dropdown-item" @onclick="SortCampaignsByTitleAscending"><i class="fas fa-sort-alpha-down"></i> Sort by Title (A-Z)</a></li>
+                 <li><a class="dropdown-item" @onclick="SortCampaignsByTitleDescending"><i class="fas fa-sort-alpha-up"></i> Sort by Title (Z-A)</a></li>
+                 <li><a class="dropdown-item" @onclick="SortCampaignsByTargetAmountAscending"><i class="fas fa-arrow-up"></i> Sort by Target Amount (Asc)</a></li>
+                 <li><a class="dropdown-item" @onclick="SortCampaignsByTargetAmountDescending"><i class="fas fa-arrow-down"></i> Sort by Target Amount (Desc)</a></li>
+                 <li><a class="dropdown-item" @onclick="SortCampaignsByTotalFundAscending"><i class="fas fa-arrow-up"></i> Sort by Total Fund (Asc)</a></li>
+                 <li><a class="dropdown-item" @onclick="SortCampaignsByTotalFundDescending"><i class="fas fa-arrow-down"></i> Sort by Total Fund (Desc)</a></li>
+                 <li><a class="dropdown-item" @onclick="SortCampaignsByProgressPercentage"><i class="fas fa-tachometer-alt"></i> Sort by Progress Percentage</a></li>
+             </ul>
+         </div>
+     </div>
+
+     <div class="row g-4" id="campaignContainer">
+         @foreach (var campaign in FilteredCampaignModels)
+         {
+             <div class="col-md-4 card-wrapper visible">
+                 <div class="campaign-card d-flex flex-column h-100"
+                      id="CampaignId"
+                      data-campaign-id="@campaign.CampaignId"
+                      data-title="@campaign.Title"
+                      data-description="@campaign.Description"
+                      data-target-amount="@campaign.TargetAmount"
+                      data-creation-date="@campaign.ApprovalDate?.ToString("yyyy-MM-dd")"
+                      data-total-fund-collected="@campaign.TotalFundCollected"
+                      data-image-path="@campaign.ImagePath">
+
+                     @if (campaign.ImageBytes != null)
+                     {
+                         base64Image = $"data:image/png;base64,{Convert.ToBase64String(campaign.ImageBytes)}";
+                         Task.Delay(700);
+                     }
+
+                     @if (!string.IsNullOrEmpty(campaign.ImagePath))
+                     {
+                         <div class="campaign-image-container mb-2" style="position: relative; width: 100%; padding-top: 75%; overflow: hidden; border-radius: 0.5rem;">
+                             <img src="@campaign.ImagePath" alt="Campaign Image" loading="lazy"
+                                  style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;" />
+                         </div>
+                     }
+
+
+                     <h5>@campaign.Title</h5>
+                     <div class="d-flex flex-row justify-content-between gap-5">
+                         <p class="text-success">
+                             @((campaign.TotalFundCollected ?? 0)) Raised
+                         </p>
+                         <p class="text-success">
+                             @((campaign.TargetAmount ?? 0)) Funds Target
+                         </p>
+                     </div>
+
+                     <div class="progress mb-2">
+                         <div class="progress-bar bg-success"
+                              style="width: @(campaign.TotalFundCollected / (campaign.TargetAmount ?? 1) * 100)%"
+                              id="Progress">
+                             @(campaign.TotalFundCollected / (campaign.TargetAmount ?? 1) * 100)%
+                         </div>
+                     </div>
+                     <p class="text-muted small">
+                         Approved Date: @(campaign.ApprovalDate?.ToString("MMMM dd, yyyy"))
+                     </p>
+
+                     <!-- Conditional Buttons Display -->
+                     <div class="d-flex justify-content-between mt-auto">
+                         <NavLink href="@GetCampaignDetailsUrl(campaign.CampaignId)" class="btn btn-success w-30">
+                             Go for Details
+                         </NavLink>
+                     </div>
+                 </div>
+             </div>
+         }
+     </div>
+ </div>
+
+ @code {
+     private string base64Image;
+
+
+     public List<CampaignModel> CampaignModels { get; set; } = new List<CampaignModel>();
+     public List<CampaignModel> FilteredCampaignModels { get; set; } = new List<CampaignModel>();
+     protected override async Task OnInitializedAsync()
+     {
+         await CampaignSelectAsync();
+         FilteredCampaignModels = CampaignModels.Where(c => c.CampaignId > 1).ToList(); // Initially show all campaigns
+     }
+
+     // Method to generate the URL with campaignId
+     private string GetCampaignDetailsUrl(int campaignId)
+     {
+         return $"/MainWebsite/CampaignDetails/?campaignId={campaignId}";
+     }
+
+     private async Task CampaignSelectAsync()
+     {
+         // Fetch the JSON response from the backend
+         var result = await _Main.CampaignsSelectAsync();
+
+         // Deserialize the JSON into a list of Result objects containing a list of CampaignsModel
+         var resultData = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Result<List<CampaignModel>>>>(result.ToString());
+
+         if (resultData != null && resultData.Any())
+         {
+             // Access the first item in the array and assign its Data field (list of Campaigns) to CampaignModels
+             CampaignModels = resultData.FirstOrDefault()?.Data;
+         }
+     }
+
+     private void ShowAllCampaigns()
+     {
+         FilteredCampaignModels = CampaignModels.Where(x => x.CampaignId > 1).ToList();
+     }
+
+     private void ShowMyCampaigns()
+     {
+         FilteredCampaignModels = CampaignModels.Where(x => x.CampaignId == 7).ToList();
+     }
+
+     // Sorting by Title (Ascending)
+     private void SortCampaignsByTitleAscending()
+     {
+         FilteredCampaignModels = FilteredCampaignModels.OrderBy(c => c.Title).ToList();
+     }
+
+     // Sorting by Title (Descending)
+     private void SortCampaignsByTitleDescending()
+     {
+         FilteredCampaignModels = FilteredCampaignModels.OrderByDescending(c => c.Title).ToList();
+     }
+
+     // Sorting by Target Amount (Ascending)
+     private void SortCampaignsByTargetAmountAscending()
+     {
+         FilteredCampaignModels = FilteredCampaignModels.OrderBy(c => c.TargetAmount).ToList();
+     }
+
+     // Sorting by Target Amount (Descending)
+     private void SortCampaignsByTargetAmountDescending()
+     {
+         FilteredCampaignModels = FilteredCampaignModels.OrderByDescending(c => c.TargetAmount).ToList();
+     }
+
+     // Sorting by Total Fund Collected (Ascending)
+     private void SortCampaignsByTotalFundAscending()
+     {
+         FilteredCampaignModels = FilteredCampaignModels.OrderBy(c => c.TotalFundCollected).ToList();
+     }
+
+     // Sorting by Total Fund Collected (Descending)
+     private void SortCampaignsByTotalFundDescending()
+     {
+         FilteredCampaignModels = FilteredCampaignModels.OrderByDescending(c => c.TotalFundCollected).ToList();
+     }
+
+     // Sorting by Progress Percentage (Amount Raised vs. Target Amount)
+     private void SortCampaignsByProgressPercentage()
+     {
+         FilteredCampaignModels = FilteredCampaignModels.OrderBy(c => (c.TotalFundCollected ?? 0) / (c.TargetAmount ?? 1) * 100).ToList();
+     }
+
+ }
+ *@
+
+
+
+
+@page "/MainWebsite/FundraiserCampaigns"
+@layout MainLayout
+@inject IMainWebsite _Main
+@inject IJSRuntime _JS
+<PageTitle>Fundraiser Campaigns</PageTitle>
+
+<div class="container py-5">
+    <h2 class="fw-bold text-success text-center mb-2">Campaigns</h2>
+    <p class="text-muted text-center mb-5">
+        Discover active campaigns you can support today.
+    </p>
+
+    <!-- Container with filter buttons centered and dropdown at the right -->
+    <div class="d-flex justify-content-around mb-4">
+        <!-- Filter Buttons (centered) -->
+        <div class="btn-group" role="group" aria-label="Campaign Filter">
+            <button type="button" class="btn btn-outline-primary fw-bold border-2 me-2" @onclick="ShowAllCampaigns">All Campaigns</button>
+            <button type="button" class="btn btn-outline-warning fw-bold border-2" @onclick="ShowMyCampaigns">My Campaigns</button>
+        </div>
+
+        <!-- Sort Dropdown (right side) -->
+        <div class="dropdown">
+            <button class="btn btn-outline-primary dropdown-toggle fw-bold" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                Sort By <i class="fas fa-sort"></i> <!-- Sort Icon -->
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <li><a class="dropdown-item" @onclick="SortCampaignsByTitleAscending"><i class="fas fa-sort-alpha-down"></i> Sort by Title (A-Z)</a></li>
+                <li><a class="dropdown-item" @onclick="SortCampaignsByTitleDescending"><i class="fas fa-sort-alpha-up"></i> Sort by Title (Z-A)</a></li>
+                <li><a class="dropdown-item" @onclick="SortCampaignsByTargetAmountAscending"><i class="fas fa-arrow-up"></i> Sort by Target Amount (Asc)</a></li>
+                <li><a class="dropdown-item" @onclick="SortCampaignsByTargetAmountDescending"><i class="fas fa-arrow-down"></i> Sort by Target Amount (Desc)</a></li>
+                <li><a class="dropdown-item" @onclick="SortCampaignsByTotalFundAscending"><i class="fas fa-arrow-up"></i> Sort by Total Fund (Asc)</a></li>
+                <li><a class="dropdown-item" @onclick="SortCampaignsByTotalFundDescending"><i class="fas fa-arrow-down"></i> Sort by Total Fund (Desc)</a></li>
+                <li><a class="dropdown-item" @onclick="SortCampaignsByProgressPercentage"><i class="fas fa-tachometer-alt"></i> Sort by Progress Percentage</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="row g-4" id="campaignContainer">
+        @foreach (var campaign in FilteredCampaignModels)
+        {
+            <div class="col-md-4 card-wrapper visible">
+                <div class="campaign-card d-flex flex-column h-100"
+                     id="CampaignId"
+                     data-campaign-id="@campaign.CampaignId"
+                     data-title="@campaign.Title"
+                     data-description="@campaign.Description"
+                     data-target-amount="@campaign.TargetAmount"
+                     data-creation-date="@campaign.ApprovalDate?.ToString("yyyy-MM-dd")"
+                     data-total-fund-collected="@campaign.TotalFundCollected"
+                     data-image-path="@campaign.ImagePath">
+
+                    @if (!string.IsNullOrEmpty(campaign.ImagePath))
+                    {
+                        <div class="campaign-image-container mb-2" style="position: relative; width: 100%; padding-top: 75%; overflow: hidden; border-radius: 0.5rem;">
+                            <img src="@campaign.ImagePath" alt="Campaign Image" loading="lazy"
+                                 style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;" />
+                        </div>
+                    }
+
+                    <h5>@campaign.Title</h5>
+                    <div class="d-flex flex-row justify-content-between gap-5">
+                        <p class="text-success">
+                            @((campaign.TotalFundCollected ?? 0)) Raised
+                        </p>
+                        <p class="text-success">
+                            @((campaign.TargetAmount ?? 0)) Funds Target
+                        </p>
+                    </div>
+
+                    <div class="progress mb-2">
+                        <div class="progress-bar bg-success"
+                             style="width: @(campaign.TotalFundCollected / (campaign.TargetAmount ?? 1) * 100)%"
+                             id="Progress">
+                            @(campaign.TotalFundCollected / (campaign.TargetAmount ?? 1) * 100)%
+                        </div>
+                    </div>
+                    <p class="text-muted small">
+                        Approved Date: @(campaign.ApprovalDate?.ToString("MMMM dd, yyyy"))
+                    </p>
+
+                    <!-- Conditional Buttons Display -->
+                    <div class="d-flex justify-content-between mt-auto">
+                        <NavLink href="@GetCampaignDetailsUrl(campaign.CampaignId)" class="btn btn-success w-30">
+                            Go for Details
+                        </NavLink>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    public List<CampaignModel> CampaignModels { get; set; } = new List<CampaignModel>();
+    public List<CampaignModel> FilteredCampaignModels { get; set; } = new List<CampaignModel>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CampaignSelectAsync();
+        FilteredCampaignModels = CampaignModels.Where(c => c.CampaignId > 1).ToList(); // Initially show all campaigns
+    }
+
+    private async Task CampaignSelectAsync()
+    {
+        var result = await _Main.CampaignsSelectAsync();
+        var resultData = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Result<List<CampaignModel>>>>(result.ToString());
+
+        if (resultData != null && resultData.Any())
+        {
+            CampaignModels = resultData.FirstOrDefault()?.Data;
+        }
+    }
+
+    // Method to generate the URL with campaignId
+    private string GetCampaignDetailsUrl(int campaignId)
+    {
+        return $"/MainWebsite/CampaignDetails/?campaignId={campaignId}";
+    }
+
+    private void ShowAllCampaigns()
+    {
+        FilteredCampaignModels = CampaignModels.Where(x => x.CampaignId > 1).ToList();
+    }
+
+    private void ShowMyCampaigns()
+    {
+        FilteredCampaignModels = CampaignModels.Where(x => x.CampaignId == 7).ToList();
+    }
+
+    // Sorting methods
+    private void SortCampaignsByTitleAscending() => FilteredCampaignModels = FilteredCampaignModels.OrderBy(c => c.Title).ToList();
+    private void SortCampaignsByTitleDescending() => FilteredCampaignModels = FilteredCampaignModels.OrderByDescending(c => c.Title).ToList();
+    private void SortCampaignsByTargetAmountAscending() => FilteredCampaignModels = FilteredCampaignModels.OrderBy(c => c.TargetAmount).ToList();
+    private void SortCampaignsByTargetAmountDescending() => FilteredCampaignModels = FilteredCampaignModels.OrderByDescending(c => c.TargetAmount).ToList();
+    private void SortCampaignsByTotalFundAscending() => FilteredCampaignModels = FilteredCampaignModels.OrderBy(c => c.TotalFundCollected).ToList();
+    private void SortCampaignsByTotalFundDescending() => FilteredCampaignModels = FilteredCampaignModels.OrderByDescending(c => c.TotalFundCollected).ToList();
+    private void SortCampaignsByProgressPercentage() => FilteredCampaignModels = FilteredCampaignModels.OrderBy(c => (c.TotalFundCollected ?? 0) / (c.TargetAmount ?? 1) * 100).ToList();
+}

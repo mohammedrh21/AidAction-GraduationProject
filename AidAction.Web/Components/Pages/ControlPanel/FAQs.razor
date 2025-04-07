@@ -1,0 +1,167 @@
+﻿@page "/ControlPanel/FAQs"
+@layout ControlPanelLayout
+@inject IControlPanel _Control
+<!-- FAQS-->
+<!-- 🔹 FAQs Section -->
+<section class="faqs-section m-5 w-75" style="background-color: white">
+    <div class="container">
+        <h2 class="fw-bold text-center text-success">
+            Frequently Asked Questions
+        </h2>
+        <p class="text-center text-muted mb-5">
+            Find answers to common questions about our donation process.
+        </p>
+
+        <!-- Search Field and Add New Button -->
+        <div class="mb-4 d-flex justify-content-center">
+            <input type="text" class="form-control w-50 mx-2" placeholder="Search FAQs..." @bind="searchTerm" />
+            <button class="btn btn-primary mx-2" @onclick="AddNewFaq">Add New</button>
+        </div>
+
+        <!-- New FAQ Form -->
+        @if (isAddingNewFaq)
+        {
+            <div class="mb-4">
+                <div class="card p-3">
+                    <h4 class="text-center">Add New FAQ</h4>
+                    <div class="mb-2">
+                        <label for="newFaqQuestion" class="form-label">Question</label>
+                        <input type="text" id="newFaqQuestion" class="form-control" @bind="newFaq.Question" />
+                    </div>
+                    <div class="mb-2">
+                        <label for="newFaqAnswer" class="form-label">Answer</label>
+                        <textarea id="newFaqAnswer" class="form-control" @bind="newFaq.Answer"></textarea>
+                    </div>
+                    <div class="text-center">
+                        <button class="btn btn-success" @onclick="SaveNewFaq">Save</button>
+                        <button class="btn btn-secondary" @onclick="CancelNewFaq">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="accordion" id="faqAccordion">
+            @foreach (var faq in FilteredFAQs)
+            {
+                <div class="accordion-item mb-5 border-0 shadow-b-sm">
+                    <div class="bg-white border-0 me-2 text-left">
+                        <button class="me-3 btn btn-warning" @onclick="() => EditFaq(faq.FAQId)">Edit</button>
+                        <button class="btn btn-danger" @onclick="() => DeleteFaq(faq.FAQId)">Delete</button>
+                    </div>
+                    <h3 class="accordion-header" id="heading@(faq.FAQId)">
+                        <button class="accordion-button collapsed text-success bg-light"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#collapse@(faq.FAQId)"
+                                aria-expanded="false"
+                                aria-controls="collapse@(faq.FAQId)">
+                            @if (isEditing && currentFaqId == faq.FAQId)
+                            {
+                                <input type="text" class="form-control" @bind="faq.Question" />
+                            }
+                            else
+                            {
+                                @faq.Question
+                            }
+                        </button>
+                    </h3>
+                    <div id="collapse@(faq.FAQId)"
+                         class="accordion-collapse collapse"
+                         aria-labelledby="heading@(faq.FAQId)"
+                         data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            @if (isEditing && currentFaqId == faq.FAQId)
+                            {
+                                <textarea class="form-control" @bind="faq.Answer"></textarea>
+                                <div class="mt-2">
+                                    <button class="btn btn-success" @onclick="SaveFaq">Save</button>
+                                </div>
+                            }
+                            else
+                            {
+                                @faq.Answer
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+@code {
+    public List<FAQsModel> FAQsModels { get; set; } = new List<FAQsModel>();
+    private string searchTerm = string.Empty;
+    private bool isEditing = false;
+    private int currentFaqId = 0;
+    private bool isAddingNewFaq = false;
+    private FAQsModel newFaq = new FAQsModel();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await FAQSelectAsync();
+    }
+
+    private async Task FAQSelectAsync()
+    {
+        // Fetch the JSON response from the backend
+        var result = await _Control.FAQSelectAsync();
+
+        // Deserialize the JSON into a list of Result objects containing a list of FAQsModel
+        var resultData = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Result<List<FAQsModel>>>>(result.ToString());
+
+        if (resultData != null && resultData.Any())
+        {
+            // Access the first item in the array and assign its Data field (list of FAQs) to FAQsModels
+            FAQsModels = resultData.FirstOrDefault()?.Data;
+        }
+    }
+
+    private void EditFaq(int faqId)
+    {
+        isEditing = true;
+        currentFaqId = faqId;
+    }
+
+    private void DeleteFaq(int faqId)
+    {
+        // Implement your delete logic here
+    }
+
+    private void SaveFaq()
+    {
+        isEditing = false;
+        currentFaqId = 0;
+    }
+
+    private void AddNewFaq()
+    {
+        isAddingNewFaq = true;
+    }
+
+    private void SaveNewFaq()
+    {
+        if (!string.IsNullOrEmpty(newFaq.Question) && !string.IsNullOrEmpty(newFaq.Answer))
+        {
+            // You can implement the save logic here, like calling an API to save the new FAQ
+            FAQsModels.Add(newFaq);
+            newFaq = new FAQsModel(); // Reset the new FAQ fields
+            isAddingNewFaq = false; // Hide the form
+        }
+        else
+        {
+            // Handle validation if needed (e.g., show an error message)
+        }
+    }
+
+    private void CancelNewFaq()
+    {
+        isAddingNewFaq = false;
+        newFaq = new FAQsModel(); // Reset the new FAQ fields
+    }
+
+    // Property to filter FAQs based on the search term
+    private IEnumerable<FAQsModel> FilteredFAQs => FAQsModels
+        .Where(f => string.IsNullOrWhiteSpace(searchTerm) || f.Question.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+        .ToList();
+}

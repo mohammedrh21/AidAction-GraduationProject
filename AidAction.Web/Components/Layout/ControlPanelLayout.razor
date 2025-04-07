@@ -1,113 +1,160 @@
 ﻿@inherits LayoutComponentBase
+@inject CustomAuthStateProvider AuthStateProvider
+@inject IJSRuntime JS
 @inject NavigationManager _Nav
 
-<div class="page controlpanel-content">
-    <!-- Mobile Header: Visible only on small screens -->
-    <header class="d-flex d-md-none justify-content-between p-3 text-white">        
-        <!-- Logo: Aid Action with Icon -->
-        <a href="/ControlPanel/" class="d-flex align-items-center text-white text-decoration-none ms-3">
-            <img src="https://img.icons8.com/ios11/512w/FFFFFF/admin-settings-male.png" alt="Admin Icon" width="40" height="40" class="me-2">
-            <span class="fs-4">Aid Action</span>
-        </a>
+@if (isAuthenticated || !isAuthenticated)
+{
+    <div class="page controlpanel-content">
+        <!-- Mobile Header: Visible only on small screens -->
+        <header class="d-flex d-md-none justify-content-between p-3 text-white">
+            <!-- Logo: Aid Action with Icon -->
+            <a href="/ControlPanel/" class="d-flex align-items-center text-white text-decoration-none ms-3">
+                <img src="https://img.icons8.com/ios11/512w/FFFFFF/admin-settings-male.png" alt="Admin Icon" width="40" height="40" class="me-2">
+                <span class="fs-4">Aid Action</span>
+            </a>
 
-        <!-- Sidebar Toggler Button -->
-        <button class="btn btn-dark px-3 border-light" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar"
-                aria-controls="sidebar" aria-expanded="false" aria-label="Toggle sidebar">
-            <i class="bi bi-list"></i>
+            <!-- Sidebar Toggler Button -->
+            <button class="btn btn-dark px-3 border-light" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar"
+                    aria-controls="sidebar" aria-expanded="false" aria-label="Toggle sidebar">
+                <i class="bi bi-list"></i>
 
-        </button>
-    </header>
+            </button>
+        </header>
 
-    <main class="d-flex flex-column flex-md-row">
-        <!-- Sidebar: Collapsible on mobile, always visible on md and up -->
-        <div class="collapse d-md-block controlpanel-sidebar text-white p-4" id="sidebar">
-            <!-- Desktop Logo: Hidden on mobile -->
-            <div class="d-none d-md-flex align-items-center mb-4">
-                <a href="/ControlPanel/" class="d-flex align-items-center text-white text-decoration-none controlpanel-logo">
-                    <img src="https://img.icons8.com/ios11/512w/FFFFFF/admin-settings-male.png" alt="Admin Icon" width="40" height="40" class="me-3">
-                    <span class="fs-4">Aid Action</span>
-                </a>
-            </div>
-            <hr class="mb-4">
-
-            <!-- Sidebar Navigation Items -->
-            <ul class="nav nav-pills flex-column gap-3 controlpanel-ul controlpanel-sidebar-list">
-                <li class="nav-link text-white px-0 py-1">
-                    <button class="text-white nav-link py-2 px-3 rounded d-flex align-items-center text-start w-100 flex-fill controlpanel-home-li-n"
-                            data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true">
-                        <i class="fas fa-hand-holding-usd" style="color: white;"></i>
-                        Donation
-                    </button>
-                    <div class="collapse show mt-2 w-100 flex-fill" id="home-collapse">
-                        <ul class="btn-toggle-nav list-unstyled fw-normal small ps-3">
-                            <li class="mb-2">
-                                <NavLink class="text-white link-light rounded d-block py-2 px-3" href="/ControlPanel/">
-                                    <i class="bi bi-bar-chart-fill me-2"></i>Donation Statistics
-                                </NavLink>
-                            </li>
-                            <li>
-                                <NavLink class="text-white link-light rounded d-block py-2 px-3" href="/ControlPanel/DonationRecords">
-                                    <i class="bi bi-receipt me-2"></i>Donation Records
-                                </NavLink>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-                <li class="nav-link text-white px-0 py-1">
-                    <button class="text-white nav-link py-2 px-3 rounded d-flex align-items-center text-start w-100 flex-fill controlpanel-home-li-n"
-                            data-bs-toggle="collapse" data-bs-target="#need-collapse" aria-expanded="true">
-                        <i class="bi bi-house-fill me-2"></i> Needs
-                    </button>
-                    <div class="collapse show mt-2 w-100 flex-fill" id="need-collapse">
-                        <ul class="btn-toggle-nav list-unstyled fw-normal small ps-3">
-                            <li class="mb-2">
-                                <NavLink class="text-white link-light rounded d-block py-2 px-3" href="/ControlPanel/">Overview</NavLink>
-                            </li>
-                            <li>
-                                <NavLink class="text-white link-light rounded d-block py-2 px-3" href="/ControlPanel/DonationRecords">Donation Records</NavLink>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-                <li>
-                    <a href="#" class="nav-link text-white py-2 px-3 rounded d-flex align-items-center">
-                        <i class="bi bi-people me-2"></i> Customers
+        <main class="d-flex flex-column flex-md-row">
+            <!-- Sidebar: Collapsible on mobile, always visible on md and up -->
+            <div class="collapse d-md-block controlpanel-sidebar text-white p-4" id="sidebar">
+                <!-- Desktop Logo: Hidden on mobile -->
+                <div class="d-none d-md-flex align-items-center mb-4">
+                    <a href="/ControlPanel/" class="d-flex align-items-center text-white text-decoration-none controlpanel-logo">
+                        <img src="https://img.icons8.com/ios11/512w/FFFFFF/admin-settings-male.png" alt="Admin Icon" width="40" height="40" class="me-3">
+                        <span class="fs-4">Aid Action</span>
                     </a>
-                </li>
-                <!-- Add additional sidebar items as needed -->
-            </ul>
+                </div>
+                <hr class="mb-4">
 
-            <hr class="my-4">
-
-            <!-- Sidebar User Menu -->
-            <div class="dropdown">
-                <ul>
-                    <li class="nav-link text-white">
-                        <button class="btn btn-toggle w-100 text-white align-items-center rounded py-2 px-3 text-start"
-                                data-bs-toggle="collapse" data-bs-target="#user-collapse" aria-expanded="true">
-                            User Menu
+                <!-- Sidebar Navigation Items -->
+                <ul class="nav nav-pills flex-column gap-3 controlpanel-ul controlpanel-sidebar-list">
+                    <li class="nav-link text-white px-0 py-1">
+                        <button class="text-white nav-link py-2 px-3 rounded d-flex align-items-center text-start w-100 flex-fill controlpanel-home-li-n"
+                                data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true">
+                            <i class="fas fa-hand-holding-usd" style="color: white;"></i>
+                            Donation
                         </button>
-                        <div class="collapse show mt-2" id="user-collapse">
+                        <div class="collapse show mt-2 w-100 flex-fill" id="home-collapse">
                             <ul class="btn-toggle-nav list-unstyled fw-normal small ps-3">
                                 <li class="mb-2">
-                                    <a href="#" class="text-white link-light rounded d-block py-1 px-2">Overview</a>
-                                </li>
-                                <li class="mb-2">
-                                    <a href="#" class="text-white link-light rounded d-block py-1 px-2">Updates</a>
+                                    <NavLink class="text-white link-light rounded d-block py-2 px-3" href="/ControlPanel/">
+                                        <i class="bi bi-bar-chart-fill me-2"></i>Donation Statistics
+                                    </NavLink>
                                 </li>
                                 <li>
-                                    <a href="#" class="text-white link-light rounded d-block py-1 px-2">Reports</a>
+                                    <NavLink class="text-white link-light rounded d-block py-2 px-3" href="/ControlPanel/DonationRecords">
+                                        <i class="bi bi-receipt me-2"></i>Donation Records
+                                    </NavLink>
                                 </li>
                             </ul>
                         </div>
                     </li>
+                    <li class="nav-link text-white px-0 py-1">
+                        <button class="text-white nav-link py-2 px-3 rounded d-flex align-items-center text-start w-100 flex-fill controlpanel-home-li-n"
+                                data-bs-toggle="collapse" data-bs-target="#need-collapse" aria-expanded="true">
+                            <i class="fa-solid fa-hands-holding-child me-2"></i>Fundraiser Campaigns
+                        </button>
+                        <div class="collapse show mt-2 w-100 flex-fill" id="need-collapse">
+                            <ul class="btn-toggle-nav list-unstyled fw-normal small ps-3">
+                                <li class="mb-2">
+                                    <NavLink class="text-white link-light rounded d-block py-2 px-3" href="/ControlPanel/FundraiserCampaigns">Campaigns</NavLink>
+                                </li>
+                                <li>
+                                    <NavLink class="text-white link-light rounded d-block py-2 px-3" href="/ControlPanel/CampaignsRequests">Campaign Requests</NavLink>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-link text-white px-0 py-1 controlpanel-home-li-n">
+                        <NavLink class="text-white link-light rounded d-block py-2 px-3" href="/ControlPanel/DonationRecords">
+                            <i class="fa-solid fa-hands-holding-child me-2"></i> Needs
+                        </NavLink>
+                    </li>
+                    <li class="nav-link text-white px-0 py-1 controlpanel-home-li-n">
+                        <NavLink class="text-white link-light rounded d-block py-2 px-3" href="/ControlPanel/FAQs">
+                            <i class="fa-solid fa-question me-2"></i> FAQs
+                        </NavLink>
+                    </li>
+                    <li class="nav-link text-white px-0 py-1 controlpanel-home-li-n">
+                        <NavLink class="text-white link-light rounded d-block py-2 px-3" href="/ControlPanel/WebDetails">
+                            <i class="fa-solid fa-square-poll-horizontal me-2"></i>Web Details & Contacts
+                        </NavLink>
+                    </li>
+                    <!-- Add additional sidebar items as needed -->
                 </ul>
-            </div>
-        </div>
 
-        <!-- Main Content Area -->
-        <article class="content flex-grow-1 p-4">
-            @Body
-        </article>
-    </main>
-</div>
+                <hr class="my-4">
+
+                <!-- Sidebar User Menu -->
+                <div class="dropdown">
+                    <ul>
+                        <li class="nav-link text-white">
+                            <button class="btn btn-toggle w-100 text-white align-items-center rounded py-2 px-3 text-start"
+                                    data-bs-toggle="collapse" data-bs-target="#user-collapse" aria-expanded="true">
+                                <i class="fa-solid fa-user me-2"></i>Admin List
+                            </button>
+                            <div class="collapse show mt-2" id="user-collapse">
+                                <ul class="btn-toggle-nav list-unstyled fw-normal small ps-3">
+                                    <li class="mb-2">
+                                        <NavLink class="text-white link-light rounded d-block py-2 px-3" href="/ControlPanel/ChangePassword">
+                                            <i class="fa-sharp fa-solid fa-gear me-2"></i>Change Password
+                                        </NavLink>
+                                    </li>
+                                    <li>
+                                        <button @onclick="Logout" class="btn w-100 text-white align-items-center rounded py-2 px-3 text-start" href="/ControlPanel/">
+                                            <i class="fa-sharp fa-solid fa-right-from-bracket me-2"></i>Log out
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <article class="content flex-grow-1 p-4">
+                @Body
+            </article>
+        </main>
+
+    </div>
+}
+else
+{
+    @*   _nav.navigateto("/auth/login"); *@
+}
+
+@code {
+    private bool isAuthenticated;
+
+    protected override async Task OnInitializedAsync()
+    {
+        string token = AuthStateProvider.token;
+        if (!string.IsNullOrEmpty(AuthStateProvider.token))
+        {
+            isAuthenticated = true;
+        }
+    }
+    private async Task Logout()
+    {
+        await JS.InvokeVoidAsync("localStorage.removeItem", "Token");
+        await JS.InvokeVoidAsync("localStorage.removeItem", "UserId");
+        await JS.InvokeVoidAsync("localStorage.removeItem", "UserType");
+
+        await Task.Delay(200);
+        await AuthStateProvider.LogoutAsync();
+        isAuthenticated = false;
+        StateHasChanged();
+        _Nav.NavigateTo("/");
+        StateHasChanged();
+    }
+}

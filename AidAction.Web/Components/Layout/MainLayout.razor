@@ -130,6 +130,82 @@
         </article>
     </main>
 </div>
+<!-- 🔹 Footer Section -->
+<!-- 🔹 Footer Section -->
+<footer class="footer-section text-white py-5"
+        id="footer"
+        style="background-color: #343a40">
+    <div class="container">
+        <div class="row">
+            <!-- First column: Site name and logo -->
+            <div class="col-md-4 mb-4">
+                <h4 class="fw-bold mb-2">Fund</h4>
+                <img src="./resources/images/logo.png"
+                     alt="logo"
+                     class="mb-3"
+                     style="width: 50px" />
+                <p class="text-white">
+                    Building Experience & Safe Crowdfunding for Social Impact.
+                </p>
+            </div>
+
+            <!-- Second column: 3 vertical lists -->
+            <div class="col-md-8">
+                <div class="row">
+                    <!-- Quick Links list -->
+                    <div class="col-md-4 mb-4">
+                        <h5 class="fw-bold text-success">Quick Links</h5>
+                        <ul class="list-unstyled">
+                            <li><a href="index.html" class="text-white">Home</a></li>
+                            <li><a href="about.html" class="text-white">About</a></li>
+                            <li>
+                                <a href="campaigns.html" class="text-white">Campaigns</a>
+                            </li>
+                            <li>
+                                <a href="donationCenter.html" class="text-white">Donation Center</a>
+                            </li>
+                            <li><a href="#footer" class="text-white">Contact Us</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Contact Info list -->
+                    <div class="col-md-4 mb-4">
+                        <h5 class="fw-bold text-success">Contact Info</h5>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-phone-alt"></i> +123 456 7890</li>
+                            <li><i class="fas fa-envelope"></i> info@fund.com</li>
+                            <li>
+                                <i class="fas fa-map-marker-alt"></i> 123 Fund Street, City,
+                                Country
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Social Media Icons list -->
+                    <div class="col-md-4 mb-4">
+                        <h5 class="fw-bold text-success">Follow Us</h5>
+                        <div>
+                            <a href="https://www.facebook.com" class="text-white mx-2">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="https://www.instagram.com" class="text-white mx-2">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="https://www.x.com" class="text-white mx-2">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Copyright text in the center -->
+        <div class="text-center mt-4">
+            <p class="mb-0">&copy; 2025 Fund. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
 
 @code{
     private bool isAuthenticated;
@@ -141,19 +217,20 @@
         {
             isAuthenticated = true;
         }
-
     }
 
     private async Task Logout()
     {
         await JS.InvokeVoidAsync("localStorage.removeItem", "Token");
+        await JS.InvokeVoidAsync("localStorage.removeItem", "UserId");
+        await JS.InvokeVoidAsync("localStorage.removeItem", "UserType");
+
         await Task.Delay(200);
         await AuthStateProvider.LogoutAsync();
         isAuthenticated = false;
         StateHasChanged();
         _Nav.Refresh();
         StateHasChanged();
-
     }
 
 }

@@ -23,11 +23,51 @@ namespace AidAction.Repository.Repositories
             // Use the CommandAsync method for your donor registration logic
             return await CommandAsync<JObject>("dbo.DonorRegister", model);
         }
+        #endregion
 
+        #region FAQs
+        public async Task<JArray> FAQSelectAsync()
+        {
+            // Use the CommandAsync method for your donor registration logic
+            return await CommandAsync<JArray>("dbo.FAQSelect");
+        }
 
         #endregion
 
+        #region Fundraiser Campaign
+        public async Task<JArray> CampaignsSelectAsync()
+        {
+            // Use the CommandAsync method for your donor registration logic
+            return await CommandAsync<JArray>("dbo.CampaignSelect");
+        }
 
+        public async Task<JArray> CampaignSelectAsync(object o)
+        {
+            // Use the CommandAsync method for your donor registration logic
+            return await CommandAsync<JArray>("dbo.CampaignsSelect", o);
+        }
+
+        public async Task<JArray> CampaignsSelectAsync(object o)
+        {
+            // Use the CommandAsync method for your donor registration logic
+            return await CommandAsync<JArray>("dbo.CampaignSelect", o);
+        }
+
+        public async Task<JObject> CampaignRequestSelectAsync(object o)
+        {
+            // Use the CommandAsync method for your donor registration logic
+            return await CommandAsync<JObject>("dbo.CampaignRequestSelect", o);
+        }
+
+        public async Task<JArray> CampaignSaveRequestAsync(CampaignModel model)
+        {
+            // Use the CommandAsync method for your donor registration logic
+            return await CommandAsync<JArray>("dbo.CampaignSaveRequest", model);
+        }
+
+        //CampaignSaveRequest => @Title, @Description, @TargetAmount, @CreatorId, @ImagePath
+        //CampaignRequestSelect => @CreatorId 
+        #endregion
 
 
     }

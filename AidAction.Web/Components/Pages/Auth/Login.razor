@@ -109,6 +109,7 @@
                     AuthStateProvider.token = dBResult.data[0].Token;
                     await Task.Delay(500);
                     await JS.InvokeVoidAsync("localStorage.setItem", "Token", dBResult.data[0].Token);
+                    await JS.InvokeVoidAsync("localStorage.setItem", "UserId", dBResult.data[0].UserId);
                     await JS.InvokeVoidAsync("localStorage.setItem", "UserType", dBResult.data[0].UserType);
 
                     await _authRep.SaveTokenAsync(dBResult.data.FirstOrDefault());

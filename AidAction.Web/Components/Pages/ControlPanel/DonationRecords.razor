@@ -2,11 +2,12 @@
 @rendermode InteractiveServer
 @layout ControlPanelLayout
 @inject IJSRuntime JSRuntime
+<div class="controlpanel-body">
 <h3 class="mb-3 fw-semibold border-bottom pb-2">
     <i class="fas fa-hand-holding-heart text-primary me-2"></i>Donation Records
 </h3>
 <br/>
-<EditForm Model="@filterModel" OnValidSubmit="OnFilterSubmit">
+<EditForm Model="@filterModel" OnValidSubmit="OnFilterSubmit" FormName="RecordsFilter">
     <div class="d-flex flex-wrap align-items-end gap-3">
 
         <!-- Donor -->
@@ -99,7 +100,7 @@
         }
     </tbody>
 </table>
-
+</div>
 @code {
     // Filter Model
     private DonationFilterModel filterModel = new DonationFilterModel();
@@ -108,7 +109,16 @@
     private List<DonationRecord> allDonations = new List<DonationRecord>
     {
         new DonationRecord { DonationId = 1, DonorName = "John Doe", Amount = 100, DonationDate = new DateTime(2025, 3, 25), DonationTargeted = "Need", StripeTransactionId = "txn_1234" },
-        new DonationRecord { DonationId = 2, DonorName = "Jane Smith", Amount = 150, DonationDate = new DateTime(2025, 3, 24), DonationTargeted = "Campaign", StripeTransactionId = "txn_5678" },
+        new DonationRecord { DonationId = 2, DonorName = "Jane Smith", Amount = 150, DonationDate = new DateTime(2025, 1, 1), DonationTargeted = "Campaign", StripeTransactionId = "txn_5678" },
+        new DonationRecord { DonationId = 3, DonorName = "Mohammed Hamdan", Amount = 250, DonationDate = new DateTime(2025, 3, 2), DonationTargeted = "Campaign", StripeTransactionId = "txn_5678" },
+        new DonationRecord { DonationId = 4, DonorName = "Medhat Rafat", Amount = 120, DonationDate = new DateTime(2025, 5, 13), DonationTargeted = "Campaign", StripeTransactionId = "txn_5678" },
+        new DonationRecord { DonationId = 5, DonorName = "moly bateekh", Amount = 30, DonationDate = new DateTime(2025, 3, 23), DonationTargeted = "Campaign", StripeTransactionId = "txn_5678" },
+        new DonationRecord { DonationId = 6, DonorName = "Newton Jibril", Amount = 290, DonationDate = new DateTime(2025, 7, 22), DonationTargeted = "Campaign", StripeTransactionId = "txn_5678" },
+        new DonationRecord { DonationId = 7, DonorName = "Harry Kean", Amount = 1025, DonationDate = new DateTime(2025, 9, 14), DonationTargeted = "Campaign", StripeTransactionId = "txn_5678" },
+        new DonationRecord { DonationId = 7, DonorName = "Rami Salhi", Amount = 843, DonationDate = new DateTime(2024, 7, 29), DonationTargeted = "Campaign", StripeTransactionId = "txn_5678" },
+        new DonationRecord { DonationId = 7, DonorName = "Semsem Abu Mughaseeb", Amount = 84, DonationDate = new DateTime(2023, 9, 21), DonationTargeted = "Campaign", StripeTransactionId = "txn_5678" },
+        new DonationRecord { DonationId = 7, DonorName = "Mohammed Oun", Amount = 646, DonationDate = new DateTime(2023, 5, 13), DonationTargeted = "Campaign", StripeTransactionId = "txn_5678" }
+
         // Add more sample data as needed
     };
 
