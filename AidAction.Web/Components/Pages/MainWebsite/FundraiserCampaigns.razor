@@ -205,7 +205,7 @@
         <!-- Filter Buttons (centered) -->
         <div class="btn-group" role="group" aria-label="Campaign Filter">
             <button type="button" class="btn btn-outline-primary fw-bold border-2 me-2" @onclick="ShowAllCampaigns">All Campaigns</button>
-            <button type="button" class="btn btn-outline-warning fw-bold border-2" @onclick="ShowMyCampaigns">My Campaigns</button>
+            <button type="button" class="btn btn-outline-warning fw-bold border-2 me-2" @onclick="ShowMyCampaigns">My Campaigns</button>
         </div>
 
         <!-- Sort Dropdown (right side) -->
@@ -247,7 +247,10 @@
                         </div>
                     }
 
-                    <h5>@campaign.Title</h5>
+                    <div class="d-flex justify-content-between">
+                        <h5>@campaign.Title</h5>
+                        <p>Created by: @campaign.CreatorName</p>
+                    </div>
                     <div class="d-flex flex-row justify-content-between gap-5">
                         <p class="text-success">
                             @((campaign.TotalFundCollected ?? 0)) Raised
@@ -270,8 +273,11 @@
 
                     <!-- Conditional Buttons Display -->
                     <div class="d-flex justify-content-between mt-auto">
-                        <NavLink href="@GetCampaignDetailsUrl(campaign.CampaignId)" class="btn btn-success w-30">
-                            Go for Details
+                        <NavLink href="@GetCampaignDetailsUrl(campaign.CampaignId)" class="btn btn-outline-primary w-50">
+                            Campaign Details
+                        </NavLink>
+                        <NavLink href="" class="btn btn-outline-success w-25">
+                            Donate
                         </NavLink>
                     </div>
                 </div>

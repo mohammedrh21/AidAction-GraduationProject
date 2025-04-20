@@ -1,173 +1,159 @@
-﻿ @* @page "/ControlPanel/WebDetails"
- @layout ControlPanelLayout
- @inject IControlPanel _IControl
+﻿@page "/ControlPanel/WebDetails"
+@layout ControlPanelLayout
+@inject IControlPanel _Control
+@inject IJSRuntime JS
+@inject NavigationManager Navigation
+<PageTitle>Website Details</PageTitle>
+<h2 class="fw-bold text-success text-center mb-4">Edit camp details</h2>
 
- <h3>Upload Photo</h3>
-
- <InputFile OnChange="HandleFileSelected" />
-
- @if (isFileSelected)
- {
-     <button @onclick="UploadFile">Upload</button>
- }
-
- @code {
-     private bool isFileSelected = false;
-     private IBrowserFile selectedFile; // Holds the selected file
-
-     // List of allowed file types (you can add more types as needed)
-     private readonly string[] allowedFileTypes = new[] { "image/jpeg", "image/png", "image/gif" };
-
-     // Handle file selection using InputFile component
-     private void HandleFileSelected(InputFileChangeEventArgs e)
-     {
-         var fileInput = e.File; // This is the IBrowserFile object
-
-         if (fileInput != null)
-         {
-             // Check the file type
-             if (!allowedFileTypes.Contains(fileInput.ContentType))
-             {
-                 Console.WriteLine("Invalid file type selected.");
-                 isFileSelected = false;
-                 return; // Exit the method if the file type is invalid
-             }
-
-             selectedFile = fileInput;
-             isFileSelected = true;
-         }
-         else
-         {
-             // Log or handle any issues with the file selection
-             Console.WriteLine("Selected file is not valid.");
-             isFileSelected = false;
-         }
-     }
-
-     // Upload the file
-     private async Task UploadFile()
-     {
-         if (selectedFile != null)
-         {
-             var fileName = selectedFile.Name;
-             var fileSize = selectedFile.Size;
-
-             var fileBytes = new byte[fileSize];
-             await selectedFile.OpenReadStream().ReadAsync(fileBytes);
-
-             // Create the ContentModel to send to the server
-             var contentModel = new ContentModel
-                 {
-                     FileName = fileName,
-                     FileBytes = fileBytes
-                 };
-
-             // Call the ContentSaveAsync method of the injected IControlPanel service
-             JObject response = await _IControl.ContentSaveAsync(contentModel);
-
-             // Handle the response from the service
-             if (response["success"].Value<bool>())
-             {
-                 Console.WriteLine("File uploaded successfully: " + response["fileName"]);
-             }
-             else
-             {
-                 Console.WriteLine("Error during file upload: " + response["message"]);
-             }
-         }
-     }
- }
- *@
- @page "/ControlPanel/WebDetails"
-@layout ControlPanelLayout 
-@inject IControlPanel _IControl
-
-<h3>Upload Photo</h3>
-
-<InputFile OnChange="HandleFileSelected" />
-
-@if (isFileSelected)
+@* Message Alert *@
+@if (!string.IsNullOrWhiteSpace(DB.Msg))
 {
-    <button @onclick="UploadFile">Upload</button>
-}
-
-@if (!string.IsNullOrEmpty(base64Image))
-{
-    <div>
-        <h4>Uploaded Image:</h4>
-        <img src="@base64Image" alt="Uploaded Image" width="300" />
+    <div class="alert w-50 @(DB.rv > 0 ? "alert-success" : "alert-danger") alert-dismissible fade show" role="alert">
+        @DB.Msg
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
+<div class="container py-5 ">
+    <EditForm class="d-flex flex-row justify-content-around" Model="@webDetails" OnValidSubmit="HandleValidSubmit" FormName="webDetailsSave">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
 
+        <div class="w-50">
+            <div class="mb-3">
+                <label for="Title" class="form-label">Title</label>
+                <InputText id="Title" class="form-control" @bind-Value="webDetails.Title" />
+            </div>
+
+            <div class="mb-3">
+                <label for="AboutCamp" class="form-label">AboutCamp</label>
+                <InputTextArea id="AboutCamp" class="form-control" @bind-Value="webDetails.AboutCamp" />
+            </div>
+
+            <div class="mb-3">
+                <label for="imageFile" class="form-label">Select Image File</label>
+                <InputFile id="imageFile" class="form-control" OnChange="HandleFileSelected" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="LocationLongtitude">Location Longtitude</label>
+                <InputNumber id="LocationLongtitude" class="form-control" @bind-Value="webDetails.LocationLongitude" />
+            </div>
+
+            <div class="mb-3">
+                <label for="LocationLatitude" class="form-label">Location Latitude</label>
+                <InputNumber id="LocationLatitude" class="form-control" @bind-Value="webDetails.LocationLatitude" />
+            </div>
+
+            <div class="mb-3">
+                <label for="IBAN" class="form-label">IBAN</label>
+                <InputText id="IBAN" class="form-control" @bind-Value="webDetails.IBAN" />
+            </div>
+        </div>
+
+        <div class="border"></div>
+
+        <div>
+            <div class="mb-3">
+                <label for="FacebookURL" class="form-label">Facebook URL</label>
+                <InputText id="FacebookURL" class="form-control" @bind-Value="webDetails.FacebookURL" />
+            </div>
+
+            <div class="mb-3">
+                <label for="InstagramURL" class="form-label">Instagram URL</label>
+                <InputText id="InstagramURL" class="form-control" @bind-Value="webDetails.InstagramURL" />
+            </div>
+
+            <div class="mb-3">
+                <label for="TikTokURL" class="form-label">TikTok URL</label>
+                <InputText id="TikTokURL" class="form-control" @bind-Value="webDetails.TikTokURL" />
+            </div>
+
+            <div class="mb-3">
+                <label for="PhoneNumber" class="form-label">PhoneNumber</label>
+                <InputText id="PhoneNumber" class="form-control" @bind-Value="webDetails.PhoneNumber" />
+            </div>
+
+            <div class="mb-3">
+                <label for="Email" class="form-label">Email</label>
+                <InputText id="Email" class="form-control" @bind-Value="webDetails.Email" />
+            </div>
+        </div>
+        <hr>
+        <hr>
+        <div class="position-absolute min-w-100" style="bottom: 25%; left: 72%;">
+            <button type="submit" class="btn btn-outline-success px-5 w-100">Submit</button>
+        </div>
+
+    </EditForm>
+
+
+</div>
 @code {
-    private bool isFileSelected = false;
-    private IBrowserFile selectedFile; // Holds the selected file
-    private string base64Image; // Holds the Base64 string for the uploaded image
+    private int UserId;
+    private WebsiteDetails webDetails = new WebsiteDetails();
+    private IBrowserFile selectedFile;
+    public Result<List<WebsiteDetails>> DB { get; set; } = new Result<List<WebsiteDetails>>();
 
-    // List of allowed file types (you can add more types as needed)
-    private readonly string[] allowedFileTypes = new[] { "image/jpeg", "image/png", "image/gif" };
+    protected override void OnInitialized()
+    {
+        WebsiteDetailsSelect();
+    }
 
-    // Handle file selection using InputFile component
+    // Triggered when a file is selected; stores the file for later upload.
     private void HandleFileSelected(InputFileChangeEventArgs e)
     {
-        var fileInput = e.File; // This is the IBrowserFile object
-
-        if (fileInput != null)
+        if (e.File != null)
         {
-            // Check the file type
-            if (!allowedFileTypes.Contains(fileInput.ContentType))
-            {
-                Console.WriteLine("Invalid file type selected.");
-                isFileSelected = false;
-                return; // Exit the method if the file type is invalid
-            }
-
-            selectedFile = fileInput;
-            isFileSelected = true;
-
-            // Convert the selected file to a Base64 string to display it
-            ConvertToBase64(fileInput);
-        }
-        else
-        {
-            // Log or handle any issues with the file selection
-            Console.WriteLine("Selected file is not valid.");
-            isFileSelected = false;
+            selectedFile = e.File;
         }
     }
 
-    // Convert the uploaded file (byte[]) to a Base64 string
-    private async Task ConvertToBase64(IBrowserFile file)
+    public async Task WebsiteDetailsSelect()
     {
-        var fileSize = file.Size;
-        var fileBytes = new byte[fileSize];
-        await file.OpenReadStream().ReadAsync(fileBytes);
-
-        // Convert byte[] to Base64 string
-        base64Image = $"data:{file.ContentType};base64,{Convert.ToBase64String(fileBytes)}";
+        var result = await _Control.WebsiteDetailsSelectAsync();
+        var resultData = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Result<List<WebsiteDetails>>>>(result.ToString());
+        webDetails = resultData.FirstOrDefault().Data.FirstOrDefault();
+        StateHasChanged(); // Trigger re-render to update UI with the new data
     }
 
-    // Upload the file
-    private async Task UploadFile()
+    private async Task HandleValidSubmit()
     {
+        // Retrieve the user's id from localStorage.
+        var userIdString = await JS.InvokeAsync<string>("localStorage.getItem", "UserId");
+        if (!string.IsNullOrEmpty(userIdString))
+        {
+            UserId = int.Parse(userIdString);
+        }
+        webDetails.CreatedBy = UserId;
+        webDetails.Id = 1;
+        // If an image file was selected, save it and update the image path.
         if (selectedFile != null)
         {
-            var fileName = selectedFile.Name;
-            var fileSize = selectedFile.Size;
-
-            var fileBytes = new byte[fileSize];
-            await selectedFile.OpenReadStream().ReadAsync(fileBytes);
-
-            // Create the ContentModel to send to the server
-            var contentModel = new ContentModel
-                {
-                    FileName = fileName,
-                    FileBytes = fileBytes
-                };
-
-            // Call the ContentSaveAsync method of the injected IControlPanel service
-            JObject response = await _IControl.ContentSaveAsync(contentModel);
-            
+            webDetails.ImagePath = await SaveImageAsync(selectedFile);
         }
+
+        // Save the new need via the backend service.
+        var result = await _Control.WebsiteDetailsSaveAsync(webDetails);
+
+        var resultData = Newtonsoft.Json.JsonConvert.DeserializeObject<Result<List<WebsiteDetails>>>(result.ToString());
+        DB.rv = resultData.rv;
+        DB.Msg = resultData.Msg;
+    }
+
+    // Saves the image file to wwwroot/images and returns the relative URL.
+    private async Task<string> SaveImageAsync(IBrowserFile file)
+    {
+        // Generate unique file name using GUID to avoid collisions.
+        var fileName = Path.Combine("wwwroot", "images", Guid.NewGuid().ToString() + Path.GetExtension(file.Name));
+
+        // Write the file to disk.
+        using (var fileStream = new FileStream(fileName, FileMode.Create))
+        {
+            await file.OpenReadStream().CopyToAsync(fileStream);
+        }
+
+        // Return the relative path to the image to be stored in the database.
+        return $"/images/{Path.GetFileName(fileName)}";
     }
 }

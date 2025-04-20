@@ -1,137 +1,282 @@
 ﻿@page "/"
-@rendermode InteractiveServer
+@inject IJSRuntime JS
+@inject NavigationManager _Nav
 @layout MainLayout
+@inject IMainWebsite _Main
+@inject CustomAuthStateProvider AuthStateProvider
 
-<!-- Hero Section -->
-<section class="hero text-center">
-    <div class="container">
-        <h2 style="opacity:1;">Your Contribution Makes a Difference</h2>
-        <p>Join us in supporting those who need it the most.Your donations help make a lasting impact on the lives of many.</p>
-        <NavLink class="btn btn-outline-light me-auto" href="/MainWebsite/DonationCenter">Donate Now </NavLink>
+<PageTitle>Home</PageTitle>
+
+<!-- 🔹 Hero Section -->
+<section class="hero-section d-flex align-items-center text-center text-white">
+    <div class="container" id="hero">
+        <h1 class="display-4 fw-bold">
+            Fund <span class="text-light">Help Others</span>
+        </h1>
+        <p class="lead">
+            Your donations change lives. Start fundraising today.
+        </p>
+        <NavLink href="/MainWebsite/DonationCenter" class="btn btn-success btn-lg">Start Donation</NavLink>
     </div>
 </section>
 
-<!-- About the Camp (Fragment Text) -->
-<section class="fragment-text text-center">
-    <div class="container">
-        <h3>About Our Camp</h3>
-        <p>This camp is dedicated to providing essential services to people in need. Our mission is to offer a helping hand and provide shelter, food, and education. Every donation helps us get closer to our goal.</p>
+<!-- about our camp  -->
+<!-- 🔹 About Our Camp Section -->
+<section class="about-camp-section py-5" id="about">
+    <div class="container text-center">
+        <h2 class="fw-bold">
+            About Our Camp:
+            <span class="text-success">Supporting Refugees in Need</span>
+        </h2>
+        <p class="text-muted">
+            Our mission is to provide essential services for those in need within
+            the camp, including food, water, shelter, and healthcare.
+        </p>
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="p-4 shadow-sm rounded">
+                    <h4 class="text-success">Essential Supplies</h4>
+                    <p>
+                        Providing food, clean water, and medical supplies to improve
+                        living conditions.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-4 shadow-sm rounded">
+                    <h4 class="text-success">Shelter & Safety</h4>
+                    <p>
+                        Ensuring refugees have safe, secure shelters to protect them
+                        from harsh conditions.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-4 shadow-sm rounded">
+                    <h4 class="text-success">Health & Care</h4>
+                    <p>
+                        Offering access to healthcare services to maintain the
+                        well-being of camp residents.
+                    </p>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
-<!-- Statistics Section -->
-<section class="statistics text-center">
-    <div class="container">
-        <h3>Donation Statistics</h3>
+<!-- 🔹 Statistics Section -->
+<section class="statistics-section py-5 bg-light">
+    <div class="container text-center">
+        <h2 class="fw-bold mb-4">Our Impact in Numbers</h2>
         <div class="row">
-            <div class="col-md-4">
-                <div class="card p-4">
-                    <h5>Total Donations</h5>
-                    <p>$1,200,000</p>
+            <!-- Total Donations -->
+            <div class="col-md-4 mb-4">
+                <div class="d-flex flex-column align-items-center">
+                    <img src="./resources/images/dollar.png" alt="total-donations" />
+                    <h4 class="text-success">Total Donations</h4>
+                    <h3 style="font-weight: normal">$@(main.TotalDonation)</h3>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card p-4">
-                    <h5>People Helped</h5>
-                    <p>5,000</p>
+            <!-- Total Donors -->
+            <div class="col-md-4 mb-4">
+                <div class="d-flex flex-column align-items-center Statistics">
+                    <img src="./resources/images/volunteer.png"
+                         alt="total-donators" />
+
+                    <h4 class="text-success">Total Donors</h4>
+                    <h3 style="font-weight: normal">@(main.TotalDonors)</h3>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card p-4">
-                    <h5>Urgent Needs Funded</h5>
-                    <p>80%</p>
+            <!-- Emergency Donations -->
+            <div class="col-md-4 mb-4"
+                 style="
+              display: flex;
+              flex-direction: column;
+              justify-content: space-around;
+            ">
+                <div class="d-flex flex-column align-items-center"
+                     id="fund-progress">
+                    <div class="mt-4">
+                        <h4 class="text-success">Emergency Fund Progress</h4>
+                        <div class="progress" style="height: 30px">
+                            <div class="progress-bar bg-success"
+                                 role="progressbar"
+                                 style="width: @(main.EmergencyFundProgress)%"
+                                 aria-valuenow="@(main.EmergencyFundProgress)"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100">
+                                @(main.EmergencyFundProgress)%
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Urgent Needs Section -->
-<section class="container my-5">
-    <h3 class="text-center mb-4">Urgent Needs</h3>
-    <div class="row">
-        <div class="col-md-4">
-            <div class="card">
-                <img src="/images/about-1-660x495.jpg" class="card-img-top" alt="Urgent Need 1">
-                <div class="card-body">
-                    <h5 class="card-title">Urgent Need 1</h5>
-                    <div class="progress mb-2">
-                        <div class="progress-bar" style="width: 60%;">60% funded</div>
-                    </div>
-                    <button class="btn btn-warning">Donate</button>
-                </div>
-            </div>
+
+<section class="statistics-section py-5 bg-light">
+    <div class="container text-center">
+        <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+            <h2 class="fw-bold text-success mb-0">Urgent Needs Fundraising!</h2>
         </div>
-        <div class="col-md-4">
-            <div class="card">
-                <img src="/images/about-1-660x495.jpg" class="card-img-top" alt="Urgent Need 2">
-                <div class="card-body">
-                    <h5 class="card-title">Urgent Need 2</h5>
-                    <div class="progress mb-2">
-                        <div class="progress-bar" style="width: 45%;">45% funded</div>
+        <div class="row">
+            @if (main.Needs != null)
+            {
+                @foreach (var need in main.Needs)
+                {
+                    <div class="col-md-4 mb-3">
+                        <div class="shadow-sm rounded p-3">
+                            <img src="@need.ImagePath"
+                                 class="img-fluid rounded"
+                                 alt="Need '@need.NeedId'" style="width:400px; height:300px;" />
+                            <h5 class="mt-2">Disaster-Care: @need.Title</h5>
+                            <p class="text-success">$@need.TotalFundsCollected Raised</p>
+
+                            <!-- Progress Bar -->
+                            <div class="progress mb-3" style="height: 20px">
+                                <div class="progress-bar bg-success"
+                                     role="progressbar"
+                                     style="width: @(need.TotalFundsCollected / (need.TargetAmount ?? 1) * 100)%"
+                                     aria-valuenow="30"
+                                     aria-valuemin="0"
+                                     aria-valuemax="100">
+                                    @(need.TotalFundsCollected / (need.TargetAmount ?? 1) * 100)%
+                                </div>
+                            </div>
+
+                            <!-- Last Donation Date -->
+                            <p class="text-muted">Creation Date: @need.CreationDate</p>
+
+                            <!-- Donate Button -->
+                            <NavLink href="@GetNeedDetailsUrl(need.NeedId)" class="btn btn-success w-100">Donate</NavLink>
+                        </div>
                     </div>
-                    <button class="btn btn-warning">Donate</button>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card">
-                <img src="/images/about-1-660x495.jpg" class="card-img-top" alt="Urgent Need 3">
-                <div class="card-body">
-                    <h5 class="card-title">Urgent Need 3</h5>
-                    <div class="progress mb-2">
-                        <div class="progress-bar" style="width: 80%;">80% funded</div>
-                    </div>
-                    <button class="btn btn-warning">Donate</button>
-                </div>
-            </div>
+                }
+            }
+
         </div>
     </div>
 </section>
 
-<!-- Monthly Needs Section -->
-<section class="container my-5">
-    <h3 class="text-center mb-4">Monthly Needs</h3>
-    <div class="row">
-        <div class="col-md-4">
-            <div class="card">
-                <img src="/images/about-1-660x495.jpg" class="card-img-top" alt="Monthly Need 1">
-                <div class="card-body">
-                    <h5 class="card-title">Monthly Need 1</h5>
-                    <div class="progress mb-2">
-                        <div class="progress-bar" style="width: 70%;">70% funded</div>
-                    </div>
-                    <button class="btn btn-success">Donate</button>
-                </div>
-            </div>
+<!-- 🔹 Fundraising Campaigns Section -->
+<section id="campaigns"
+         class="urgent-fundraising py-5"
+         style="background-color: rgb(237, 237, 237)">
+    <div class="container text-center">
+        <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+            <h2 class="fw-bold text-success mb-0">Campaigns Fundraising!</h2>
+
         </div>
-        <div class="col-md-4">
-            <div class="card">
-                <img src="/images/about-1-660x495.jpg" class="card-img-top" alt="Monthly Need 2">
-                <div class="card-body">
-                    <h5 class="card-title">Monthly Need 2</h5>
-                    <div class="progress mb-2">
-                        <div class="progress-bar" style="width: 50%;">50% funded</div>
+        <p class="text-muted">Uniting for a Greater Cause</p>
+        <div class="row mt-4">
+            @if (main.Campaigns != null)
+            {
+                @foreach (var campaign in main.Campaigns)
+                {
+                    <div class="col-md-4 mb-3">
+                        <div class="shadow-sm rounded p-3">
+                            <img src="@campaign.ImagePath"
+                                 class="img-fluid rounded"
+                                 alt="Campaign '@campaign.CampaignId'" style="width:400px; height:300px;" />
+                            <h5 class="mt-2">@campaign.Title</h5>
+                            <p class="text-success">$@campaign.TotalFundCollected Raised</p>
+
+                            <!-- Progress Bar -->
+                            <div class="progress mb-3" style="height: 20px">
+                                <div class="progress-bar bg-success"
+                                     role="progressbar"
+                                     style="width: @(campaign.TotalFundCollected / (campaign.TargetAmount ?? 1) * 100)%"
+                                     aria-valuenow="30"
+                                     aria-valuemin="0"
+                                     aria-valuemax="100">
+                                    @(campaign.TotalFundCollected / (campaign.TargetAmount ?? 1) * 100)%
+                                </div>
+                            </div>
+
+                            <!-- Last Donation Date -->
+                            <p class="text-muted">Approved Date: @campaign.ApprovalDate</p>
+
+                            <!-- Donate Button -->
+                            <NavLink href="@GetCampaignDetailsUrl(campaign.CampaignId)" class="btn btn-success w-100">Donate</NavLink>
+                        </div>
                     </div>
-                    <button class="btn btn-success">Donate</button>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card">
-                <img src="/images/about-1-660x495.jpg" class="card-img-top" alt="Monthly Need 3">
-                <div class="card-body">
-                    <h5 class="card-title">Monthly Need 3</h5>
-                    <div class="progress mb-2">
-                        <div class="progress-bar" style="width: 65%;">65% funded</div>
-                    </div>
-                    <button class="btn btn-success">Donate</button>
-                </div>
-            </div>
+                }
+            }
         </div>
     </div>
 </section>
-
 @code {
-    // Add any C# logic here if needed
+    private int index;
+    private bool isAuthenticated;
+    public MainWebsite main { get; set; } = new MainWebsite();
+    public WebsiteDetails website { get; set; } = new WebsiteDetails();
+
+    private string GetCampaignDetailsUrl(int campaignId)
+    {
+        return $"/MainWebsite/CampaignDetails/?campaignId={campaignId}";
+    }
+
+    public async Task MainWebsiteSelectAsync()
+    {
+
+        var result = await _Main.MainWebsiteSelectAsync();
+        var resultData = Newtonsoft.Json.JsonConvert.DeserializeObject<Result<List<MainWebsite>>>(result.ToString());
+        main = resultData.Data.FirstOrDefault();
+        StateHasChanged(); // Trigger re-render to update UI with the new data
+
+    }
+
+    public async Task WebsiteDetailsSelectAsync()
+    {
+
+        var result = await _Main.WebsiteDetailsSelectAsync();
+        var resultDataList = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Result<List<WebsiteDetails>>>>(result.ToString());
+
+        // Get the first item from the list (since it’s an array in the JSON root)
+        var resultData = resultDataList.FirstOrDefault();
+
+        // Check if the result is not null
+        if (resultData != null)
+        {
+            // Access the list of WebsiteDetails
+            List<WebsiteDetails> websiteDetailsList = resultData.Data;
+            website = websiteDetailsList.FirstOrDefault();
+        }
+        StateHasChanged(); // Trigger re-render to update UI with the new data
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await MainWebsiteSelectAsync();
+        await WebsiteDetailsSelectAsync();
+        string token = AuthStateProvider.token;
+        if (!string.IsNullOrEmpty(AuthStateProvider.token))
+        {
+            isAuthenticated = true;
+        }
+    }
+
+
+
+    private async Task Logout()
+    {
+        await JS.InvokeVoidAsync("localStorage.removeItem", "Token");
+        await JS.InvokeVoidAsync("localStorage.removeItem", "UserId");
+        await JS.InvokeVoidAsync("localStorage.removeItem", "UserType");
+
+        await Task.Delay(200);
+        await AuthStateProvider.LogoutAsync();
+        isAuthenticated = false;
+        StateHasChanged();
+        _Nav.Refresh();
+        StateHasChanged();
+    }
+
+    // Generate the URL for need details
+    private string GetNeedDetailsUrl(int NeedId)
+    {
+        return $"/MainWebsite/NeedDetails/?NeedId={NeedId}";
+    }
 }

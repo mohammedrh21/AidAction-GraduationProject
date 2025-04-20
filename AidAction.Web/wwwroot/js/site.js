@@ -55,27 +55,17 @@
     }
 };
 
+function copyIBAN(btn) {
+    const ibanText = document.getElementById("iban-text").innerText;
+    navigator.clipboard.writeText(ibanText);
+    btn.innerText = "Copied!";
+    btn.classList.remove("btn-secondary");
+    btn.classList.add("btn-success");
+    setTimeout(() => {
+        btn.innerText = "Copy IBAN";
+        btn.classList.remove("btn-success");
+        btn.classList.add("btn-secondary");
+    }, 2000);
+}
 
-const cards = document.querySelectorAll(".card-wrapper");
-const loadBtn = document.getElementById("loadMoreBtn");
 
-let visibleCount = 3; // عدد الحملات الظاهرة مبدئياً (بعد أول 3 مرئية)
-const cardsPerClick = 3;
-
-loadBtn.addEventListener("click", () => {
-    let revealed = 0;
-    for (
-        let i = visibleCount;
-        i < cards.length && revealed < cardsPerClick;
-        i++
-    ) {
-        cards[i].classList.add("visible");
-        revealed++;
-        visibleCount++;
-    }
-
-    // إخفاء الزر عند انتهاء الحملات
-    if (visibleCount >= cards.length) {
-        loadBtn.style.display = "none";
-    }
-});

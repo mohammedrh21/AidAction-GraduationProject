@@ -1,0 +1,84 @@
+﻿@page "/MainWebsite/FAQs"
+@layout MainLayout
+@inject IJSRuntime JS
+@inject NavigationManager _Nav
+@inject IMainWebsite _Main
+<PageTitle>Our FAQs</PageTitle>
+
+<!-- FAQS-->
+<!-- 🔹 FAQs Section -->
+<section class="faqs-section py-5" style="background-color: white">
+    <div class="container">
+        <h2 class="fw-bold text-center text-success">
+            Frequently Asked Questions
+        </h2>
+        <p class="text-center text-muted mb-5">
+            Find answers to common questions about our donation process.
+        </p>
+
+        @if (FAQsModels != null)
+        {
+            foreach (var faq in FAQsModels)
+            {
+                <div class="accordion mb-4" id="faqAccordion@(faq.FAQId)A">
+                    <!-- Question 1 -->
+                    <div class="accordion-item mb-3 border-0 shadow-sm">
+                        <h3 class="accordion-header" id="heading@(faq.FAQId)">
+                            <button class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#collapse@(faq.FAQId)"
+                                    aria-expanded="false"
+                                    aria-controls="collapse@(faq.FAQId)">
+                                @faq.Question
+                            </button>
+                        </h3>
+                        <div id="collapse@(faq.FAQId)"
+                             class="accordion-collapse collapse shadow-md"
+                             aria-labelledby="heading@(faq.FAQId)"
+                             data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                @(faq.Answer)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            }
+        }
+
+
+    </div>
+    <div class="text-center mt-4">
+        <p class="text-muted">
+            Still need help?
+            <a href="#footer" class="text-success">Contact us</a>.
+        </p>
+    </div>
+
+</section>
+
+@code {
+    public List<FAQsModel> FAQsModels { get; set; } = new List<FAQsModel>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await FAQSelectAsync();
+    }
+
+    private async Task FAQSelectAsync()
+    {
+        // Fetch the JSON response from the backend
+        var result = await _Main.FAQSelectAsync();
+
+        // Deserialize the JSON into a list of Result objects containing a list of FAQsModel
+        var resultData = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Result<List<FAQsModel>>>>(result.ToString());
+
+        if (resultData != null && resultData.Any())
+        {
+            // Access the first item in the array and assign its Data field (list of FAQs) to FAQsModels
+            FAQsModels = resultData.FirstOrDefault()?.Data;
+        }
+    }
+
+}

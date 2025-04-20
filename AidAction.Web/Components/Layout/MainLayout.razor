@@ -1,135 +1,58 @@
 ﻿@inherits LayoutComponentBase
 @inject CustomAuthStateProvider AuthStateProvider
+@inject IMainWebsite _Main
 @inject IJSRuntime JS
 @inject NavigationManager _Nav
-<div class="page">
+
+<!-- 🔹 Navbar Section -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+    <div class="container">
+        <a class="navbar-brand fw-bold text-success" href="/"><img src="./resources/images/logo.png" alt="logo" />Aid Action</a>
+        <button class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-center"
+             id="navbarNav">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="/">Home</NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="/MainWebsite/About">ِAbout</NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="/MainWebsite/FundraiserCampaigns">Campaigns</NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="/MainWebsite/Needs">Needs</NavLink>
+                </li>
+
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="/MainWebsite/DonationCenter">Donation Center</NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="/MainWebsite/FAQs">FAQs</NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="/MainWebsite/Contact Us">Contact Us</NavLink>
+                </li>
+            </ul>
+        </div>
+        <div class="d-flex">
+            <NavLink href="/Auth/Login" class="btn btn-outline-success me-2">Login</NavLink>
+            <NavLink href="/Auth/Signup" class="btn btn-success">Sign Up</NavLink>
+        </div>
+    </div>
+</nav>
+
+<section>
+    @Body
+</section>
 
 
-
-
-    <main>
-        @if (isAuthenticated)
-        {
-            <!-- Navigation Bar -->
-            <nav class="navbar navbar-expand-xxl navbar-custom">
-                <div class="container-fluid">
-                    <a class="navbar-brand" href="/">MyBrand</a>
-                    <button class="navbar-toggler nav-button" style="background-color:#ffc107" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
-                            aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="navbarContent">
-                        <ul class="navbar-nav me-auto">
-                            <li class="nav-item custom-nav-item">
-                                <NavLink href="/" class="nav-link">Home</NavLink>
-                            </li>
-                            <li class="nav-item custom-nav-item">
-                                <NavLink href="/MainWebsite/About" class="nav-link">About</NavLink>
-                            </li>
-                            <li class="nav-item custom-nav-item">
-                                <NavLink href="/MainWebsite/Needs_Campaign" class="nav-link">Needs & Fundraiser Campaigns</NavLink>
-                            </li>
-                            <li class="nav-item custom-nav-item">
-                                <NavLink href="/MainWebsite/DonationCenter" class="nav-link">Donation Center</NavLink>
-                            </li>
-                            <li class="nav-item custom-nav-item">
-                                <NavLink href="/MainWebsite/About" class="nav-link">FAQs</NavLink>
-                            </li>
-                            <li class="nav-item custom-nav-item">
-                                <NavLink href="/MainWebsite/About" class="nav-link">Contact Us</NavLink>
-                            </li>
-
-                            <!-- Dropdown Menu -->
-                            <li class="nav-item dropdown custom-nav-item">
-                                <a class="nav-link dropdown-toggle text-light" id="dropdownMenu" role="button"
-                                   data-bs-toggle="dropdown" aria-expanded="true">
-                                    More
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenu">
-                                    <li><a class="dropdown-item text-light" href="/blog">Blog</a></li>
-                                    <li><a class="dropdown-item text-light" href="/careers">Careers</a></li>
-                                    <li><hr class="dropdown-divider bg-light"></li>
-                                    <li><a class="dropdown-item text-light" href="/faq">FAQ</a></li>
-                                </ul>
-                            </li>
-
-                        </ul>
-                        <!-- User Menu Dropdown -->
-                        <div class="dropdown">
-                            <div class="user-menu dropdown-toggle d-flex align-items-center" data-bs-toggle="dropdown">
-                                <img src="images/about-1-660x495.jpg" class="rounded-circle me-2" alt="User Photo" style="width: 40px; height: 40px; object-fit: cover;">
-                                <span class="fw-bold text-light">John Doe</span>
-                            </div>
-                            <ul class="dropdown-menu text-light">
-                                <li><a class="dropdown-item" href="#">Donation Records</a></li>
-                                <li><button class="dropdown-item text-danger" @onclick="Logout">Log Out</button></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </nav>
-        }
-        else
-        {
-            <!-- Navigation Bar -->
-            <nav class="navbar navbar-expand-xxl navbar-custom">
-                <div class="container-fluid">
-                    <a class="navbar-brand" href="/">MyBrand</a>
-                    <button class="navbar-toggler nav-button" style="background-color:#ffc107" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
-                            aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="navbarContent">
-                        <ul class="navbar-nav me-auto">
-                            <li class="nav-item custom-nav-item">
-                                <NavLink href="/" class="nav-link">Home</NavLink>
-                            </li>
-                            <li class="nav-item custom-nav-item">
-                                <NavLink href="/MainWebsite/About" class="nav-link">About</NavLink>
-                            </li>
-                            <li class="nav-item custom-nav-item">
-                                <NavLink href="/MainWebsite/Needs_Campaign" class="nav-link">Needs & Fundraiser Campaigns</NavLink>
-                            </li>
-                            <li class="nav-item custom-nav-item">
-                                <NavLink href="/MainWebsite/DonationCenter" class="nav-link">Donation Center</NavLink>
-                            </li>
-                            <li class="nav-item custom-nav-item">
-                                <NavLink href="/MainWebsite/About" class="nav-link">FAQs</NavLink>
-                            </li>
-                            <li class="nav-item custom-nav-item">
-                                <NavLink href="/MainWebsite/About" class="nav-link">Contact Us</NavLink>
-                            </li>
-
-                            <!-- Dropdown Menu -->
-                            <li class="nav-item dropdown custom-nav-item">
-                                <a class="nav-link dropdown-toggle text-light" id="dropdownMenu" role="button"
-                                   data-bs-toggle="dropdown" aria-expanded="true">
-                                    More
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenu">
-                                    <li><a class="dropdown-item text-light" href="/blog">Blog</a></li>
-                                    <li><a class="dropdown-item text-light" href="/careers">Careers</a></li>
-                                    <li><hr class="dropdown-divider bg-light"></li>
-                                    <li><a class="dropdown-item text-light" href="/faq">FAQ</a></li>
-                                </ul>
-                            </li>
-
-                        </ul>
-                        <!-- Login & Sign Up Buttons -->
-                        <div class="d-flex">
-                            <NavLink href="/Auth/Login" class="btn btn-outline-light me-2">Login</NavLink>
-                            <NavLink href="/Auth/Signup" class="btn btn-warning">Sign Up</NavLink>
-                        </div>
-                    </div>                   
-                </div>
-            </nav>
-        }
-
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
 <!-- 🔹 Footer Section -->
 <!-- 🔹 Footer Section -->
 <footer class="footer-section text-white py-5"
@@ -139,7 +62,7 @@
         <div class="row">
             <!-- First column: Site name and logo -->
             <div class="col-md-4 mb-4">
-                <h4 class="fw-bold mb-2">Fund</h4>
+                <h4 class="fw-bold mb-2">Aid Action</h4>
                 <img src="./resources/images/logo.png"
                      alt="logo"
                      class="mb-3"
@@ -149,75 +72,122 @@
                 </p>
             </div>
 
-            <!-- Second column: 3 vertical lists -->
-            <div class="col-md-8">
-                <div class="row">
-                    <!-- Quick Links list -->
-                    <div class="col-md-4 mb-4">
-                        <h5 class="fw-bold text-success">Quick Links</h5>
-                        <ul class="list-unstyled">
-                            <li><a href="index.html" class="text-white">Home</a></li>
-                            <li><a href="about.html" class="text-white">About</a></li>
-                            <li>
-                                <a href="campaigns.html" class="text-white">Campaigns</a>
-                            </li>
-                            <li>
-                                <a href="donationCenter.html" class="text-white">Donation Center</a>
-                            </li>
-                            <li><a href="#footer" class="text-white">Contact Us</a></li>
-                        </ul>
-                    </div>
+            @if (website != null)
+            {
+                <!-- Second column: 3 vertical lists -->
+                <div class="col-md-8">
+                    <div class="row">
+                        <!-- Quick Links list -->
+                        <div class="col-md-4 mb-4">
+                            <h5 class="fw-bold text-success">Quick Links</h5>
+                            <ul class="list-unstyled">
+                                <li><NavLink href="/" class="text-white">Home</NavLink></li>
+                                <li><NavLink href="/MainWebsite/About" class="text-white">About</NavLink></li>
+                                <li>
+                                    <NavLink href="/MainWebsite/FundraiserCampaigns" class="text-white">Fundraiser Campaigns</NavLink>
+                                </li>
+                                <li>
+                                    <NavLink href="/MainWebsite/DonationCenter" class="text-white">Donation Center</NavLink>
+                                </li>
+                                <li><NavLink href="/MainWebsite/ContactUs" class="text-white">Contact Us</NavLink></li>
+                            </ul>
+                        </div>
 
-                    <!-- Contact Info list -->
-                    <div class="col-md-4 mb-4">
-                        <h5 class="fw-bold text-success">Contact Info</h5>
-                        <ul class="list-unstyled">
-                            <li><i class="fas fa-phone-alt"></i> +123 456 7890</li>
-                            <li><i class="fas fa-envelope"></i> info@fund.com</li>
-                            <li>
-                                <i class="fas fa-map-marker-alt"></i> 123 Fund Street, City,
-                                Country
-                            </li>
-                        </ul>
-                    </div>
+                        <!-- Contact Info list -->
+                        <div class="col-md-4 mb-4">
+                            <h5 class="fw-bold text-success">Contact Info</h5>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-phone-alt"></i>@website.PhoneNumber</li>
+                                <li><i class="fas fa-envelope"></i> @website.Email</li>
+                                <li>
+                                    <i class="fas fa-map-marker-alt"></i> Salah Eldeen St.,Gaza City,
+                                    Palestine
+                                </li>
+                            </ul>
+                        </div>
 
-                    <!-- Social Media Icons list -->
-                    <div class="col-md-4 mb-4">
-                        <h5 class="fw-bold text-success">Follow Us</h5>
-                        <div>
-                            <a href="https://www.facebook.com" class="text-white mx-2">
-                                <i class="fab fa-facebook-f"></i>
-                            </a>
-                            <a href="https://www.instagram.com" class="text-white mx-2">
-                                <i class="fab fa-instagram"></i>
-                            </a>
-                            <a href="https://www.x.com" class="text-white mx-2">
-                                <i class="fab fa-twitter"></i>
-                            </a>
+                        <!-- Social Media Icons list -->
+                        <div class="col-md-4 mb-4">
+                            <h5 class="fw-bold text-success">Follow Us</h5>
+                            <div>
+                                <a href="@website.FacebookURL" target="_blank" class="text-white mx-2">
+                                    <i class="fab fa-facebook"></i>
+                                </a>
+                                <a href="@website.InstagramURL" target="_blank" class="text-white mx-2">
+                                    <i class="fab fa-instagram"></i>
+                                </a>
+                                <a href="@website.TikTokURL" target="_blank" class="text-white mx-2">
+                                    <i class="fab fa-tiktok"></i>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            }
         </div>
 
         <!-- Copyright text in the center -->
+        <!-- Copyright text in the center -->
+        <!-- Copyright text in the center -->
         <div class="text-center mt-4">
-            <p class="mb-0">&copy; 2025 Fund. All rights reserved.</p>
+            <p class="mb-0">&copy; @(DateTime.UtcNow.Year) Aid Action. All rights reserved.</p>
         </div>
     </div>
 </footer>
 
-@code{
+
+@code {
+    private int index;
     private bool isAuthenticated;
+    public MainWebsite main { get; set; } = new MainWebsite();
+    public WebsiteDetails website { get; set; } = new WebsiteDetails();
+
+    private string GetCampaignDetailsUrl(int campaignId)
+    {
+        return $"/MainWebsite/CampaignDetails/?campaignId={campaignId}";
+    }
+
+    public async Task MainWebsiteSelectAsync()
+    {
+
+        var result = await _Main.MainWebsiteSelectAsync();
+        var resultData = Newtonsoft.Json.JsonConvert.DeserializeObject<Result<List<MainWebsite>>>(result.ToString());
+        main = resultData.Data.FirstOrDefault();
+        StateHasChanged(); // Trigger re-render to update UI with the new data
+
+    }
+
+    public async Task WebsiteDetailsSelectAsync()
+    {
+
+        var result = await _Main.WebsiteDetailsSelectAsync();
+        var resultDataList = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Result<List<WebsiteDetails>>>>(result.ToString());
+
+        // Get the first item from the list (since it’s an array in the JSON root)
+        var resultData = resultDataList.FirstOrDefault();
+
+        // Check if the result is not null
+        if (resultData != null)
+        {
+            // Access the list of WebsiteDetails
+            List<WebsiteDetails> websiteDetailsList = resultData.Data;
+            website = websiteDetailsList.FirstOrDefault();
+        }
+        StateHasChanged(); // Trigger re-render to update UI with the new data
+    }
 
     protected override async Task OnInitializedAsync()
     {
+        await MainWebsiteSelectAsync();
+        await WebsiteDetailsSelectAsync();
         string token = AuthStateProvider.token;
         if (!string.IsNullOrEmpty(AuthStateProvider.token))
         {
             isAuthenticated = true;
         }
     }
+
+
 
     private async Task Logout()
     {
@@ -233,4 +203,9 @@
         StateHasChanged();
     }
 
+    // Generate the URL for need details
+    private string GetNeedDetailsUrl(int NeedId)
+    {
+        return $"/MainWebsite/NeedDetails/?NeedId={NeedId}";
+    }
 }

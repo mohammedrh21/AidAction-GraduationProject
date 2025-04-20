@@ -1,0 +1,56 @@
+﻿@page "/MainWebsite/SuccessDonation"
+@using global::Stripe.Checkout
+@layout MainLayout
+@inject IJSRuntime JS
+@inject IStripeService PaymentService
+@inject NavigationManager _Nav
+<div class="container-lg">
+    @if (_Session != null)
+    {
+        if (_Session.PaymentStatus == "paid")
+        {
+
+            <h2>Thank you for helping our people</h2>
+
+        }
+        else
+        {
+            <h2>Fuck off</h2>
+
+        }
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string SessionId { get; set; }
+    public Session _Session { get; set; } = new Session();
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = _Nav.ToAbsoluteUri(_Nav.Uri);
+        var queryParams = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
+
+        if (queryParams.TryGetValue("session_id", out var campaignIdValue))
+        {
+            // Parse the campaignId from the query string
+            SessionId = campaignIdValue.ToString();
+        }
+
+        if (!string.IsNullOrEmpty(SessionId))
+        {
+            _Session = await PaymentService.GetCheckoutSession(SessionId);
+            var email = _Session.CustomerDetails.Email;
+            if (_Session.PaymentStatus == "paid")
+            {
+                // Donation is successful, show success message
+                Console.WriteLine("Donation was successful!");
+                // You can also store donation details in your database, send thank you email, etc.
+            }
+            else
+            {
+                // Payment was not completed successfully
+                Console.WriteLine("Payment was not successful.");
+            }
+        }
+    }
+}

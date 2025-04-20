@@ -1,0 +1,184 @@
+﻿@page "/ControlPanel/Needs"
+@layout ControlPanelLayout
+@inject IControlPanel _Control
+@inject IJSRuntime _JS
+@inject NavigationManager Navigation
+
+<PageTitle>Needs</PageTitle>
+
+<div class="container py-5">
+    <h2 class="fw-bold text-success text-center mb-2">Urgent & Monthly needs</h2>
+    <p class="text-muted text-center mb-5">
+        Control camp needs.
+    </p>
+
+    <div class="d-flex justify-content-around">
+        <!-- Filter Buttons (All, Urgent, Monthly) -->
+        <div class="d-flex justify-content-center mb-4">
+            <div class="btn-group w-50" role="group" aria-label="Need Filter">
+                <button type="button" class="btn btn-success w-33" @onclick="FilterAll"><strong>All</strong></button>
+                <button type="button" class="btn btn-outline-danger w-33" @onclick="FilterUrgent"><strong>Urgent</strong></button>
+                <button type="button" class="btn btn-outline-secondary w-33" @onclick="FilterMonthly"><strong>Monthly</strong></button>
+            </div>
+        </div>
+        <div>
+            <!-- Updated Add New Need Button with an onclick event -->
+            <button class="btn btn-outline-success text-bold" @onclick="RedirectToAddNeed">New Need</button>
+        </div>
+    </div>
+    @* Message Alert *@
+    @if (!string.IsNullOrWhiteSpace(DB.Msg))
+    {
+        <div class="alert w-50 @(DB.rv > 0 ? "alert-success" : "alert-danger") alert-dismissible fade show" role="alert">
+            @DB.Msg
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    <div class="row g-4" id="needContainer">
+        @foreach (var need in FilteredNeedModels)
+        {
+            <div class="col-md-4 card-wrapper visible">
+                <div class="need-card d-flex flex-column h-100"
+                     id="NeedId"
+                     data-Need-id="@need.NeedId"
+                     data-title="@need.Title"
+                     data-description="@need.Description"
+                     data-target-amount="@need.TargetAmount"
+                     data-creation-date="@need.CreationDate?.ToString("yyyy-MM-dd")"
+                     data-total-fund-collected="@need.TotalFundsCollected"
+                     data-image-path="@need.ImagePath">
+
+                    @if (!string.IsNullOrEmpty(need.ImagePath))
+                    {
+                        <div class="need-image-container mb-2" style="position: relative; width: 100%; padding-top: 75%; overflow: hidden; border-radius: 0.5rem;">
+                            <img src="@need.ImagePath" alt="Need Image" loading="lazy"
+                                 style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;" />
+                        </div>
+                    }
+
+                    <h5>@need.Title</h5>
+
+                    <div class="d-flex flex-row justify-content-between gap-5">
+                        <p class="text-success">
+                            @((need.TotalFundsCollected ?? 0)) Raised
+                        </p>
+                        <p class="text-success">
+                            @((need.TargetAmount ?? 0)) Funds Target
+                        </p>
+                    </div>
+
+                    <div class="progress mb-2">
+                        <div class="progress-bar bg-success"
+                             style="width: @(need.TotalFundsCollected / (need.TargetAmount ?? 1) * 100)%"
+                             id="Progress">
+                            @(need.TotalFundsCollected / (need.TargetAmount ?? 1) * 100)%
+                        </div>
+                    </div>
+
+                    <p class="text-muted small">
+                        Approved Date: @(need.CreationDate?.ToString("MMMM dd, yyyy"))
+                    </p>
+
+                    <!-- Conditional Buttons Display -->
+                    <div class="d-flex justify-content-between mt-auto">
+                        <NavLink href="@GetNeedDetailsUrl(need.NeedId)" class="btn btn-success w-30">
+                            Go for Details
+                        </NavLink>
+                        <NavLink href="@GetNeedEditUrl(need.NeedId)" class="btn btn-warning px-4">
+                            Edit
+                        </NavLink>
+                        <button class="btn btn-danger me-2 px-3" @onclick="()=>NeedDeleteAsync(need.NeedId)">Delete</button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    public List<NeedModel> NeedModels { get; set; } = new List<NeedModel>();
+    public List<NeedModel> FilteredNeedModels { get; set; } = new List<NeedModel>();
+    private int UserId;
+    public Result<List<Needs>> DB { get; set; } = new Result<List<Needs>>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await NeedSelectAsync();
+        FilteredNeedModels = NeedModels; // Initially show all Needs
+    }
+
+    // Generate the URL for need details
+    private string GetNeedDetailsUrl(int NeedId)
+    {
+        return $"/ControlPanel/NeedDetails/?NeedId={NeedId}";
+    }
+
+    private string GetNeedEditUrl(int NeedId)
+    {
+        return $"/ControlPanel/AddNeed/?NeedId={NeedId}";
+    }
+
+    private async Task NeedSelectAsync()
+    {
+        // Fetch the JSON response from the backend
+        var result = await _Control.NeedSelectAsync();
+        // Deserialize the JSON into a list of Result objects containing a list of NeedModels
+        var resultData = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Result<List<NeedModel>>>>(result.ToString());
+
+        if (resultData != null && resultData.Any())
+        {
+            // Assign the first list of Needs to NeedModels
+            NeedModels = resultData.FirstOrDefault()?.Data;
+            StateHasChanged();
+        }
+    }
+
+    private async Task NeedDeleteAsync(int needId)
+    {
+        var userIdstring = await _JS.InvokeAsync<string>("localStorage.getItem", "UserId");
+        if (!string.IsNullOrEmpty(userIdstring))
+        {
+            UserId = int.Parse(userIdstring);
+        }
+        // Fetch the JSON response from the backend
+        var result = await _Control.NeedDeleteAsync(new { NeedId = needId, CreatedBy = UserId });
+
+
+        var resultData = Newtonsoft.Json.JsonConvert.DeserializeObject<Result<List<NeedModel>>>(result.ToString());
+        DB.rv = resultData.rv;
+        DB.Msg = resultData.Msg;
+
+        // Deserialize the JSON into a list of Result objects containing a list of NeedModels
+        if (resultData.rv > 0)
+        {
+            StateHasChanged();
+            await NeedSelectAsync();
+            FilterAll();
+        }
+        
+        StateHasChanged();
+    }
+
+    // Filter methods
+    private void FilterAll()
+    {
+        FilteredNeedModels = NeedModels; // Show all Needs
+    }
+
+    private void FilterUrgent()
+    {
+        FilteredNeedModels = NeedModels.Where(c => c.IsUrgent == true).ToList();
+    }
+
+    private void FilterMonthly()
+    {
+        FilteredNeedModels = NeedModels.Where(c => c.IsUrgent != true).ToList();
+    }
+
+    // Navigation method for adding a new need
+    private void RedirectToAddNeed()
+    {
+        // Navigate to the Add Need page
+        Navigation.NavigateTo("/ControlPanel/AddNeed");
+    }
+}

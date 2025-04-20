@@ -13,6 +13,12 @@ namespace AidAction.Domain.DomainModels.Auth
         public string? Msg { set; get; }
         public List<AuthModel>? data { set; get; }
     }
+
+    public class DBResultWithout
+    {
+        public int? rv { set; get; }
+        public string? Msg { set; get; }
+    }
     public class AuthModel
     {
         public int UserId { set; get; }

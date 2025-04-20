@@ -1,0 +1,97 @@
+﻿@page "/MainWebsite/NeedDetails/"
+@layout MainLayout
+@inject NavigationManager _Nav
+@inject IControlPanel _Main
+<PageTitle>Need Details</PageTitle>
+<!-- need details-->
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <img id="ImagePath"
+                 src="@NeedModel.ImagePath"
+                 class="img-fluid rounded shadow h-75 w-80"
+                 alt="Need Image" />
+        </div>
+
+        <div class="col-md-6">
+            <div class="d-flex justify-content-around">
+                <h5>@NeedModel.Title</h5>
+                @if (NeedModel.IsUrgent == true)
+                {
+                    <div class="px-2 rounded alert-danger text-center align-center">Urgent Need</div>
+                }
+                else
+                {
+                    <div class="px-2 rounded primary text-center align-center">Monthly Need</div>
+                }
+            </div>
+
+            <hr />
+            <p id="Description">
+                @NeedModel.Description
+            </p>
+            <p class="text-muted mb-2">
+                <strong>Created On:</strong> <span id="CreationDate">@(NeedModel.CreationDate?.ToString("MMMM dd, yyyy"))</span>
+            </p>
+            <p class="text-muted mb-2">
+                <strong>Target Amount:</strong> $<span id="TargetAmount">@NeedModel.TargetAmount</span>
+            </p>
+            <p class="text-muted mb-2">
+                <strong>Total Raised:</strong> $<span id="TotalFundCollected">@NeedModel.TotalFundsCollected</span>
+            </p>
+            <div class="progress mb-2">
+                <div class="progress-bar bg-success" style="width: @(NeedModel.TotalFundsCollected / (NeedModel.TargetAmount ?? 1) * 100)%">
+                    @(NeedModel.TotalFundsCollected / (NeedModel.TargetAmount ?? 1) * 100)%
+                </div>
+            </div>
+
+            <hr />
+            <div class="d-flex justify-content-start align-items-center">
+                <NavLink href="/MainWebsite/Needs" class="me-3 d-flex w-25 justify-content-center align-items-center btn btn-primary">
+                    Back
+                </NavLink>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int NeedId { get; set; }
+
+    protected override void OnInitialized()
+    {
+        // Access the query string
+        var uri = _Nav.ToAbsoluteUri(_Nav.Uri);
+        var queryParams = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
+
+        if (queryParams.TryGetValue("NeedId", out var NeedIdValue))
+        {
+            // Parse the needId from the query string
+            NeedId = int.Parse(NeedIdValue);
+        }
+    }
+
+    public NeedModel NeedModel { get; set; } = new NeedModel();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await NeedSelectAsync(new { NeedId = NeedId });
+    }
+
+    private async Task NeedSelectAsync(object o)
+    {
+        // Fetch the JSON response from the backend
+        var result = await _Main.NeedSelectAsync(o);
+
+        // Deserialize the JSON into a list of Result objects containing a list of needsModel
+        var resultData = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Result<List<NeedModel>>>>(result.ToString());
+
+        if (resultData != null)
+        {
+            // Access the first item in the array and assign its Data field (list of needs) to NeedModels
+            NeedModel = resultData.FirstOrDefault()?.Data.FirstOrDefault();
+        }
+    }
+}

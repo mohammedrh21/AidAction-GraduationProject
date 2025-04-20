@@ -1,0 +1,154 @@
+﻿@page "/ControlPanel/CampaignsRequests"
+@layout ControlPanelLayout
+@inject IControlPanel _Control
+@inject IJSRuntime JS
+
+<PageTitle>Fundraiser Campaigns Requests</PageTitle>
+
+<div class="container py-5">
+    <h2 class="fw-bold text-success text-center mb-2">Campaigns Requests</h2>
+    <p class="text-muted text-center mb-5">
+        Update Fundraiser Campaigns Status.
+    </p>
+
+    <div class="row g-4" id="campaignContainer">
+        @foreach (var campaign in FilterCampaignModels)
+        {
+            <div class="col-md-4 card-wrapper visible">
+                <div class="campaign-card d-flex flex-column h-100"
+                     id="CampaignId"
+                     data-campaign-id="@campaign.CampaignId"
+                     data-title="@campaign.Title"
+                     data-description="@campaign.Description"
+                     data-target-amount="@campaign.TargetAmount"
+                     data-creation-date="@campaign.ApprovalDate?.ToString("yyyy-MM-dd")"
+                     data-total-fund-collected="@campaign.TotalFundCollected"
+                     data-image-path="@campaign.ImagePath">
+
+                    @if (!string.IsNullOrEmpty(campaign.ImagePath))
+                    {
+                        <div class="campaign-image-container mb-2" style="position: relative; width: 100%; padding-top: 75%; overflow: hidden; border-radius: 0.5rem;">
+                            <img src="@campaign.ImagePath" alt="Campaign Image" loading="lazy"
+                                 style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;" />
+                        </div>
+                    }
+
+                    <div class="d-flex justify-content-between">
+                        <h5>@campaign.Title</h5>
+                        <p>Created by: @campaign.CreatorName</p>
+                    </div>
+
+
+                    <div class="d-flex flex-row justify-content-between gap-5">
+                        <p class="text-success">
+                            @((campaign.TotalFundCollected ?? 0)) Raised
+                        </p>
+                        <p class="text-success">
+                            @((campaign.TargetAmount ?? 0)) Funds Target
+                        </p>
+                    </div>
+
+                    <!-- Buttons Display -->
+                    <div class="d-flex justify-content-between mt-auto">
+                        <div>
+                            <NavLink href="@GetCampaignDetailsUrl(campaign.CampaignId)" class="btn btn-primary w-30">
+                                Go for Details
+                            </NavLink>
+                        </div>
+                        <div>
+                            <button class="btn btn-success" @onclick="() => ShowConfirmationDialog(true, campaign.CampaignId)">Approve</button>
+                            <button class="btn btn-danger" @onclick="() => ShowConfirmationDialog(false, campaign.CampaignId)">Reject</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Confirmation Dialog -->
+@if (isConfirmationVisible)
+{
+    <div class="modal-overlay" style="position: fixed; top: 0%; left: 40%; width: 25%; height: 100%; background: rgba(255, 255, 255, 0); display: flex; justify-content: center; align-items: center;">
+        <div class="modal-content" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+            <h4>Are you sure?</h4>
+            <div class="d-flex justify-content-between">
+                <button class="btn btn-success" @onclick="ConfirmAction">Yes</button>
+                <button class="btn btn-secondary" @onclick="CancelAction">No</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private int UserId;
+    public List<CampaignModel> CampaignModels { get; set; } = new List<CampaignModel>();
+    public List<CampaignModel> FilterCampaignModels { get; set; } = new List<CampaignModel>();
+
+    private bool isConfirmationVisible = false;
+    private bool approveStatus;
+    private int campaignId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CampaignRequestSelectAsync();
+    }
+
+    private async Task CampaignRequestSelectAsync()
+    {
+        var result = await _Control.CampaignRequestSelectAsync();
+        var resultData = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Result<List<CampaignModel>>>>(result.ToString());
+
+        if (resultData != null && resultData.Any())
+        {
+            CampaignModels = resultData.FirstOrDefault()?.Data;
+            FilterCampaignModels = CampaignModels.Where(x => x.ApproveStatus == false || x.ApproveStatus == null).ToList();
+        }
+    }
+
+    // Method to generate the URL with campaignId
+    private string GetCampaignDetailsUrl(int campaignId)
+    {
+        return $"/ControlPanel/CampaignRequestsDetails/?campaignId={campaignId}";
+    }
+
+    // Show confirmation dialog
+    private void ShowConfirmationDialog(bool status, int id)
+    {
+        approveStatus = status;
+        campaignId = id;
+        isConfirmationVisible = true;
+    }
+
+    // Handle confirmation (Yes)
+    private async Task ConfirmAction()
+    {
+        await CampaignStatusSaveAsync(approveStatus, campaignId);
+        isConfirmationVisible = false; // Hide the dialog after action
+    }
+
+    // Handle cancellation (No)
+    private void CancelAction()
+    {
+        isConfirmationVisible = false; // Hide the dialog
+    }
+
+    private async Task CampaignStatusSaveAsync(bool approveStatus, int campaignId)
+    {
+        var userIdstring = await JS.InvokeAsync<string>("localStorage.getItem", "UserId");
+        if (!string.IsNullOrEmpty(userIdstring))
+        {
+            UserId = int.Parse(userIdstring);
+        }
+
+        var result = await _Control.CampaignStatusSaveAsync(new { AdminId = UserId, ApproveStatus = approveStatus, CampaignId = campaignId });
+
+        var result2 = await _Control.CampaignRequestSelectAsync();
+        var resultData = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Result<List<CampaignModel>>>>(result2.ToString());
+        if (resultData != null && resultData.Any())
+        {
+            CampaignModels = resultData.FirstOrDefault()?.Data;
+            FilterCampaignModels = CampaignModels.Where(x => x.ApproveStatus == false || x.ApproveStatus == null).ToList();
+        }
+    }
+}

@@ -1,0 +1,158 @@
+﻿@page "/MainWebsite/Needs"
+@layout MainLayout
+@inject IMainWebsite _Main
+@inject IJSRuntime _JS
+@inject NavigationManager Navigation
+
+<PageTitle>Needs</PageTitle>
+
+<div class="container py-5">
+    <h2 class="fw-bold text-success text-center mb-2">Urgent & Monthly needs</h2>
+    <p class="text-muted text-center mb-5">
+        Help displaced people to fufill thier needs.
+    </p>
+
+    <div class="d-flex justify-content-around">
+        <!-- Filter Buttons (All, Urgent, Monthly) -->
+        <div class="d-flex justify-content-center mb-4 w-50">
+            <div class="btn-group w-50" role="group" aria-label="Need Filter">
+                <button type="button" class="btn btn-success w-33 me-2" @onclick="FilterAll"><strong>All</strong></button>
+                <button type="button" class="btn btn-outline-danger w-33 me-2" @onclick="FilterUrgent"><strong>Urgent</strong></button>
+                <button type="button" class="btn btn-outline-secondary w-33 me-2" @onclick="FilterMonthly"><strong>Monthly</strong></button>
+            </div>
+        </div>
+        <!-- Sort Dropdown (right side) -->
+        <div class="dropdown">
+            <button class="btn btn-outline-primary dropdown-toggle fw-bold" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                Sort By <i class="fas fa-sort"></i> <!-- Sort Icon -->
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <li><a class="dropdown-item" @onclick="SortNeedsByTitleAscending"><i class="fas fa-sort-alpha-down"></i> Sort by Title (A-Z)</a></li>
+                <li><a class="dropdown-item" @onclick="SortNeedsByTitleDescending"><i class="fas fa-sort-alpha-up"></i> Sort by Title (Z-A)</a></li>
+                <li><a class="dropdown-item" @onclick="SortNeedsByTargetAmountAscending"><i class="fas fa-arrow-up"></i> Sort by Target Amount (Asc)</a></li>
+                <li><a class="dropdown-item" @onclick="SortNeedsByTargetAmountDescending"><i class="fas fa-arrow-down"></i> Sort by Target Amount (Desc)</a></li>
+                <li><a class="dropdown-item" @onclick="SortNeedsByTotalFundAscending"><i class="fas fa-arrow-up"></i> Sort by Total Fund (Asc)</a></li>
+                <li><a class="dropdown-item" @onclick="SortNeedsByTotalFundDescending"><i class="fas fa-arrow-down"></i> Sort by Total Fund (Desc)</a></li>
+                <li><a class="dropdown-item" @onclick="SortNeedsByProgressPercentage"><i class="fas fa-tachometer-alt"></i> Sort by Progress Percentage</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="row g-4" id="needContainer">
+        @foreach (var need in FilteredNeedModels)
+        {
+            <div class="col-md-4 card-wrapper visible">
+                <div class="need-card d-flex flex-column h-100"
+                     id="NeedId"
+                     data-Need-id="@need.NeedId"
+                     data-title="@need.Title"
+                     data-description="@need.Description"
+                     data-target-amount="@need.TargetAmount"
+                     data-creation-date="@need.CreationDate?.ToString("yyyy-MM-dd")"
+                     data-total-fund-collected="@need.TotalFundsCollected"
+                     data-image-path="@need.ImagePath">
+
+                    @if (!string.IsNullOrEmpty(need.ImagePath))
+                    {
+                        <div class="need-image-container mb-2" style="position: relative; width: 100%; padding-top: 75%; overflow: hidden; border-radius: 0.5rem;">
+                            <img src="@need.ImagePath" alt="Need Image" loading="lazy"
+                                 style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;" />
+                        </div>
+                    }
+
+                    <h5>@need.Title</h5>
+
+                    <div class="d-flex flex-row justify-content-between gap-5">
+                        <p class="text-success">
+                            @((need.TotalFundsCollected ?? 0)) Raised
+                        </p>
+                        <p class="text-success">
+                            @((need.TargetAmount ?? 0)) Funds Target
+                        </p>
+                    </div>
+
+                    <div class="progress mb-2">
+                        <div class="progress-bar bg-success"
+                             style="width: @(need.TotalFundsCollected / (need.TargetAmount ?? 1) * 100)%"
+                             id="Progress">
+                            @(need.TotalFundsCollected / (need.TargetAmount ?? 1) * 100)%
+                        </div>
+                    </div>
+
+                    <p class="text-muted small">
+                        Approved Date: @(need.CreationDate?.ToString("MMMM dd, yyyy"))
+                    </p>
+
+                    <!-- Conditional Buttons Display -->
+                    <div class="d-flex justify-content-between mt-auto">
+                        <NavLink href="@GetNeedDetailsUrl(need.NeedId)" class="btn btn-outline-primary w-50">
+                            Go for Details
+                        </NavLink>
+
+                        <button class="btn btn-success me-2 px-3">Donate</button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    public List<NeedModel> NeedModels { get; set; } = new List<NeedModel>();
+    public List<NeedModel> FilteredNeedModels { get; set; } = new List<NeedModel>();
+    private int UserId;
+    public Result<List<Need>> DB { get; set; } = new Result<List<Need>>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await NeedSelectAsync();
+        FilteredNeedModels = NeedModels; // Initially show all Needs
+    }
+
+    // Generate the URL for need details
+    private string GetNeedDetailsUrl(int NeedId)
+    {
+        return $"/MainWebsite/NeedDetails/?NeedId={NeedId}";
+    }
+
+    private async Task NeedSelectAsync()
+    {
+        // Fetch the JSON response from the backend
+        var result = await _Main.NeedSelectAsync();
+        // Deserialize the JSON into a list of Result objects containing a list of NeedModels
+        var resultData = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Result<List<NeedModel>>>>(result.ToString());
+
+        if (resultData != null && resultData.Any())
+        {
+            // Assign the first list of Needs to NeedModels
+            NeedModels = resultData.FirstOrDefault()?.Data;
+            StateHasChanged();
+        }
+    }
+
+    // Filter methods
+    private void FilterAll()
+    {
+        FilteredNeedModels = NeedModels; // Show all Needs
+    }
+
+    private void FilterUrgent()
+    {
+        FilteredNeedModels = NeedModels.Where(c => c.IsUrgent == true).ToList();
+    }
+
+    private void FilterMonthly()
+    {
+        FilteredNeedModels = NeedModels.Where(c => c.IsUrgent != true).ToList();
+    }
+
+    // Sorting methods
+    private void SortNeedsByTitleAscending() => FilteredNeedModels = FilteredNeedModels.OrderBy(c => c.Title).ToList();
+    private void SortNeedsByTitleDescending() => FilteredNeedModels = FilteredNeedModels.OrderByDescending(c => c.Title).ToList();
+    private void SortNeedsByTargetAmountAscending() => FilteredNeedModels = FilteredNeedModels.OrderBy(c => c.TargetAmount).ToList();
+    private void SortNeedsByTargetAmountDescending() => FilteredNeedModels = FilteredNeedModels.OrderByDescending(c => c.TargetAmount).ToList();
+    private void SortNeedsByTotalFundAscending() => FilteredNeedModels = FilteredNeedModels.OrderBy(c => c.TotalFundsCollected).ToList();
+    private void SortNeedsByTotalFundDescending() => FilteredNeedModels = FilteredNeedModels.OrderByDescending(c => c.TotalFundsCollected).ToList();
+    private void SortNeedsByProgressPercentage() => FilteredNeedModels = FilteredNeedModels.OrderBy(c => (c.TotalFundsCollected ?? 0) / (c.TargetAmount ?? 1) * 100).ToList();
+
+}

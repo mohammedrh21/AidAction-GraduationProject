@@ -1,0 +1,103 @@
+﻿@page "/donate"
+@using global::Stripe
+@using global::Stripe.Checkout
+@inject IStripeService PaymentService
+@inject IJSRuntime JS
+
+
+<div class="container py-5">
+    <div class="row g-4">
+        <!-- Payment Form -->
+        <div class="col-lg-7">
+            <div class="card p-4">
+                <h4 class="mb-4">Payment Details</h4>
+                <form>
+                    <div class="mb-3">
+                        <label>Select Donation Amount</label>
+                        <div class="d-flex gap-2 donation-amounts">
+                            <button type="button"
+                                    class="btn btn-outline-success"
+                                    onclick="selectAmount(20, this)">
+                                20
+                            </button>
+                            <button type="button"
+                                    class="btn btn-outline-success"
+                                    onclick="selectAmount(50, this)">
+                                50
+                            </button>
+                            <button type="button"
+                                    class="btn btn-outline-success"
+                                    onclick="selectAmount(70, this)">
+                                70
+                            </button>
+                            <button type="button"
+                                    class="btn btn-outline-success"
+                                    onclick="selectAmount(100, this)">
+                                100
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label>Or Enter Custom Amount</label>
+                        <input type="number"
+                               class="form-control"
+                               id="customAmount"
+                               oninput="updateSummary()"
+                               placeholder="Enter amount" />
+                    </div>
+
+                    <small class="text-muted d-block mb-3">
+                        <i class="bi bi-info-circle"></i> Payments may take up to 4
+                        business days to process.
+                    </small>
+                </form>
+            </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="col-lg-5">
+            <div class="card p-4 bg-light">
+                <h5 class="mb-4">Donation Summary</h5>
+                <h6 class="mb-4">For Health Care Campaign</h6>
+                <ul class="list-group mb-3">
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Donation Amount</span>
+                        <strong id="summaryAmount">$0.00</strong>
+                    </li>
+                </ul>
+                <button class="btn btn-success w-100" @onclick="Donate" disabled="@isProcessing">Donate Now</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    private bool isProcessing = false;
+    private string CHECKOUT_SESSION_ID;
+    private string GetCampaignDetailsUrl(int campaignId)
+    {
+        return $"/MainWebsite/SuccessDonation/?SuccessDonation?session_id={CHECKOUT_SESSION_ID}";
+    }
+
+    private async Task Donate()
+    {
+        try
+        {
+            isProcessing = true;
+            var sessionId = await PaymentService.CreateCheckoutSession(10);
+            await JS.InvokeVoidAsync("redirectToCheckout", sessionId);
+            CHECKOUT_SESSION_ID = sessionId;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+        finally
+        {
+            isProcessing = false;
+        }
+    }
+}
+

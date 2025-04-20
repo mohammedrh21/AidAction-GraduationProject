@@ -16,6 +16,12 @@ namespace AidAction.Repository.Repositories
     {
         public MainWebsiteRepository(IConfiguration configuration) : base(configuration) { }
 
+        #region Main
+        public async Task<JObject> MainWebsiteSelectAsync()
+        {
+            return await CommandAsync<JObject>("dbo.MainWebsiteSelect");
+        }
+        #endregion
 
         #region Donor
         public async Task<JObject> DonorSaveAsync(DonorModel model)
@@ -69,6 +75,23 @@ namespace AidAction.Repository.Repositories
         //CampaignRequestSelect => @CreatorId 
         #endregion
 
+        #region WebsiteDetails
+        public async Task<JArray> WebsiteDetailsSelectAsync()
+        {
+            return await CommandAsync<JArray>("dbo.WebsiteDetails_Contact_Select");
+        }
+        #endregion
 
+        #region Need
+        public async Task<JArray> NeedSelectAsync()
+        {
+            return await CommandAsync<JArray>("dbo.NeedSelect");
+        }
+
+        public async Task<JArray> NeedSelectAsync(object o)
+        {
+            return await CommandAsync<JArray>("dbo.NeedSelect", o);
+        }
+        #endregion
     }
 }

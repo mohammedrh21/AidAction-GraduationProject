@@ -1,10 +1,13 @@
+using AidAction.Domain.DomainModels.Auth;
 using AidAction.Domain.Interfaces;
 using AidAction.Repository.Generic;
 using AidAction.Repository.Repositories;
 using AidAction.Services.Auth;
+using AidAction.Services.Stripe;
 using AidAction.Web.AuthProvider;
 using AidAction.Web.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -29,13 +32,16 @@ builder.Services.AddAuthentication("Bearer")
         };
     });
 
+builder.Services.Configure<StripeSettings>(configuration.GetSection("StripeSettings"));
+
 
 // Add services to the container.
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
-builder.Services.AddScoped<IMainWebsite,MainWebsiteRepository>();
+builder.Services.AddScoped<IMainWebsite, MainWebsiteRepository>();
 builder.Services.AddScoped<IControlPanel, ControlPanelRepository>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddSingleton<IStripeService,StripeService>();
 
 builder.Services.AddTransient<GenericRepository>();
 
@@ -48,6 +54,13 @@ builder.Services.AddLogging(logging =>
     logging.SetMinimumLevel(LogLevel.Debug);  // You can set this to Trace for more detailed logging
     logging.AddConsole(); // Console logger can also show real-time logs in the browser
 });
+
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 104857600; // 100MB, adjust as needed
+});
+
+
 var app = builder.Build();
 
 
@@ -64,6 +77,7 @@ app.UseAntiforgery();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
+
 
 
 app.Run();

@@ -11,16 +11,17 @@ namespace AidAction.Domain.Interfaces
 {
     public interface IMainWebsite
     {
-        Task<JObject> DonorSaveAsync(DonorModel model);
-
-
-        #region FAQs
-
-        Task<JArray> FAQSelectAsync();
-
+        #region MainWebsite
+        Task<JObject> MainWebsiteSelectAsync();
         #endregion
 
+        #region Donor
+        Task<JObject> DonorSaveAsync(DonorModel model);
+        #endregion
 
+        #region FAQs
+        Task<JArray> FAQSelectAsync();
+        #endregion
 
         #region Fundraiser Campaign
         Task<JArray> CampaignsSelectAsync();
@@ -29,6 +30,17 @@ namespace AidAction.Domain.Interfaces
         Task<JArray> CampaignSaveRequestAsync(CampaignModel model);
         #endregion
 
+        #region WebsiteDetails
+        Task<JArray> WebsiteDetailsSelectAsync();
+        #endregion
 
+        #region Need
+        Task<JArray> NeedSelectAsync();
+        Task<JArray> NeedSelectAsync(object o);
+        #endregion
+
+
+        #region Moh
+        #endregion
     }
 }

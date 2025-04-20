@@ -13,7 +13,7 @@ namespace AidAction.Repository.Repositories
 {
     public class ControlPanelRepository : GenericRepository, IControlPanel
     {
-        public ControlPanelRepository(IConfiguration configuration) : base(configuration){}
+        public ControlPanelRepository(IConfiguration configuration) : base(configuration) { }
 
 
 
@@ -56,13 +56,24 @@ namespace AidAction.Repository.Repositories
         public async Task<JArray> CampaignsSelectAsync(object o)
         {
             // Use the CommandAsync method for your donor registration logic
-            return await CommandAsync<JArray>("dbo.CampaignSelect",o);
+            return await CommandAsync<JArray>("dbo.CampaignSelect", o);
         }
 
         public async Task<JObject> CampaignsArchiveAsync(object o)
         {
             // Use the CommandAsync method for your donor registration logic
             return await CommandAsync<JObject>("dbo.CampaignArchive", o);
+        }
+
+        public async Task<JArray> CampaignRequestSelectAsync()
+        {
+            // Use the CommandAsync method for your donor registration logic
+            return await CommandAsync<JArray>("dbo.CampaignRequestSelect");
+        }
+        public async Task<JArray> CampaignRequestSelectAsync(object o)
+        {
+            // Use the CommandAsync method for your donor registration logic
+            return await CommandAsync<JArray>("dbo.CampaignRequestSelect", o);
         }
 
         public async Task<JObject> CampaignStatusSaveAsync(object o)
@@ -72,8 +83,39 @@ namespace AidAction.Repository.Repositories
         }
         #endregion
 
-    
+        #region Need
+        public async Task<JArray> NeedSelectAsync()
+        {
+            return await CommandAsync<JArray>("dbo.NeedSelect");
+        }
 
+        public async Task<JArray> NeedSelectAsync(object o)
+        {
+            return await CommandAsync<JArray>("dbo.NeedSelect", o);
+        }
+
+        public async Task<JObject> NeedSaveAsync(NeedModel model)
+        {
+            return await CommandAsync<JObject>("dbo.NeedSave", model);
+        }
+
+        public async Task<JObject> NeedDeleteAsync(object o)
+        {
+            return await CommandAsync<JObject>("dbo.NeedDelete", o);
+        }
+        #endregion
+
+        #region Website Details
+        public async Task<JArray> WebsiteDetailsSelectAsync()
+        {
+            return await CommandAsync<JArray>("dbo.WebsiteDetails_Contact_Select");
+        }
+
+        public async Task<JObject> WebsiteDetailsSaveAsync(WebsiteDetails model)
+        {
+            return await CommandAsync<JObject>("dbo.WebsiteDetails_Contact_Save", model);
+        }
+        #endregion
     }
 
 }

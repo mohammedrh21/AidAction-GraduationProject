@@ -1,0 +1,90 @@
+﻿@page "/MainWebsite/ContactUs"
+@inject IJSRuntime JS
+@inject IMainWebsite _Main
+@inject NavigationManager _Nav
+<PageTitle>Contact Us</PageTitle>
+
+
+<div class="mb-3">
+    <label class="form-label">Phone Number:</label>
+    <p>@contactInfo.PhoneNumber</p>
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Email:</label>
+    <p>@contactInfo.Email</p>
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Social Media:</label>
+    <div>
+        <!-- Facebook Icon -->
+        <a href="@contactInfo.FacebookURL" target="_blank">
+            <i class="fab fa-facebook fa-2x" title="Facebook"></i>
+        </a>
+        <!-- Instagram Icon -->
+        <a href="@contactInfo.InstagramURL" target="_blank">
+            <i class="fab fa-instagram fa-2x" title="Instagram"></i>
+        </a>
+        <!-- TikTok Icon -->
+        <a href="@contactInfo.TikTokURL" target="_blank">
+            <i class="fab fa-tiktok fa-2x" title="TikTok"></i>
+        </a>
+    </div>
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Location Longitude:</label>
+    <p>@contactInfo.LocationLongitude</p>
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Location Latitude:</label>
+    <p>@contactInfo.LocationLatitude</p>
+</div>
+
+<h4>Location Map</h4>
+<div id="map" style="height: 400px;"></div>
+
+@code {
+    private ContactInfo contactInfo = new ContactInfo
+        {
+            PhoneNumber = "123-456-7890",
+            Email = "example@example.com",
+            FacebookURL = "https://facebook.com/example",
+            InstagramURL = "https://instagram.com/example",
+            TikTokURL = "https://tiktok.com/@example",
+            LocationLongitude = "31.2357", // Example coordinates
+            LocationLatitude = "34.5678"
+        };
+
+    // Call JavaScript function to display the map when the page loads
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Update the map with the saved coordinates
+            await UpdateMap(contactInfo.LocationLatitude, contactInfo.LocationLongitude);
+        }
+    }
+
+    private async Task UpdateMap(string latitude, string longitude)
+    {
+        if (double.TryParse(latitude, out double lat) && double.TryParse(longitude, out double lon))
+        {
+            await JS.InvokeVoidAsync("updateMap", lat, lon);
+        }
+    }
+
+    public class ContactInfo
+    {
+        public string PhoneNumber { get; set; }
+        public string Email { get; set; }
+        public string FacebookURL { get; set; }
+        public string InstagramURL { get; set; }
+        public string TikTokURL { get; set; }
+        public string LocationLongitude { get; set; }
+        public string LocationLatitude { get; set; }
+    }
+}
+

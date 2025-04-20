@@ -13,9 +13,12 @@
         </div>
 
         <div class="col-md-6">
-            <h2 id="Title" class="text-success fw-bold">
-                @CampaignModel.Title
-            </h2>
+            <div class="d-flex justify-content-around">
+                <h5>@CampaignModel.Title</h5>
+                <p>Created by: @CampaignModel.CreatorName</p>
+            </div>
+            <hr/>
+            <p>@CampaignModel.CreatorName</p>
             <p id="Description">
                 @CampaignModel.Description
             </p>
@@ -42,9 +45,17 @@
                         Archive
                     </button>
                 }
+
+                @if (CampaignModel.ApproveStatus != true){
                 <NavLink href="/ControlPanel/FundraiserCampaigns" class="me-3 d-flex w-25 justify-content-center align-items-center btn btn-primary">
                     Back
                 </NavLink>
+                }else {
+                <NavLink href="/ControlPanel/CampaignsRequests" class="me-3 d-flex w-25 justify-content-center align-items-center btn btn-primary">
+                    Back
+                </NavLink>
+                }
+               
             </div>
 
         </div>

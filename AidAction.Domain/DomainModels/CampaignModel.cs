@@ -10,6 +10,7 @@ namespace AidAction.Domain.DomainModels
     {
         public int CampaignId { get; set; }
         public int? CreatorId { get; set; }
+        public string? CreatorName { get; set; }
         public string? Title { get; set; }
         public string? Description { get; set; }
         public int? TargetAmount { get; set; }

@@ -1,0 +1,42 @@
+﻿@page "/MainWebsite/CancelDonation"
+@layout MainLayout
+@inject IJSRuntime JS
+@inject IStripeService PaymentService
+@inject NavigationManager _Nav
+<h3>Donation Cancelled</h3>
+
+<p>It looks like you have canceled the donation process. You can try again later.</p>
+
+@code {
+    [Parameter]
+    public string SessionId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = _Nav.ToAbsoluteUri(_Nav.Uri);
+        var queryParams = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
+
+        if (queryParams.TryGetValue("session_id", out var campaignIdValue))
+        {
+            // Parse the campaignId from the query string
+            SessionId = campaignIdValue.ToString();
+        }
+
+        if (!string.IsNullOrEmpty(SessionId))
+        {
+            var session = await PaymentService.GetCheckoutSession(SessionId);
+
+            if (session.PaymentStatus == "paid")
+            {
+                // Donation is successful, show success message
+                Console.WriteLine("Donation was successful!");
+                // You can also store donation details in your database, send thank you email, etc.
+            }
+            else
+            {
+                // Payment was not completed successfully
+                Console.WriteLine("Payment was not successful.");
+            }
+        }
+    }
+}
