@@ -16,6 +16,8 @@ namespace AidAction.Domain.Interfaces
         #endregion
 
         #region Donor
+        Task<JObject> DonorSelectAsync(object o);
+        Task<JObject> UpdateDonorSaveAsync(DonorModel model);
         Task<JObject> DonorSaveAsync(DonorModel model);
         #endregion
 
@@ -27,7 +29,7 @@ namespace AidAction.Domain.Interfaces
         Task<JArray> CampaignsSelectAsync();
         Task<JArray> CampaignsSelectAsync(object o);
         Task<JObject> CampaignRequestSelectAsync(object o);
-        Task<JArray> CampaignSaveRequestAsync(CampaignModel model);
+        Task<JArray> CampaignSaveRequestAsync(AddCampaignModel model);
         #endregion
 
         #region WebsiteDetails
@@ -39,8 +41,9 @@ namespace AidAction.Domain.Interfaces
         Task<JArray> NeedSelectAsync(object o);
         #endregion
 
-
-        #region Moh
+        #region Donation       
+        Task<JArray> DonationRecordsSelectAsync(object o);
+        Task<JObject> DonationSaveAsync(DonationModel model);
         #endregion
     }
 }

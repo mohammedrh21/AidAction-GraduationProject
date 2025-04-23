@@ -265,10 +265,12 @@
         await JS.InvokeVoidAsync("localStorage.removeItem", "Token");
         await JS.InvokeVoidAsync("localStorage.removeItem", "UserId");
         await JS.InvokeVoidAsync("localStorage.removeItem", "UserType");
+        await JS.InvokeVoidAsync("localStorage.removeItem", "FullName");
 
         await Task.Delay(200);
         await AuthStateProvider.LogoutAsync();
         isAuthenticated = false;
+
         StateHasChanged();
         _Nav.Refresh();
         StateHasChanged();

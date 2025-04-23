@@ -4,53 +4,134 @@
 @inject IJSRuntime JS
 @inject IStripeService PaymentService
 @inject NavigationManager _Nav
-<div class="container-lg">
+@inject IMainWebsite _Main
+
+<article class="d-flex justify-content-center align-items-start" style="height: 100vh; padding-top: 20%; background: linear-gradient(45deg, #52db02 50%, #eef2eb 50%);">
+
     @if (_Session != null)
     {
         if (_Session.PaymentStatus == "paid")
         {
-
-            <h2>Thank you for helping our people</h2>
-
+            <h2 class="text-center"><i class="bi bi-check me-2"></i>Thank you for helping our people, Redirecting ..</h2>
         }
-        else
+        else if (_Session.PaymentStatus == "unpaid")
         {
-            <h2>Fuck off</h2>
-
+            <h2 class="text-center">
+                <!-- Using Bootstrap Icons -->
+                <i class="bi bi-x"></i>
+                Payment Canceled ! , Redirecting ..
+            </h2>
         }
     }
-</div>
+</article>
+
+
+
 
 @code {
     [Parameter]
+    public int campaignId { get; set; }
+    [Parameter]
+    public int needId { get; set; }
+
+    [Parameter]
     public string SessionId { get; set; }
     public Session _Session { get; set; } = new Session();
+    public DonationModel _Donation { get; set; } = new DonationModel();
+    private string CHECKOUT_SESSION_ID;
+    public decimal Amount { get; set; }
+
+    private int? UserId = 0;
+
     protected override async Task OnInitializedAsync()
     {
         var uri = _Nav.ToAbsoluteUri(_Nav.Uri);
         var queryParams = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
 
-        if (queryParams.TryGetValue("session_id", out var campaignIdValue))
+        if (queryParams.TryGetValue("session_id", out var sessionIdValue))
         {
             // Parse the campaignId from the query string
-            SessionId = campaignIdValue.ToString();
+            SessionId = sessionIdValue.ToString();
         }
 
-        if (!string.IsNullOrEmpty(SessionId))
+        if (queryParams.TryGetValue("campaignId", out var campaignIdValue))
         {
-            _Session = await PaymentService.GetCheckoutSession(SessionId);
-            var email = _Session.CustomerDetails.Email;
-            if (_Session.PaymentStatus == "paid")
+            // Parse the campaignId from the query string
+            campaignId = int.Parse(campaignIdValue);
+        }
+
+        if (queryParams.TryGetValue("needId", out var NeedIdValue))
+        {
+            // Parse the campaignId from the query string
+            needId = int.Parse(NeedIdValue);
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Run only once after the first render
+            await Task.Delay(1000); // Simulate some work
+            if (!string.IsNullOrEmpty(SessionId))
             {
-                // Donation is successful, show success message
-                Console.WriteLine("Donation was successful!");
-                // You can also store donation details in your database, send thank you email, etc.
+                _Session = await PaymentService.GetCheckoutSession(SessionId);
+                await DonationSaveAsync();
+                if (_Session.PaymentStatus == "paid")
+                {
+                    // Donation is successful, show success message
+                    Console.WriteLine("Donation was successful!");
+                    // You can also store donation details in your database, send thank you email, etc.
+                }
+                else
+                {
+                    // Payment was not completed successfully
+                    Console.WriteLine("Payment was not successful.");
+                }
             }
-            else
+            StateHasChanged();
+            await Task.Delay(3000);
+            if (needId != null && needId != 0)
             {
-                // Payment was not completed successfully
-                Console.WriteLine("Payment was not successful.");
+                _Nav.NavigateTo("/MainWebsite/Needs");
             }
+            else if (campaignId != null && campaignId != 0)
+            {
+                _Nav.NavigateTo("/MainWebsite/FundraiserCampaigns");
+            }
+        }
+    }
+
+    private async Task DonationSaveAsync()
+    {
+        var donorId = await JS.InvokeAsync<string>("localStorage.getItem", "UserId");
+        if (!string.IsNullOrEmpty(donorId))
+        {
+            UserId = int.Parse(donorId);
+        }
+
+        _Donation.DonorId = UserId;
+        _Donation.NeedDonationTargetedId = needId;
+        _Donation.CampaignDonationTargetedId = campaignId;
+        if (_Session.AmountTotal != null) _Donation.Amount = (_Session.AmountTotal / 100);
+        if (_Session.CustomerDetails != null) _Donation.Email = _Session.CustomerDetails.Email;
+        if (_Session.CustomerDetails != null) _Donation.FullName = _Session.CustomerDetails.Name;
+        _Donation.SessionId = _Session.Id;
+        if (_Session.PaymentStatus == "paid")
+        {
+            _Donation.PaymentStatusId = 1;
+        }
+        else
+        {
+            _Donation.PaymentStatusId = 2;
+        }
+
+        var result = await _Main.DonationSaveAsync(_Donation);
+        var resultData = Newtonsoft.Json.JsonConvert.DeserializeObject<Result<List<DonationModel>>>(result.ToString());
+
+        if (resultData != null)
+        {
+            _Donation = resultData.Data.FirstOrDefault();
         }
     }
 }

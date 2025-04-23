@@ -15,12 +15,20 @@ namespace AidAction.Domain.DomainModels
         public string? Description { get; set; }
         public int? TargetAmount { get; set; }
         public double? TotalFundCollected { get; set; }
-        public bool? ApproveStatus { get; set; }
+        public bool ApproveStatus { get; set; }
         public DateTime? ApprovalDate { get; set; }
         public DateTime? CreationDate { get; set; }
         public string? ImagePath { get; set; }
-        public byte[] ImageBytes { get; set; }
         public int? ApprovedBy { get; set; }
         public bool? IsArchived { get; set; }
+    }
+
+    public class AddCampaignModel
+    {
+        public int? CreatorId { get; set; }
+        public string? Title { get; set; }
+        public string? Description { get; set; }
+        public int? TargetAmount { get; set; }
+        public string? ImagePath { get; set; }
     }
 }

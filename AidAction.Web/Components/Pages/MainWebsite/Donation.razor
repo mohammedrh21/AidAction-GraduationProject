@@ -1,0 +1,187 @@
+﻿@page "/MainWebsite/Donate"
+@using global::Stripe.Checkout
+
+@layout MainLayout
+@inject IStripeService PaymentService
+@inject IJSRuntime JS
+@inject NavigationManager _Nav
+@inject IMainWebsite _Main
+
+
+<div class="container py-5">
+    <div class="row g-4">
+        <!-- Payment Form -->
+        <div class="col-lg-7">
+            <div class="card p-4">
+                <h4 class="mb-4">Payment Details</h4>
+                <form>
+                    <div class="mb-3">
+                        <label>Select Donation Amount</label>
+                        <div class="d-flex gap-2 donation-amounts">
+                            <button type="button"
+                                    class="btn btn-outline-success"
+                                    @onclick="()=>SelectAmount(20)">
+                                20
+                            </button>
+                            <button type="button"
+                                    class="btn btn-outline-success"
+                                    @onclick="()=>SelectAmount(50)">
+                                50
+                            </button>
+                            <button type="button"
+                                    class="btn btn-outline-success"
+                                    @onclick="()=>SelectAmount(70)">
+                                70
+                            </button>
+                            <button type="button"
+                                    class="btn btn-outline-success"
+                                    @onclick="()=>SelectAmount(100)">
+                                100
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label>Or Enter Custom Amount</label>
+                        <InputNumber @bind-Value="Amount" @onblur="OnAmountBlur" class="form-control" />
+                    </div>
+
+                    <small class="text-muted d-block mb-3">
+                        <i class="bi bi-info-circle"></i> Payments may take up to 4
+                        business days to process.
+                    </small>
+                </form>
+            </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="col-lg-5">
+            <div class="card p-4 bg-light">
+                <h5 class="mb-4">Donation Summary</h5>
+                <h6 class="mb-4">For Health Care Campaign</h6>
+                <ul class="list-group mb-3">
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span class="me-2">Donation Amount</span>
+                        @*                         <InputNumber style="background:white;" class="border-0 m-0" disabled @bind-Value="Amount"></InputNumber>
+ *@                        <strong><span style="margin-left:-5rem;">@Amount.ToString("F2")</span></strong>
+                    </li>
+                </ul>
+                <button class="btn btn-success w-100" @onclick="Donate" disabled="@isProcessing">Donate Now</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public int campaignId { get; set; }
+    [Parameter]
+    public int needId { get; set; }
+
+    public DonationModel _Donation { get; set; } = new DonationModel();
+    private bool isProcessing = false;
+    private string CHECKOUT_SESSION_ID;
+    public decimal Amount { get; set; }
+
+    private int? UserId;
+    public Session _Session { get; set; } = new Session();
+
+
+    protected override void OnInitialized()
+    {
+        // Access the query string
+        var uri = _Nav.ToAbsoluteUri(_Nav.Uri);
+        var queryParams = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
+
+        if (queryParams.TryGetValue("campaignId", out var campaignIdValue))
+        {
+            // Parse the campaignId from the query string
+            campaignId = int.Parse(campaignIdValue);
+        }
+
+        if (queryParams.TryGetValue("needId", out var NeedIdValue))
+        {
+            // Parse the campaignId from the query string
+            needId = int.Parse(NeedIdValue);
+        }
+    }
+
+    private string GetSessionUrl(int sessionId)
+    {
+        return $"/MainWebsite/SuccessDonation/?SuccessDonation?session_id={CHECKOUT_SESSION_ID}&needId={needId}&campaignId={campaignId}";
+    }
+
+    // private async Task DonationSaveAsync()
+    // {
+    //     var donorId = await JS.InvokeAsync<string>("localStorage.getItem", "UserId");
+    //     if (!string.IsNullOrEmpty(donorId))
+    //     {
+    //         UserId = int.Parse(donorId);
+    //     }
+    //     _Donation.StripeTransactionId = _Session.Id;
+    //     _Donation.DonorId = UserId;
+    //     _Donation.DonationTargetedId = 1;
+    //     _Donation.Amount = Amount;
+    //     _Donation.Email = _Session.CustomerDetails.Email;
+    //     _Donation.FullName = _Session.CustomerDetails.Name;
+    //     _Donation.SessionId = _Session.Id;
+    //     if (_Session.PaymentStatus == "paid")
+    //     {
+    //         _Donation.paymentStatusId = 1;
+    //     }
+    //     else
+    //     {
+    //         _Donation.paymentStatusId = 0;
+    //     }
+
+    //     var result = await _Main.DonationSaveAsync(_Donation);
+    //     var resultData = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Result<List<DonationModel>>>>(result.ToString());
+
+    //     if (resultData != null && resultData.Any())
+    //     {
+    //         _Donation = resultData.FirstOrDefault()?.Data.FirstOrDefault();
+    //     }
+    // }
+
+    private async Task Donate()
+    {
+        try
+        {
+            isProcessing = true;
+            var sessionId = await PaymentService.CreateCheckoutSession(Amount,campaignId,needId);
+            await JS.InvokeVoidAsync("redirectToCheckout", sessionId);
+            CHECKOUT_SESSION_ID = sessionId;
+
+            _Session = await PaymentService.GetCheckoutSession(sessionId);
+
+            // await DonationSaveAsync();
+
+
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+        finally
+        {
+            isProcessing = false;
+        }
+    }
+
+    private void OnAmountBlur()
+    {
+        if (Amount != null)
+        {
+            SelectAmount(Amount);
+        }
+    }
+
+    private decimal SelectAmount(decimal _amount)
+    {
+        Amount = _amount;
+        return Amount;
+    }
+}
+

@@ -1,0 +1,136 @@
+﻿@page "/MainWebsite/AddCampaign"
+@layout MainLayout
+@inject IMainWebsite _Main
+@inject IJSRuntime JS
+@inject NavigationManager Navigation
+
+<PageTitle>Campaign Post</PageTitle>
+
+<div class="container py-5">
+
+    <h2 class="fw-bold text-success text-center mb-4">Add New Campaign</h2>
+
+
+
+    <EditForm Model="@newCampaign" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <!-- Title Field -->
+        <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <InputText id="title" class="form-control" @bind-Value="newCampaign.Title" />
+        </div>
+
+        <!-- Description Field -->
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <InputTextArea id="description" class="form-control" @bind-Value="newCampaign.Description" />
+        </div>
+
+        <!-- Image File Field -->
+        <div class="mb-3">
+            <label for="imageFile" class="form-label">Select Image File</label>
+            <InputFile id="imageFile" class="form-control" OnChange="HandleFileSelected" />
+        </div>
+
+        <!-- Target Amount Field -->
+        <div class="mb-3">
+            <label for="targetAmount" class="form-label">Target Amount</label>
+            <InputNumber id="targetAmount" class="form-control" @bind-Value="newCampaign.TargetAmount" />
+        </div>
+
+        <button type="submit" class="btn btn-success px-4 me-5">Submit</button>
+        <NavLink class="btn btn-primary px-4 me-2" href="/MainWebsite/FundraiserCampaigns">Back</NavLink>
+    </EditForm>
+</div>
+
+@code {
+    [Parameter]
+    public int CampaignId { get; set; }
+
+    // Instance of the model which will be bound to the form fields.
+    private AddCampaignModel newCampaign = new AddCampaignModel();
+    private int UserId;
+    private IBrowserFile selectedFile;
+
+    // protected override void OnInitialized()
+    // {
+    //     var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+    //     var queryParams = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
+    //     if (queryParams.TryGetValue("Campaign", out var NeedIdValue))
+    //     {
+    //         Parse the campaignId from the query string
+    //         CampaignId = int.Parse(NeedIdValue);
+    //     }
+    // }
+
+    private void HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        if (e.File != null)
+        {
+            selectedFile = e.File;
+        }
+    }
+
+    // Saves the image file to wwwroot/images and returns the relative URL.
+    private async Task<string> SaveImageAsync(IBrowserFile file)
+    {
+        // Get the absolute path to the wwwroot folder.
+        var wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+
+        // Create the directory if it doesn't exist.
+        if (!Directory.Exists(wwwRootPath))
+        {
+            Directory.CreateDirectory(wwwRootPath);
+        }
+
+        // Generate unique file name using GUID to avoid collisions.
+        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.Name);
+
+        // Full path to save the image
+        var filePath = Path.Combine(wwwRootPath, fileName);
+
+        // Write the file to disk.
+        using (var fileStream = new FileStream(filePath, FileMode.Create))
+        {
+            var fileSize = file.Size;
+            var maxAllowedSize = 10 * 1024 * 1024; // 10MB example
+            if (fileSize > maxAllowedSize)
+            {
+                throw new InvalidOperationException("File size exceeds the allowed limit.");
+            }
+
+            await file.OpenReadStream(maxAllowedSize).CopyToAsync(fileStream);
+        }
+
+        // Return the relative path to the image to be stored in the database.
+        return $"/images/{fileName}";
+    }
+
+    // Called when the form is valid and submitted.
+    private async Task HandleValidSubmit()
+    {
+
+        // Retrieve the user's id from localStorage.
+        var userIdString = await JS.InvokeAsync<string>("localStorage.getItem", "UserId");
+        if (!string.IsNullOrEmpty(userIdString))
+        {
+            UserId = int.Parse(userIdString);
+        }
+
+        newCampaign.CreatorId = UserId;
+
+        // If an image file was selected, save it and update the image path.
+        if (selectedFile != null)
+        {
+            newCampaign.ImagePath = await SaveImageAsync(selectedFile);
+        }
+
+        // Save the new need via the backend service.
+        var result = await _Main.CampaignSaveRequestAsync(newCampaign);
+
+        // Navigate back to the needs list after saving.
+        Navigation.NavigateTo("/MainWebsite/FundraiserCampaigns");
+    }
+}

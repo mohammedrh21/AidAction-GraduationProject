@@ -21,7 +21,7 @@ namespace AidAction.Services.Stripe
             StripeConfiguration.ApiKey = _secretKey;
         }
 
-        public async Task<string> CreateCheckoutSession(decimal amount)
+        public async Task<string> CreateCheckoutSession(decimal amount, int? campaignId, int? needId)
         {
             // Create a Product (if you don't have one already)
             var productOptions = new ProductCreateOptions
@@ -59,8 +59,8 @@ namespace AidAction.Services.Stripe
                 },
             },
                 Mode = "payment",
-                SuccessUrl = $"https://localhost:44398/MainWebsite/SuccessDonation?session_id={{CHECKOUT_SESSION_ID}}",
-                CancelUrl = $"https://localhost:44398/MainWebsite/CancelDonation?session_id={{CHECKOUT_SESSION_ID}}",
+                SuccessUrl = $"https://localhost:44398/MainWebsite/SuccessDonation?session_id={{CHECKOUT_SESSION_ID}}&needId={needId}&campaignId={campaignId}",
+                CancelUrl = $"https://localhost:44398/MainWebsite/SuccessDonation?session_id={{CHECKOUT_SESSION_ID}}&needId={needId}&campaignId={campaignId}",
                 ExpiresAt = DateTime.UtcNow.AddMinutes(30) // Set expiration to 2 hours from now (you can change this duration)
 
             };

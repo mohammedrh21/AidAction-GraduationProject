@@ -39,5 +39,8 @@ namespace AidAction.Domain.Interfaces
         Task<JArray> WebsiteDetailsSelectAsync();
         Task<JObject> WebsiteDetailsSaveAsync(WebsiteDetails model);
         #endregion
+        #region Donation
+        Task<JArray> DonationRecordsSelectAsync();
+        #endregion
     }
 }

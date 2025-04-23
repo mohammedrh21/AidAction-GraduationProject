@@ -10,7 +10,7 @@ namespace AidAction.Services.Stripe
 {
     public interface IStripeService
     {
-        Task<string> CreateCheckoutSession(decimal amount);
+        Task<string> CreateCheckoutSession(decimal amount,int? campaignId,int? needId);
         Task<Session> GetCheckoutSession(string sessionId);
     }
 }

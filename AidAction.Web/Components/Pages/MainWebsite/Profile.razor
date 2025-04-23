@@ -1,0 +1,119 @@
+﻿@page "/MainWebsite/Profile"
+@layout MainLayout
+@inject IMainWebsite _mainWebsite
+@inject IAuthService _auth
+@inject IAuthRepository _authRep
+@inject NavigationManager _nav
+@inject IJSRuntime JS
+
+
+<div class="container">
+
+    <div class="p-4 m-5">
+        <div class="">
+            <h2 class="mb-5">Update Profile - Aid Action</h2>
+
+            @if(showMsg){
+                <h6 class="mb-3 bg-light @(rv>0 ? "text-success":"text-danger")">
+                    @Msg
+                </h6>
+            }
+
+            <!-- Using Blazor's EditForm and binding the data to SignUpModel -->
+            <EditForm Model="@Donor" OnValidSubmit="DonorSaveAsync" FormName="DonorSaveForm" class="d-flex justify-content-center flex-column">
+                <div class="d-flex justify-content-around">
+                    <!-- First Name Field -->
+                    <div class="input-group">
+                        <label for="firstName"><i class="fas fa-user"></i> First Name</label>
+                        <InputText @bind-Value="@Donor.FirstName" placeholder="Enter your first name" required />
+                    </div>
+
+                    <!-- Last Name Field -->
+                    <div class="input-group">
+                        <label for="lastName"><i class="fas fa-user"></i> Last Name</label>
+                        <InputText @bind-Value="@Donor.LastName" placeholder="Enter your last name" required />
+                    </div>
+                </div>
+                <div class="d-flex flex-row">
+                    <!-- Email Field -->
+                    <div class="input-group">
+                        <label for="email"><i class="fas fa-envelope"></i> Email</label>
+                        <InputText @bind-Value="@Donor.Email" type="email" placeholder="Enter your email" required />
+                    </div>
+
+                    <!-- Date of Birth Field -->
+                    <div class="input-group">
+                        <label for="dob"><i class="fas fa-calendar-alt"></i> Date of Birth</label>
+                        <InputDate @bind-Value="@Donor.DOB" required />
+                    </div>
+                </div>
+                <div class="d-flex flex-row">
+
+                    <!-- Password Field -->
+                    <div class="input-group">
+                        <label for="password"><i class="fas fa-lock"></i> Password</label>
+                        <InputText @bind-Value="@Donor.Password" type="password" placeholder="Enter your password" required />
+                    </div>
+                    <!-- Confirm Password Field -->
+                    <div class="input-group">
+                        <label for="ConfirmPassword"><i class="fas fa-lock"></i> Confirm Password</label>
+                        <InputText @bind-Value="@Donor.ConfirmPassword" type="password" placeholder="Confirm your password" required />
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success text-left w-25">Update Profile</button>
+            </EditForm>
+        </div>
+    </div>
+
+
+</div>
+
+@code {
+    private bool showMsg;
+    private string Msg;
+    private int? rv;
+    private int UserId;
+    [SupplyParameterFromForm]
+    public DonorModel Donor { get; set; } = new DonorModel() { DOB = DateTime.UtcNow };
+
+    protected override async Task OnAfterRenderAsync(bool firstrender)
+    {
+        if (firstrender)
+        {
+
+            var userIdstring = await JS.InvokeAsync<string>("localStorage.getItem", "UserId");
+            if (!string.IsNullOrEmpty(userIdstring))
+            {
+                UserId = int.Parse(userIdstring);
+            }
+            await DonorSelectAsync();
+        }
+
+    }
+
+    private async Task DonorSelectAsync()
+    {
+        var resultdata = await _mainWebsite.DonorSelectAsync(new { DonorId = UserId });
+        var result = Newtonsoft.Json.JsonConvert.DeserializeObject<Result<List<DonorModel>>>(resultdata.ToString());
+        if (result.Data != null)
+        {
+            Donor = result.Data.FirstOrDefault();
+            Donor.Password = " ";
+            StateHasChanged();
+        }
+    }
+
+    private async Task DonorSaveAsync()
+    {
+        Donor.DonorId = UserId;
+        var result = await _mainWebsite.UpdateDonorSaveAsync(Donor);
+        var resultdata = Newtonsoft.Json.JsonConvert.DeserializeObject<Result<List<DonorModel>>>(result.ToString());
+        if (resultdata.rv != null)
+        {
+            showMsg = true;
+            Msg = resultdata.Msg;
+            rv = resultdata.rv;
+        }
+
+    }
+}

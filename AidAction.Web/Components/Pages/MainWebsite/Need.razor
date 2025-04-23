@@ -89,7 +89,9 @@
                             Go for Details
                         </NavLink>
 
-                        <button class="btn btn-success me-2 px-3">Donate</button>
+                        <NavLink href="@GetDonateUrl(need.NeedId)" class="btn btn-success w-25">
+                            Donate
+                        </NavLink>
                     </div>
                 </div>
             </div>
@@ -107,6 +109,11 @@
     {
         await NeedSelectAsync();
         FilteredNeedModels = NeedModels; // Initially show all Needs
+    }
+
+    private string GetDonateUrl(int needId)
+    {
+        return $"/MainWebsite/Donate/?needId={needId}";
     }
 
     // Generate the URL for need details

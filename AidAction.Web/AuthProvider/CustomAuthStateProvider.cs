@@ -12,29 +12,38 @@ namespace AidAction.Web.AuthProvider
         private static AuthenticationState _AuthState;
         public string? token { get; set; }
         public string? userType { get; set; }
+        public string? FullName { get; set; }
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-                
-            if(string.IsNullOrEmpty(token))
+            try
             {
-                return await Task.FromResult(new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity())));
+                if (string.IsNullOrEmpty(token))
+                {
+                    return await Task.FromResult(new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity())));
+                }
+                var identity = new ClaimsIdentity(ParseClaimsFromJwt(token), "jwt");
+
+                var _user = new ClaimsPrincipal(identity);
+
+                // Wait for the component to render before doing JavaScript interop
+                NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(_user)));
+                return await Task.FromResult(new AuthenticationState(_user));
             }
-            var identity = new ClaimsIdentity(ParseClaimsFromJwt(token), "jwt");
-            identity.AddClaim(new Claim(ClaimTypes.Role, userType));
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            return _AuthState;
 
-            var _user = new ClaimsPrincipal(identity);
-
-            // Wait for the component to render before doing JavaScript interop
-            NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(_user)));
-            return await Task.FromResult(new AuthenticationState(_user));
 
         }
 
-        public void SetUserAsync(string token, string userType)
+        public void SetUserAsync(string token, string userType, string fullName)
         {
             var identity = new ClaimsIdentity(ParseClaimsFromJwt(token), "jwt");
             identity.AddClaim(new Claim(ClaimTypes.Role, userType));
+
             var _user = new ClaimsPrincipal(new ClaimsIdentity());
             _user = new ClaimsPrincipal(identity);
 
@@ -44,22 +53,34 @@ namespace AidAction.Web.AuthProvider
 
         public async Task<AuthModel> GetUserAsync()
         {
-            var authState = await GetAuthenticationStateAsync();
-            var user = authState.User;
-
-            // Check if the user is authenticated
-            if (user.Identity is { IsAuthenticated: true })
+            try
             {
-                var userType = user.FindFirst(ClaimTypes.Role)?.Value;
-                var userName = user.Claims.FirstOrDefault(x => x.Type.Equals("UserName"))?.Value;
-                var userId = user.Claims.FirstOrDefault(x => x.Type.Equals("UserID"))?.Value;
+                var authState = await GetAuthenticationStateAsync();
+                var user = authState.User;
 
-                return new AuthModel
+                // Check if the user is authenticated
+                if (user.Identity is { IsAuthenticated: true })
                 {
-                    UserType = userType,
-                    UserId = int.Parse(userId),
-                    Username= userName,
-                };
+                    var userType = user.Claims.FirstOrDefault(x => x.Type.Equals("UserType"))?.Value;
+                    var userName = user.Claims.FirstOrDefault(x => x.Type.Equals("UserName"))?.Value;
+                    var userId = user.Claims.FirstOrDefault(x => x.Type.Equals("UserId"))?.Value;
+                    var fullName = user.Claims.FirstOrDefault(x => x.Type.Equals("FullName"))?.Value;
+
+                    return new AuthModel
+                    {
+                        UserType = userType,
+                        UserId = int.Parse(userId),
+                        FullName = fullName,
+                        Username = userName,
+                        IsAuthenticated = true
+                    };
+                }
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                throw;
             }
 
             return new AuthModel();
@@ -67,8 +88,11 @@ namespace AidAction.Web.AuthProvider
 
         public async Task LogoutAsync()
         {
+            var authState = await GetAuthenticationStateAsync();
             var _user = new ClaimsPrincipal(new ClaimsIdentity());
-            NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(_user)));
+
+            authState = new AuthenticationState(_user);
+            NotifyAuthenticationStateChanged(Task.FromResult(authState));
         }
 
         private IEnumerable<Claim> ParseClaimsFromJwt(string token)

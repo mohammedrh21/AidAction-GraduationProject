@@ -105,12 +105,13 @@
                 if (dBResult.data[0].IsAuthenticated)
                 {
 
-                    AuthStateProvider.SetUserAsync(dBResult.data[0].Token, dBResult.data[0].UserType);
+                    AuthStateProvider.SetUserAsync(dBResult.data[0].Token, dBResult.data[0].UserType, dBResult.data[0].FullName);
                     AuthStateProvider.token = dBResult.data[0].Token;
-                    await Task.Delay(500);
+                    await Task.Delay(1000);
                     await JS.InvokeVoidAsync("localStorage.setItem", "Token", dBResult.data[0].Token);
                     await JS.InvokeVoidAsync("localStorage.setItem", "UserId", dBResult.data[0].UserId);
                     await JS.InvokeVoidAsync("localStorage.setItem", "UserType", dBResult.data[0].UserType);
+                    await JS.InvokeVoidAsync("localStorage.setItem", "FullName", dBResult.data[0].FullName);
 
                     await _authRep.SaveTokenAsync(dBResult.data.FirstOrDefault());
 

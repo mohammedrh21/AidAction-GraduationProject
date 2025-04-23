@@ -116,6 +116,13 @@ namespace AidAction.Repository.Repositories
             return await CommandAsync<JObject>("dbo.WebsiteDetails_Contact_Save", model);
         }
         #endregion
+
+        #region Donation
+        public async Task<JArray> DonationRecordsSelectAsync()
+        {
+            return await CommandAsync<JArray>("dbo.DonationRecordsSelect");
+        }
+        #endregion
     }
 
 }

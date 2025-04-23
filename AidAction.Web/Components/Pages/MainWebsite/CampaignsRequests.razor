@@ -1,0 +1,130 @@
+﻿@page "/MainWebsite/FundraiserCampaignsRequests"
+@layout MainLayout
+@inject CustomAuthStateProvider AuthStateProvider
+@inject IMainWebsite _Main
+@inject IJSRuntime _JS
+@inject NavigationManager _Nav
+<PageTitle>Fundraiser Campaigns</PageTitle>
+
+<article class="p-5 m-5">
+    <h2 class="fw-bold text-success text-center mb-2">Fundraiser Campaigns Requests</h2>
+    <p class="text-muted text-center mb-5">
+        Review your fundraiser campaigns requests ..
+    </p>
+
+    <div class="row g-4" id="campaignContainer">
+        @foreach (var campaign in FilteredCampaignModels)
+        {
+            <div class="col-md-4 card-wrapper visible">
+                <div class="campaign-card d-flex flex-column h-100"
+                     id="CampaignId"
+                     data-campaign-id="@campaign.CampaignId"
+                     data-title="@campaign.Title"
+                     data-description="@campaign.Description"
+                     data-target-amount="@campaign.TargetAmount"
+                     data-creation-date="@campaign.ApprovalDate?.ToString("yyyy-MM-dd")"
+                     data-total-fund-collected="@campaign.TotalFundCollected"
+                     data-image-path="@campaign.ImagePath">
+
+                    @if (!string.IsNullOrEmpty(campaign.ImagePath))
+                    {
+                        <div class="campaign-image-container mb-2" style="position: relative; width: 100%; padding-top: 75%; overflow: hidden; border-radius: 0.5rem;">
+                            <img src="@campaign.ImagePath" alt="Campaign Image" loading="lazy"
+                                 style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;" />
+                        </div>
+                    }
+
+                    <div class="d-flex justify-content-between">
+                        <h5>@campaign.Title</h5>
+                        <p>Created by: @campaign.CreatorName</p>
+                    </div>
+                    <div class="d-flex flex-row justify-content-between gap-5">
+                        <p class="text-success">
+                            @((campaign.TotalFundCollected ?? 0)) Raised
+                        </p>
+                        <p class="text-success">
+                            @((campaign.TargetAmount ?? 0)) Funds Target
+                        </p>
+                    </div>
+
+                    <div class="progress mb-2">
+                        <div class="progress-bar bg-success"
+                             style="width: @(campaign.TotalFundCollected / (campaign.TargetAmount ?? 1) * 100)%"
+                             id="Progress">
+                            @(campaign.TotalFundCollected / (campaign.TargetAmount ?? 1) * 100)%
+                        </div>
+                    </div>
+                    <p class="text-muted small">
+                        Approved Date: @(campaign.ApprovalDate?.ToString("MMMM dd, yyyy"))
+                    </p>
+
+                    <!-- Conditional Buttons Display -->
+                    <div class="d-flex justify-content-between mt-auto">
+                        <NavLink href="@GetCampaignRequestsDetailsUrl(campaign.CampaignId)" class="btn btn-outline-primary w-50">
+                            Campaign Details
+                        </NavLink>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</article>
+
+@code {
+    public List<CampaignModel> CampaignModels { get; set; } = new List<CampaignModel>();
+    public List<CampaignModel> FilteredCampaignModels { get; set; } = new List<CampaignModel>();
+    public AuthModel Auth { get; set; } = new AuthModel();
+    private bool isAuth;
+    private int? UserId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CampaignRequestSelectAsync();
+        FilteredCampaignModels = CampaignModels.Where(c => c.CampaignId > 1).ToList(); // Initially show all campaigns
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstrender)
+    {
+        if (firstrender)
+        {
+            var userIdstring = await _JS.InvokeAsync<string>("localStorage.getItem", "UserId");
+            if (!string.IsNullOrWhiteSpace(userIdstring))
+            {
+                UserId = int.Parse(userIdstring);
+            }
+            AuthenticationState authenticationState = await AuthStateProvider.GetAuthenticationStateAsync();
+            isAuth = authenticationState.User.Identity.IsAuthenticated;
+            StateHasChanged();
+        }
+
+        try
+        {
+            
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            throw;
+        }
+
+    }
+    private async Task CampaignRequestSelectAsync()
+    {
+        var result = await _Main.CampaignRequestSelectAsync(new { CreatorId = UserId });
+        var resultData = Newtonsoft.Json.JsonConvert.DeserializeObject<Result<List<CampaignModel>>>(result.ToString());
+
+        if (resultData != null)
+        {
+            CampaignModels = resultData.Data;
+        }
+    }
+
+    // Method to generate the URL with campaignId
+    private string GetCampaignRequestsDetailsUrl(int campaignId)
+    {
+        return $"/MainWebsite/CampaignRequestsDetails/?campaignId={campaignId}";
+    }
+
+
+
+}

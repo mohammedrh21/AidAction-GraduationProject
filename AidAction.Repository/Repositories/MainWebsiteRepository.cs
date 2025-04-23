@@ -24,6 +24,17 @@ namespace AidAction.Repository.Repositories
         #endregion
 
         #region Donor
+        public async Task<JObject> DonorSelectAsync(object o)
+        {
+            // Use the CommandAsync method for your donor registration logic
+            return await CommandAsync<JObject>("dbo.DonorSelect", o);
+        }
+        public async Task<JObject> UpdateDonorSaveAsync(DonorModel model)
+        {
+            // Use the CommandAsync method for your donor registration logic
+            return await CommandAsync<JObject>("dbo.DonorSave", model);
+        }
+
         public async Task<JObject> DonorSaveAsync(DonorModel model)
         {
             // Use the CommandAsync method for your donor registration logic
@@ -65,7 +76,7 @@ namespace AidAction.Repository.Repositories
             return await CommandAsync<JObject>("dbo.CampaignRequestSelect", o);
         }
 
-        public async Task<JArray> CampaignSaveRequestAsync(CampaignModel model)
+        public async Task<JArray> CampaignSaveRequestAsync(AddCampaignModel model)
         {
             // Use the CommandAsync method for your donor registration logic
             return await CommandAsync<JArray>("dbo.CampaignSaveRequest", model);
@@ -91,6 +102,18 @@ namespace AidAction.Repository.Repositories
         public async Task<JArray> NeedSelectAsync(object o)
         {
             return await CommandAsync<JArray>("dbo.NeedSelect", o);
+        }
+        #endregion
+
+        #region Donation
+        public async Task<JArray> DonationRecordsSelectAsync(object o)
+        {
+            return await CommandAsync<JArray>("dbo.DonationRecordsSelect", o);
+        }
+
+        public async Task<JObject> DonationSaveAsync(DonationModel model)
+        {
+            return await CommandAsync<JObject>("dbo.DonationSave", model);
         }
         #endregion
     }

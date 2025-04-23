@@ -1,0 +1,154 @@
+﻿@page "/MainWebsite/DonationRecords"
+@layout MainLayout
+@inject IMainWebsite _Main
+@inject IJSRuntime JS
+<PageTitle>Donation Records</PageTitle>
+
+
+<article class="p-4 m-4">
+    <h3 class="mb-3 fw-semibold pb-2 text-center">
+        <i class="fas fa-hand-holding-heart text-success me-2"></i>Donation Records
+    </h3>
+    <br />
+    <EditForm Model="@filterModel" OnValidSubmit="OnFilterSubmit" FormName="RecordsFilter">
+        <div class="d-flex flex-wrap align-items-end gap-3">
+
+            <!-- From -->
+            <div class="d-flex flex-column">
+                <label for="fromDate" class="form-label form-label-sm mb-1 text-muted">
+                    <i class="fas fa-calendar-alt me-1"></i>From
+                </label>
+                <InputDate id="fromDate" class="form-control form-control-sm" style="width: 130px;" @bind-Value="filterModel.FromDate" />
+            </div>
+
+            <!-- To -->
+            <div class="d-flex flex-column">
+                <label for="toDate" class="form-label form-label-sm mb-1 text-muted">
+                    <i class="fas fa-calendar-check me-1"></i>To
+                </label>
+                <InputDate id="toDate" class="form-control form-control-sm" style="width: 130px;" @bind-Value="filterModel.ToDate" />
+            </div>
+
+            <!-- Targeted -->
+            <div class="d-flex flex-column">
+                <label for="donationTargeted" class="form-label form-label-sm mb-1 text-muted">
+                    <i class="fas fa-bullseye me-1"></i>Targeted
+                </label>
+                <select id="donationTargeted" class="form-select form-select-sm" style="width: 130px;" @bind="filterModel.DonationTargeted">
+                    <option value="All">All</option>
+                    <option value="Need">Need</option>
+                    <option value="Campaign">Campaign</option>
+                </select>
+            </div>
+
+            <!-- Amount -->
+            <div class="d-flex flex-column">
+                <label class="form-label form-label-sm mb-1 text-muted">
+                    <i class="fas fa-dollar-sign me-1"></i>Amount
+                </label>
+                <div class="d-flex gap-2">
+                    <InputNumber class="form-control form-control-sm" style="width: 80px;" @bind-Value="filterModel.MinAmount" min="0" />
+                    <span class="small fw-semibold text-muted">-</span>
+                    <InputNumber class="form-control form-control-sm" style="width: 80px;" @bind-Value="filterModel.MaxAmount" min="0" />
+                </div>
+            </div>
+        </div>
+
+        <!-- Second Line: Filter Button -->
+        <div class="mt-3">
+            <button type="submit" class="btn btn-sm btn-success py-1 px-4">
+                <i class="fas fa-filter me-1"></i>Apply Filter
+            </button>
+        </div>
+        <br />
+    </EditForm>
+
+
+    <!-- Donation Table -->
+    <table class="table table-bordered table-striped mt-3">
+        <thead>
+            <tr>
+                <th>Donation ID</th>
+                <th>Amount</th>
+                <th>Donation Date</th>
+                <th>Donation Targeted</th>
+                <th>Donation Targeted Title</th>
+                <th>Stripe Transaction ID</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var donation in filteredDonations)
+            {
+                <tr>
+                    <td>@donation.DonationId</td>
+                    <td>@donation.Amount</td>
+                    <td>@donation.DonationDate</td>
+                    <td>@(donation.IsNeed ? "Need" : "Campaign")</td>
+                    <td>@(donation.IsNeed ? donation.DonationNTitle : donation.DonationCTitle)</td>
+                    <td>@donation.SessionId</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</article>
+@code {
+    private int? UserId = null;
+    private DonationFilterModel filterModel = new DonationFilterModel();
+    public List<DonationRecord> allDonations { get; set; } = new List<DonationRecord>();
+    private List<DonationRecord> filteredDonations = new List<DonationRecord>();
+
+    private async Task DonationRecordsSelectAsync()
+    {
+        // Fetch the JSON response from the backend
+        var result = await _Main.DonationRecordsSelectAsync(new { UserId = UserId });
+
+        var resultData = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Result<List<DonationRecord>>>>(result.ToString());
+        if (resultData != null && resultData.Any())
+        {
+            // Access the first item in the array and assign its Data field (list of FAQs) to FAQsModels
+            allDonations = resultData.FirstOrDefault()?.Data;
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var userIdString = await JS.InvokeAsync<string>("localStorage.getItem", "UserId");
+            if (!string.IsNullOrEmpty(userIdString))
+            {
+                UserId = int.Parse(userIdString);
+                await DonationRecordsSelectAsync();
+                filteredDonations = allDonations;
+                StateHasChanged();
+            }
+        }
+    }
+
+
+    private void OnFilterSubmit()
+    {
+        filteredDonations = allDonations
+            .Where(d =>
+                // Filter by Donation Date range
+                (!filterModel.FromDate.HasValue || d.DonationDate >= filterModel.FromDate) &&
+                (!filterModel.ToDate.HasValue || d.DonationDate <= filterModel.ToDate) &&
+
+                // Filter by Amount range
+                (!filterModel.MinAmount.HasValue || d.Amount >= filterModel.MinAmount) &&
+                (!filterModel.MaxAmount.HasValue || d.Amount <= filterModel.MaxAmount) &&
+
+                // Filter by DonationTargeted (Need or Campaign)
+                (filterModel.DonationTargeted == "All" ||
+                 (filterModel.DonationTargeted == "Need" && d.IsNeed) ||
+                 (filterModel.DonationTargeted == "Campaign" && !d.IsNeed))
+            )
+            .ToList();
+    }
+
+
+    // Initialize Filtered Donations (Optional: Load All Donations Initially)
+    protected override void OnInitialized()
+    {
+    }
+}
