@@ -42,5 +42,9 @@ namespace AidAction.Domain.Interfaces
         #region Donation
         Task<JArray> DonationRecordsSelectAsync();
         #endregion
+
+        #region Index
+        Task<JObject> ControlPanelSelectAsync(object o);
+        #endregion
     }
 }

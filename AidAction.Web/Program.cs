@@ -3,6 +3,7 @@ using AidAction.Domain.Interfaces;
 using AidAction.Repository.Generic;
 using AidAction.Repository.Repositories;
 using AidAction.Services.Auth;
+using AidAction.Services.Email;
 using AidAction.Services.Stripe;
 using AidAction.Web.AuthProvider;
 using AidAction.Web.Components;
@@ -41,6 +42,8 @@ builder.Services.AddScoped<IMainWebsite, MainWebsiteRepository>();
 builder.Services.AddScoped<IControlPanel, ControlPanelRepository>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+
 builder.Services.AddSingleton<IStripeService,StripeService>();
 
 builder.Services.AddTransient<GenericRepository>();

@@ -15,6 +15,11 @@
     <link rel="stylesheet" href="/bootstrap/bootstrap.min.css" />
     <link rel="stylesheet" href="AidAction.Web.styles.css" />
 
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+    <script src="js/map.js"></script>
+
+
     <link rel="icon" type="image/png" href="favicon.png" />
 
     <link rel="icon"
@@ -28,14 +33,38 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha384-..." crossorigin="anonymous">
 
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <HeadOutlet @rendermode="InteractiveServer" />
 </head>
 
 <body>
     <Routes @rendermode="InteractiveServer" />
     <script src="/js/stripe.js"></script>
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+          apiKey: "AIzaSyBV22COoFG9bOu4pt6DCpe9KgmFSf2FU-c",
+          authDomain: "aid-action-platform.firebaseapp.com",
+          projectId: "aid-action-platform",
+          storageBucket: "aid-action-platform.firebasestorage.app",
+          messagingSenderId: "5780799433",
+          appId: "1:5780799433:web:18dfff319045af956b7218",
+          measurementId: "G-3BXNDDR5K7"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+    </script>
     <script src="https://js.stripe.com/v3/"></script>
     <script src="/js/site.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

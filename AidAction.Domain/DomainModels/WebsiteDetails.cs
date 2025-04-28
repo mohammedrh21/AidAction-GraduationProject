@@ -24,4 +24,14 @@ namespace AidAction.Domain.DomainModels
         public int? CompletedCampaign { get; set; }
         public string? IBAN { get; set; }
     }
+
+    public class ContactInfo{
+        public double? LocationLongitude { get; set; }  // Use double for precision
+        public double? LocationLatitude { get; set; }   // Use double for precision
+        public string? PhoneNumber { get; set; }
+        public string? Email { get; set; }
+        public string? FacebookURL { get; set; }
+        public string? InstagramURL { get; set; }
+        public string? TikTokURL { get; set; }
+    }
 }

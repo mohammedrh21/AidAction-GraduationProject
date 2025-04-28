@@ -123,6 +123,14 @@ namespace AidAction.Repository.Repositories
             return await CommandAsync<JArray>("dbo.DonationRecordsSelect");
         }
         #endregion
+
+        #region Index
+        public async Task<JObject> ControlPanelSelectAsync(object o)
+        {
+            // Use the CommandAsync method for your donor registration logic
+            return await CommandAsync<JObject>("dbo.ControlPanelSelect", o);
+        }
+        #endregion
     }
 
 }

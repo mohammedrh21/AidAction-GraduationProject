@@ -40,6 +40,13 @@ namespace AidAction.Repository.Repositories
             // Use the CommandAsync method for your donor registration logic
             return await CommandAsync<JObject>("dbo.DonorRegister", model);
         }
+
+        public async Task<JObject> DonorPasswordUpdateAsync(object o)
+        {
+            // Use the CommandAsync method for your donor registration logic
+            return await CommandAsync<JObject>("dbo.DonorPasswordUpdate", o);
+        }
+        
         #endregion
 
         #region FAQs
@@ -114,6 +121,14 @@ namespace AidAction.Repository.Repositories
         public async Task<JObject> DonationSaveAsync(DonationModel model)
         {
             return await CommandAsync<JObject>("dbo.DonationSave", model);
+        }
+        #endregion
+
+        #region ContactUs
+        public async Task<JObject> ContactUsSelectAsync()
+        {
+            // Use the CommandAsync method for your donor registration logic
+            return await CommandAsync<JObject>("dbo.ContactUsSelect");
         }
         #endregion
     }

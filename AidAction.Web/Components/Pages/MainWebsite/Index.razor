@@ -1,9 +1,14 @@
 ﻿@page "/"
+@using AidAction.Services.Email
 @inject IJSRuntime JS
 @inject NavigationManager _Nav
 @layout MainLayout
 @inject IMainWebsite _Main
 @inject CustomAuthStateProvider AuthStateProvider
+@inject IEmailService _Email
+@using System.Net;
+@using System.Net.Mail;
+@using SendGrid.Helpers.Mail
 
 <PageTitle>Home</PageTitle>
 
@@ -249,6 +254,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+
         await MainWebsiteSelectAsync();
         await WebsiteDetailsSelectAsync();
         string token = AuthStateProvider.token;
@@ -257,6 +263,7 @@
             isAuthenticated = true;
         }
     }
+
 
 
 

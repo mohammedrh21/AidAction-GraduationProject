@@ -4,114 +4,121 @@
 @inject IJSRuntime JS
 @inject NavigationManager _Nav
 
-@if (!isAuthenticated)
+@if (isLoading)
 {
-    <!-- 🔹 Navbar Section -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-        <div class="container">
-            <a class="navbar-brand fw-bold text-success" href="/"><img src="./resources/images/logo.png" alt="logo" />Aid Action</a>
-            <button class="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse justify-content-center"
-            id="navbarNav">
-                <ul class="navbar-nav mx-auto">
-                    <li class="nav-item">
-                        <NavLink class="nav-link" href="/">Home</NavLink>
-                    </li>
-                    <li class="nav-item">
-                        <NavLink class="nav-link" href="/MainWebsite/About">ِAbout</NavLink>
-                    </li>
-                    <li class="nav-item">
-                        <NavLink class="nav-link" href="/MainWebsite/FundraiserCampaigns">Campaigns</NavLink>
-                    </li>
-                    <li class="nav-item">
-                        <NavLink class="nav-link" href="/MainWebsite/Needs">Needs</NavLink>
-                    </li>
-
-                    <li class="nav-item">
-                        <NavLink class="nav-link" href="/MainWebsite/DonationCenter">Donation Center</NavLink>
-                    </li>
-                    <li class="nav-item">
-                        <NavLink class="nav-link" href="/MainWebsite/FAQs">FAQs</NavLink>
-                    </li>
-                    <li class="nav-item">
-                        <NavLink class="nav-link" href="/MainWebsite/Contact Us">Contact Us</NavLink>
-                    </li>
-                </ul>
-            </div>
-            <div class="d-flex">
-                <NavLink href="/Auth/Login" class="btn btn-outline-success me-2">Login</NavLink>
-                <NavLink href="/Auth/Signup" class="btn btn-success">Sign Up</NavLink>
-            </div>
-        </div>
-    </nav>
+    <p>Loading...</p> <!-- Or you can use a spinner -->
 }
 else
 {
-    <!-- 🔹 Navbar Section -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-        <div class="container">
-            <a class="navbar-brand fw-bold text-success" href="/"><img src="./resources/images/logo.png" alt="logo" />Aid Action</a>
-            <button class="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse justify-content-center"
-            id="navbarNav">
-                <ul class="navbar-nav mx-auto">
-                    <li class="nav-item">
-                        <NavLink class="nav-link" href="/">Home</NavLink>
-                    </li>
-                    <li class="nav-item">
-                        <NavLink class="nav-link" href="/MainWebsite/About">About</NavLink>
-                    </li>
-                    <li class="nav-item">
-                        <NavLink class="nav-link" href="/MainWebsite/FundraiserCampaigns">Campaigns</NavLink>
-                    </li>
-                    <li class="nav-item">
-                        <NavLink class="nav-link" href="/MainWebsite/Needs">Needs</NavLink>
-                    </li>
+    @if (!isAuthenticated)
+    {
+        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+            <div class="container">
+                <a class="navbar-brand fw-bold text-success" href="/"><img src="./resources/images/logo.png" alt="logo" />Aid Action</a>
+                <button class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse justify-content-center"
+                id="navbarNav">
+                    <ul class="navbar-nav mx-auto">
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="/">Home</NavLink>
+                        </li>
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="/MainWebsite/About">ِAbout</NavLink>
+                        </li>
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="/MainWebsite/FundraiserCampaigns">Campaigns</NavLink>
+                        </li>
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="/MainWebsite/Needs">Needs</NavLink>
+                        </li>
 
-                    <li class="nav-item">
-                        <NavLink class="nav-link" href="/MainWebsite/DonationCenter">Donation Center</NavLink>
-                    </li>
-                    <li class="nav-item">
-                        <NavLink class="nav-link" href="/MainWebsite/FAQs">FAQs</NavLink>
-                    </li>
-                    <li class="nav-item">
-                        <NavLink class="nav-link" href="/MainWebsite/Contact Us">Contact Us</NavLink>
-                    </li>
-                </ul>
-            </div>
-            <div class="d-flex">
-                <!-- User Menu Dropdown -->
-                <div class="dropdown px-3">
-                    <button class="btn btn-light dropdown-toggle d-flex align-items-center" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: 0; width: 100%;">
-                        <i class="fa-regular fa-user me-2"></i>
-                        <span class="me-2" style="font-weight:500;color:black ">Hi, @(Auth.IsAuthenticated ? Auth.FullName : "")</span>
-                    </button>
-                    <ul class="dropdown-menu user-menu border-bottom mb-1" aria-labelledby="userMenu" style="font-weight:400;color:black;background-color:white!important; border-radius: 0; width: 100%; min-width: 0;">
-                        <li class="user-menu-item"><i class="fa-solid fa-sharp fa-gear mr-2 me-2"></i><NavLink style="color:rgba(0,0,0,.7)" href="/MainWebsite/Profile">Profile</NavLink></li>
-                        <li class="user-menu-item"><i class="fa-solid fa-hands-holding-child me-2"></i><NavLink style="color:rgba(0,0,0,.7)" href="/MainWebsite/FundraiserCampaignsRequests">Campaign Requests</NavLink></li>
-
-                        <li class="user-menu-item"><i class="bi bi-receipt mr-2 me-2"></i><NavLink style="color:rgba(0,0,0,.7)" href="/MainWebsite/DonationRecords">Donation Record</NavLink></li>
-                        <li class=""><hr class="dropdown-divider"></li>
-                        <li class="user-menu-item"><i class="fa-sharp fa-solid fa-right-from-bracket mr-2 me-2"></i><a style="color:rgba(0,0,0,.7)" href="" @onclick="Logout">Logout</a></li>
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="/MainWebsite/DonationCenter">Donation Center</NavLink>
+                        </li>
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="/MainWebsite/FAQs">FAQs</NavLink>
+                        </li>
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="/MainWebsite/ContactUs">Contact Us</NavLink>
+                        </li>
                     </ul>
                 </div>
+                <div class="d-flex">
+                    <NavLink href="/Auth/Login" class="btn btn-outline-success me-2">Login</NavLink>
+                    <NavLink href="/Auth/Signup" class="btn btn-success">Sign Up</NavLink>
+                </div>
             </div>
+        </nav>
+    }
+    else
+    {
+        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+            <div class="container">
+                <a class="navbar-brand fw-bold text-success" href="/"><img src="./resources/images/logo.png" alt="logo" />Aid Action</a>
+                <button class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse justify-content-center"
+                id="navbarNav">
+                    <ul class="navbar-nav mx-auto">
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="/">Home</NavLink>
+                        </li>
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="/MainWebsite/About">About</NavLink>
+                        </li>
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="/MainWebsite/FundraiserCampaigns">Campaigns</NavLink>
+                        </li>
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="/MainWebsite/Needs">Needs</NavLink>
+                        </li>
+
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="/MainWebsite/DonationCenter">Donation Center</NavLink>
+                        </li>
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="/MainWebsite/FAQs">FAQs</NavLink>
+                        </li>
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="/MainWebsite/ContactUs">Contact Us</NavLink>
+                        </li>
+                    </ul>
+                </div>
+                <div class="d-flex">
+                    <!-- User Menu Dropdown -->
+                    <div class="dropdown px-3">
+                        <button class="btn btn-light dropdown-toggle d-flex align-items-center" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: 0; width: 100%;">
+                            <i class="fa-regular fa-user me-2"></i>
+                            <span class="me-2" style="font-weight:500;color:black ">Hi, @FullName </span>
+                        </button>
+                        <ul class="dropdown-menu user-menu border-bottom mb-1" aria-labelledby="userMenu" style="font-weight:400;color:black;background-color:white!important; border-radius: 0; width: 100%; min-width: 0;">
+                            <li class="user-menu-item"><i class="fa-solid fa-sharp fa-gear mr-2 me-2"></i><NavLink style="color:rgba(0,0,0,.7)" href="/MainWebsite/Profile">Profile</NavLink></li>
+                            <li class="user-menu-item"><i class="fa-solid fa-hands-holding-child me-2"></i><NavLink style="color:rgba(0,0,0,.7)" href="/MainWebsite/FundraiserCampaignsRequests">Campaign Requests</NavLink></li>
+
+                            <li class="user-menu-item"><i class="bi bi-receipt mr-2 me-2"></i><NavLink style="color:rgba(0,0,0,.7)" href="/MainWebsite/DonationRecords">Donation Record</NavLink></li>
+                            <li class=""><hr class="dropdown-divider"></li>
+                            <li class="user-menu-item"><i class="fa-sharp fa-solid fa-right-from-bracket mr-2 me-2"></i><a style="color:rgba(0,0,0,.7)" href="" @onclick="Logout">Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
 
 
-        </div>
-    </nav>
-
+            </div>
+        </nav>
+    }
 }
+
+
+
 <section>
     @Body
 </section>
@@ -161,11 +168,13 @@ style="background-color: #343a40">
                         <div class="col-md-4 mb-4">
                             <h5 class="fw-bold text-success">Contact Info</h5>
                             <ul class="list-unstyled">
-                                <li><i class="fas fa-phone-alt"></i>@website.PhoneNumber</li>
-                                <li><i class="fas fa-envelope"></i> @website.Email</li>
+                                <li><i class="fas fa-phone-alt"></i><a class="text-light" href="tel:@website.PhoneNumber">@website.PhoneNumber</a></li>
+                                <li><i class="fas fa-envelope"></i> <a class="text-light" href="mailto:@website.Email">@website.Email</a></li>
                                 <li>
-                                    <i class="fas fa-map-marker-alt"></i> Salah Eldeen St.,Gaza City,
+                                    <i class="fas fa-map-marker-alt"></i> <NavLink class="text-light" href="/MainWebsite/ContactUs">
+                                        Salah Eldeen St. ,Gaza City,
                                     Palestine
+                                    </NavLink>
                                 </li>
                             </ul>
                         </div>
@@ -203,6 +212,7 @@ style="background-color: #343a40">
 @code {
     private int index;
     private bool isAuthenticated;
+    private bool isLoading;
     private string? FullName;
     public AuthModel? Auth { get; set; } = new AuthModel();
     public MainWebsite main { get; set; } = new MainWebsite();
@@ -246,9 +256,10 @@ style="background-color: #343a40">
     {
         try
         {
-
+            await WebsiteDetailsSelectAsync();
+            await MainWebsiteSelectAsync();
             string token = AuthStateProvider.token;
-            if (!string.IsNullOrEmpty(AuthStateProvider.token))
+            if (!string.IsNullOrEmpty(token))
             {
                 isAuthenticated = true;
             }
@@ -256,15 +267,46 @@ style="background-color: #343a40">
             AuthenticationState authenticationState = await AuthStateProvider.GetAuthenticationStateAsync();
             isAuthenticated = authenticationState.User.Identity.IsAuthenticated;
             Auth = await AuthStateProvider.GetUserAsync();
+            var userIdstring = await JS.InvokeAsync<string>("localStorage.getItem", "UserId");
+            FullName = await JS.InvokeAsync<string>("localStorage.getItem", "FullName");
+
+            if (!string.IsNullOrEmpty(userIdstring))
+            {
+                int userId = int.Parse(userIdstring);
+                if (userId > 0)
+                {
+                    isAuthenticated = true;
+                }
+            }
         }
         catch (Exception e)
         {
             Console.WriteLine(e.Message);
-            throw;
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 
 
+    protected override async Task OnAfterRenderAsync(bool firstrender)
+    {
+        if (firstrender)
+        {
+            var userIdsstring = await JS.InvokeAsync<string>("localStorage.getItem", "UserId");
+            FullName = await JS.InvokeAsync<string>("localStorage.getItem", "FullName");
+            await Task.Delay(200);
+            if (!string.IsNullOrEmpty(userIdsstring))
+            {
+                int userId = int.Parse(userIdsstring);
+                if (userId > 0)
+                {
+                    isAuthenticated = true;
+                }
+            }
+        }
+    }
 
     private async Task Logout()
     {

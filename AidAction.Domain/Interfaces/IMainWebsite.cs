@@ -19,6 +19,8 @@ namespace AidAction.Domain.Interfaces
         Task<JObject> DonorSelectAsync(object o);
         Task<JObject> UpdateDonorSaveAsync(DonorModel model);
         Task<JObject> DonorSaveAsync(DonorModel model);
+        Task<JObject> DonorPasswordUpdateAsync(object o);
+
         #endregion
 
         #region FAQs
@@ -44,6 +46,10 @@ namespace AidAction.Domain.Interfaces
         #region Donation       
         Task<JArray> DonationRecordsSelectAsync(object o);
         Task<JObject> DonationSaveAsync(DonationModel model);
+        #endregion
+
+        #region ContactUs
+        Task<JObject> ContactUsSelectAsync();
         #endregion
     }
 }

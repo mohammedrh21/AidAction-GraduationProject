@@ -1,65 +1,67 @@
 ﻿@page "/ControlPanel/"
 @layout ControlPanelLayout
 @rendermode InteractiveServer
+@inject IControlPanel _Control
 @inject IJSRuntime JS
 
 <div class="controlpanel-body">
-        <div class="container my-4">
-            <div class="row g-3">
-                <!-- Summary Cards -->
-                <div class="col-md-3">
-                    <div class="card text-bg-light">
-                        <div class="card-body">
-                            <h5 class="card-title">Total Needs</h5>
-                            <p class="display-6">120</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card text-bg-warning">
-                        <div class="card-body">
-                            <h5 class="card-title">Urgent Needs</h5>
-                            <p class="display-6">30</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card text-bg-primary">
-                        <div class="card-body">
-                            <h5 class="card-title">Monthly Needs</h5>
-                            <p class="display-6">90</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card text-bg-success">
-                        <div class="card-body">
-                            <h5 class="card-title">Total Funds</h5>
-                            <p class="display-6">$24,000</p>
-                        </div>
+    <div class="container my-4">
+        <div class="row g-3">
+            <!-- Summary Cards -->
+            <div class="col-md-3">
+                <div class="card text-bg-light">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Needs</h5>
+                        <p class="display-6">@ControlPanelModel.TotalNeedNum</p>
                     </div>
                 </div>
             </div>
+            <div class="col-md-3">
+                <div class="card text-bg-warning">
+                    <div class="card-body">
+                        <h5 class="card-title">Urgent Needs</h5>
+                        <p class="display-6">@ControlPanelModel.UrgentNeedNum</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-bg-primary">
+                    <div class="card-body">
+                        <h5 class="card-title">Monthly Needs</h5>
+                        <p class="display-6">@ControlPanelModel.MonthlyNeedNum</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-bg-success">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Funds</h5>
+                        <p class="display-6">$@ControlPanelModel.TotalFunds</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-            <!-- Charts Row -->
-            <div class="row mt-4 g-3">
-                <div class="col-lg-6">
-                    <div class="card">
+        <!-- Charts Row -->
+        <div class="row mt-4 g-3">
+            <div class="col-lg-6">
+                <div class="card">
                     <div class="card-body chart-box">
-                            <h5 class="card-title">Top Funded Needs</h5>
-                            <canvas id="topNeedsChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="card">
-                    <div class="card-body chart-box">
-                            <h5 class="card-title">Campaign Status</h5>
-                            <canvas id="campaignStatusChart"></canvas>
-                        </div>
+                        <h5 class="card-title">Top Funded Needs</h5>
+                        <canvas id="topNeedsChart"></canvas>
                     </div>
                 </div>
             </div>
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-body chart-box">
+                        <h5 class="card-title">Campaign Status</h5>
+                        <canvas id="campaignStatusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Table -->
         <!-- Table -->
         <div class="row mt-4">
             <div class="col">
@@ -77,29 +79,35 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>Water Tanks</td>
-                                    <td><span class="badge bg-danger">Urgent</span></td>
-                                    <td>$5000</td>
-                                    <td>$4200</td>
-                                    <td>
-                                        <div class="progress">
-                                            <div class="progress-bar bg-success" style="width: 84%">84%</div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>School Supplies</td>
-                                    <td><span class="badge bg-primary">Monthly</span></td>
-                                    <td>$2000</td>
-                                    <td>$800</td>
-                                    <td>
-                                        <div class="progress">
-                                            <div class="progress-bar bg-warning" style="width: 40%">40%</div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <!-- Add more rows as needed -->
+                                @foreach (var need in ControlPanelModel.RecentNeeds?.Take(2) ?? new List<NeedModel>())
+                                {
+                                    <tr>
+                                        <td>@need.Title</td>
+                                        <td>
+                                            @if (need.IsUrgent == true)
+                                            {
+                                                <span class="badge bg-danger">Urgent</span>
+                                            }
+                                            else if (need.IsUrgent == false)
+                                            {
+                                                <span class="badge bg-primary">Monthly</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">Other</span>
+                                            }
+                                        </td>
+                                        <td>$@(need.TargetAmount ?? 0)</td>
+                                        <td>$@(need.TotalFundsCollected ?? 0)</td>
+                                        <td>
+                                            <div class="progress">
+                                                <div class="progress-bar bg-success" style="width: @((need.TotalFundsCollected/need.TargetAmount)*100)%">
+                                                    @Math.Round(((need.TotalFundsCollected ?? 0) / (need.TargetAmount ?? 1)) * 100, 1)%
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
                             </tbody>
                         </table>
                     </div>
@@ -107,41 +115,81 @@
             </div>
         </div>
 
+
         <!-- Line Chart -->
-            <div class="row mt-4">
-                <div class="col">
-                    <div class="card">
+        <div class="row mt-4">
+            <div class="col">
+                <div class="card">
                     <div class="card-body chart-box" id="linechart">
-                            <h5 class="card-title">Donations Over Time</h5>
-                            <canvas id="donationTrendsChart"></canvas>
-                        </div>
+                        <h5 class="card-title">Donations Over Time</h5>
+                        <canvas id="donationTrendsChart"></canvas>
                     </div>
                 </div>
             </div>
-
-           </div>
         </div>
 
+    </div>
+</div>
 @code {
+    private int UserId;
+    public ControlPanelModel ControlPanelModel { get; set; } = new ControlPanelModel();
+
+    // Fetch data from the backend on initial render
+    private async Task ControlPanelSelectAsync()
+    {
+        // Fetch the JSON response from the backend
+        var result = await _Control.ControlPanelSelectAsync(new { AdminId = UserId });
+
+        // Deserialize the JSON into a Result object containing the list of ControlPanelModel
+        var resultData = Newtonsoft.Json.JsonConvert.DeserializeObject<Result<List<ControlPanelModel>>>(result.ToString());
+
+        if (resultData != null)
+        {
+            // Access the first item in the array and assign its Data field (list of FAQs) to ControlPanelModel
+            ControlPanelModel = resultData.Data.FirstOrDefault();
+            StateHasChanged();
+        }
+    }
+
+    // OnAfterRenderAsync to trigger JavaScript for rendering the charts
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
+            var userIdString = await JS.InvokeAsync<string>("localStorage.getItem", "UserId");
+            if (!string.IsNullOrEmpty(userIdString))
+            {
+                UserId = int.Parse(userIdString);
+            }
+
+            // Fetch ControlPanel data
+            await ControlPanelSelectAsync();
+
+            // --- Top Needs Data ---
             var topNeedsData = new
             {
-                labels = new[] { "Water", "Food", "Shelter", "Medical", "Hygiene" },
-                values = new[] { 4200, 3800, 3300, 2500, 2000 }
+                labels = ControlPanelModel.TopFundedNeeds?.Select(x => x.Title).ToArray(),
+                values = ControlPanelModel.TopFundedNeeds?.Select(x => decimal.TryParse(x.TotalFundsCollected, out var funds) ? (int)funds : 0).ToArray()
             };
 
-            var campaignStatus = new[] { 10, 5, 3 }; // Approved, Pending, Rejected
+            // --- Campaign Status Data ---
+            var campaignStatus = new[]
+            {
+                ControlPanelModel.ApprovedCampaign ?? 0,
+                ControlPanelModel.PendingCampaign ?? 0,
+                ControlPanelModel.RejectedCampaign ?? 0
+            };
 
+            // --- Donation Trends Data ---
             var donationTrends = new
             {
-                labels = new[] { "Jan", "Feb", "Mar", "Apr", "May" },
-                values = new[] { 1000, 1800, 1500, 2200, 2700 }
+                labels = ControlPanelModel.DonationSummary?.Select(x => x.MonthName).ToArray(),
+                values = ControlPanelModel.DonationSummary?.Select(x => (int)(x.TotalDonations ?? 0)).ToArray()
             };
 
+            // Pass the data to JavaScript function for rendering the charts
             await JS.InvokeVoidAsync("renderDashboardCharts", topNeedsData, campaignStatus, donationTrends);
+            await Task.Delay(700);
         }
     }
 }

@@ -20,6 +20,7 @@ namespace AidAction.Services.Auth
         private readonly JWT _jwt;
         private readonly IAuthRepository _authRepository;
         private readonly IConfiguration _configuration;
+
         public AuthService(IOptions<JWT> jwt, IAuthRepository authService,IConfiguration configuration)
         {
             _jwt = jwt.Value;
