@@ -59,12 +59,12 @@ namespace AidAction.Services.Stripe
                 },
             },
                 Mode = "payment",
-                SuccessUrl = $"https://localhost:44398/MainWebsite/SuccessDonation?session_id={{CHECKOUT_SESSION_ID}}&needId={needId}&campaignId={campaignId}",
-                CancelUrl = $"https://localhost:44398/MainWebsite/SuccessDonation?session_id={{CHECKOUT_SESSION_ID}}&needId={needId}&campaignId={campaignId}",
+                //SuccessUrl = $"https://localhost:44398/MainWebsite/SuccessDonation?session_id={{CHECKOUT_SESSION_ID}}&needId={needId}&campaignId={campaignId}",
+                //CancelUrl = $"https://localhost:44398/MainWebsite/SuccessDonation?session_id={{CHECKOUT_SESSION_ID}}&needId={needId}&campaignId={campaignId}",
 
 
-                //SuccessUrl = $"http://aidaction-001-site1.mtempurl.com/MainWebsite/SuccessDonation?session_id={{CHECKOUT_SESSION_ID}}&needId={needId}&campaignId={campaignId}",
-                //CancelUrl = $"http://aidaction-001-site1.mtempurl.com/SuccessDonation?session_id={{CHECKOUT_SESSION_ID}}&needId={needId}&campaignId={campaignId}",
+                SuccessUrl = $"http://aidaction-001-site1.mtempurl.com/MainWebsite/SuccessDonation?session_id={{CHECKOUT_SESSION_ID}}&needId={needId}&campaignId={campaignId}",
+                CancelUrl = $"http://aidaction-001-site1.mtempurl.com/SuccessDonation?session_id={{CHECKOUT_SESSION_ID}}&needId={needId}&campaignId={campaignId}",
 
                 ExpiresAt = DateTime.UtcNow.AddMinutes(30) // Set expiration to 2 hours from now (you can change this duration)
 
