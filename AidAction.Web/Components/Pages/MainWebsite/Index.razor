@@ -147,7 +147,7 @@
                                      aria-valuenow="30"
                                      aria-valuemin="0"
                                      aria-valuemax="100">
-                                    @(need.TotalFundsCollected / (need.TargetAmount ?? 1) * 100)%
+                                    @Math.Round(((need.TotalFundsCollected ?? 0) / (need.TargetAmount ?? 1)) * 100, 1)%
                                 </div>
                             </div>
 
@@ -196,7 +196,7 @@
                                      aria-valuenow="30"
                                      aria-valuemin="0"
                                      aria-valuemax="100">
-                                    @(campaign.TotalFundCollected / (campaign.TargetAmount ?? 1) * 100)%
+                                    @Math.Round(((campaign.TotalFundCollected ?? 0) / (campaign.TargetAmount ?? 1)) * 100, 1)%
                                 </div>
                             </div>
 

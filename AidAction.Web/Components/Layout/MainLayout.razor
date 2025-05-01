@@ -55,7 +55,7 @@ else
             </div>
         </nav>
     }
-    else
+    else if (UserType == "Donor")
     {
         <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
             <div class="container">
@@ -115,6 +115,10 @@ else
             </div>
         </nav>
     }
+    else
+    {
+        _Nav.NavigateTo("/Auth/Login");
+    }
 }
 
 
@@ -173,7 +177,7 @@ style="background-color: #343a40">
                                 <li>
                                     <i class="fas fa-map-marker-alt"></i> <NavLink class="text-light" href="/MainWebsite/ContactUs">
                                         Salah Eldeen St. ,Gaza City,
-                                    Palestine
+                                        Palestine
                                     </NavLink>
                                 </li>
                             </ul>
@@ -212,6 +216,7 @@ style="background-color: #343a40">
 @code {
     private int index;
     private bool isAuthenticated;
+    private string UserType;
     private bool isLoading;
     private string? FullName;
     public AuthModel? Auth { get; set; } = new AuthModel();
@@ -261,7 +266,7 @@ style="background-color: #343a40">
             string token = AuthStateProvider.token;
             if (!string.IsNullOrEmpty(token))
             {
-                isAuthenticated = true;
+                isAuthenticated = false;
             }
 
             AuthenticationState authenticationState = await AuthStateProvider.GetAuthenticationStateAsync();
@@ -269,7 +274,8 @@ style="background-color: #343a40">
             Auth = await AuthStateProvider.GetUserAsync();
             var userIdstring = await JS.InvokeAsync<string>("localStorage.getItem", "UserId");
             FullName = await JS.InvokeAsync<string>("localStorage.getItem", "FullName");
-
+            UserType = await JS.InvokeAsync<string>("localStorage.getItem", "UserType");
+            
             if (!string.IsNullOrEmpty(userIdstring))
             {
                 int userId = int.Parse(userIdstring);
@@ -277,6 +283,10 @@ style="background-color: #343a40">
                 {
                     isAuthenticated = true;
                 }
+            }
+            if (UserType != "Donor")
+            {
+                isAuthenticated = false;
             }
         }
         catch (Exception e)
@@ -294,6 +304,7 @@ style="background-color: #343a40">
     {
         if (firstrender)
         {
+            isAuthenticated = false;
             var userIdsstring = await JS.InvokeAsync<string>("localStorage.getItem", "UserId");
             FullName = await JS.InvokeAsync<string>("localStorage.getItem", "FullName");
             await Task.Delay(200);
@@ -305,6 +316,7 @@ style="background-color: #343a40">
                     isAuthenticated = true;
                 }
             }
+            StateHasChanged();
         }
     }
 

@@ -34,10 +34,10 @@
 
                             <a href="Payment-page.html"
                                style="text-decoration: none; color: #343a40">
-                                <button class="btn btn-success w-100"
-                                        style="margin-top: 15px">
+                               
+                                <NavLink href="@GetDonateUrl()" style="margin-top: 15px" class="btn btn-success w-100">
                                     Donate Now
-                                </button>
+                                </NavLink>
                             </a>
                         </div>
                     </div>
@@ -126,5 +126,10 @@
             website = websiteDetailsList.FirstOrDefault();
         }
         StateHasChanged(); // Trigger re-render to update UI with the new data
+    }
+
+    private string GetDonateUrl()
+    {
+        return $"/MainWebsite/Donate/";
     }
 }

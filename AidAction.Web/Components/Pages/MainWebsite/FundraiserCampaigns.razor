@@ -81,7 +81,7 @@
                         <div class="progress-bar bg-success"
                              style="width: @(campaign.TotalFundCollected / (campaign.TargetAmount ?? 1) * 100)%"
                              id="Progress">
-                            @(campaign.TotalFundCollected / (campaign.TargetAmount ?? 1) * 100)%
+                            @Math.Round(((campaign.TotalFundCollected ?? 0) / (campaign.TargetAmount ?? 1)) * 100, 1)%
                         </div>
                     </div>
                     <p class="text-muted small">
@@ -112,6 +112,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        isAuth = false;
         await CampaignSelectAsync();
         FilteredCampaignModels = CampaignModels.Where(c => c.CampaignId > 1).ToList(); // Initially show all campaigns
     }
@@ -129,9 +130,18 @@
             if (!string.IsNullOrWhiteSpace(userIdstring))
             {
                 UserId = int.Parse(userIdstring);
+
             }
-            AuthenticationState authenticationState = await AuthStateProvider.GetAuthenticationStateAsync();
-            isAuth = authenticationState.User.Identity.IsAuthenticated;
+
+            if (UserId == null)
+            {
+                isAuth = false;
+            }
+            else
+            {
+                isAuth = true;
+            }
+
             StateHasChanged();
         }
         catch (Exception e)

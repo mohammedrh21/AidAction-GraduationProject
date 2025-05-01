@@ -52,7 +52,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadContactInfoAsync();
+        LoadContactInfoAsync();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -60,6 +60,8 @@
         if (firstRender && ContactInfo.LocationLatitude.HasValue && ContactInfo.LocationLongitude.HasValue)
         {
             await JS.InvokeVoidAsync("loadMap", "map", ContactInfo.LocationLatitude, ContactInfo.LocationLongitude, 17);
+            await Task.Delay(3000);
+            
         }
     }
 
@@ -72,5 +74,6 @@
         {
             ContactInfo = resultData.Data.First();
         }
+        StateHasChanged();
     }
 }

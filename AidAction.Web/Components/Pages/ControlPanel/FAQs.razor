@@ -53,11 +53,11 @@
                     </div>
                     <h3 class="accordion-header" id="heading@(faq.FAQId)">
                         <button class="accordion-button collapsed text-success bg-light"
-                                type="button"
-                                data-bs-toggle="collapse"
-                                data-bs-target="#collapse@(faq.FAQId)"
-                                aria-expanded="false"
-                                aria-controls="collapse@(faq.FAQId)">
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#collapse@(faq.FAQId)"
+                        aria-expanded="false"
+                        aria-controls="collapse@(faq.FAQId)">
                             @if (isEditing && currentFaqId == faq.FAQId)
                             {
                                 <input type="text" class="form-control" @bind="faq.Question" />
@@ -69,9 +69,9 @@
                         </button>
                     </h3>
                     <div id="collapse@(faq.FAQId)"
-                         class="accordion-collapse collapse"
-                         aria-labelledby="heading@(faq.FAQId)"
-                         data-bs-parent="#faqAccordion">
+                    class="accordion-collapse collapse"
+                    aria-labelledby="heading@(faq.FAQId)"
+                    data-bs-parent="#faqAccordion">
                         <div class="accordion-body">
                             @if (isEditing && currentFaqId == faq.FAQId)
                             {
@@ -176,7 +176,7 @@
     private async void SaveFaq(int faqId)
     {
         isEditing = false;
-        
+
         await FAQSaveAsync(FAQsModels.SingleOrDefault(x=>x.FAQId == faqId)??new FAQsModel());
         currentFaqId = 0;
     }
@@ -195,6 +195,7 @@
 
             newFaq = new FAQsModel(); // Reset the new FAQ fields
             isAddingNewFaq = false; // Hide the form
+            StateHasChanged();
         }
     }
 

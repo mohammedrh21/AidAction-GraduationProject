@@ -41,7 +41,7 @@
             </p>
             <div class="progress mb-2">
                 <div class="progress-bar bg-success" style="width: @(NeedModel.TotalFundsCollected / (NeedModel.TargetAmount ?? 1) * 100)%">
-                    @(NeedModel.TotalFundsCollected / (NeedModel.TargetAmount ?? 1) * 100)%
+                    @Math.Round(((NeedModel.TotalFundsCollected ?? 0) / (NeedModel.TargetAmount ?? 1)) * 100, 1)%
                 </div>
             </div>
 

@@ -119,26 +119,37 @@
 
     private async Task HandleValidSubmit()
     {
-        // Retrieve the user's id from localStorage.
-        var userIdString = await JS.InvokeAsync<string>("localStorage.getItem", "UserId");
-        if (!string.IsNullOrEmpty(userIdString))
+        try
         {
-            UserId = int.Parse(userIdString);
+            // Retrieve the user's id from localStorage.
+            var userIdString = await JS.InvokeAsync<string>("localStorage.getItem", "UserId");
+            if (!string.IsNullOrEmpty(userIdString))
+            {
+                UserId = int.Parse(userIdString);
+            }
+            webDetails.CreatedBy = UserId;
+            webDetails.Id = 1;
+            // If an image file was selected, save it and update the image path.
+            if (selectedFile != null)
+            {
+                webDetails.ImagePath = await SaveImageAsync(selectedFile);
+            }
+
+            // Save the new need via the backend service.
+            var result = await _Control.WebsiteDetailsSaveAsync(webDetails);
+
+            var resultData = Newtonsoft.Json.JsonConvert.DeserializeObject<Result<List<WebsiteDetails>>>(result.ToString());
+            DB.rv = resultData.rv;
+            DB.Msg = resultData.Msg;
+            StateHasChanged();
+            await Task.Delay(1000);
+            Navigation.NavigateTo("/ControlPanel/");
         }
-        webDetails.CreatedBy = UserId;
-        webDetails.Id = 1;
-        // If an image file was selected, save it and update the image path.
-        if (selectedFile != null)
+        catch (Exception e)
         {
-            webDetails.ImagePath = await SaveImageAsync(selectedFile);
+            Console.WriteLine(e.Message);
+            throw;
         }
-
-        // Save the new need via the backend service.
-        var result = await _Control.WebsiteDetailsSaveAsync(webDetails);
-
-        var resultData = Newtonsoft.Json.JsonConvert.DeserializeObject<Result<List<WebsiteDetails>>>(result.ToString());
-        DB.rv = resultData.rv;
-        DB.Msg = resultData.Msg;
     }
 
     // Saves the image file to wwwroot/images and returns the relative URL.

@@ -3,7 +3,7 @@
 @inject IJSRuntime JS
 @inject NavigationManager _Nav
 
-@if (isAuthenticated || !isAuthenticated)
+@if (checkedAuthTwice && isAuthenticated)
 {
     <div class="page controlpanel-content">
         <!-- Mobile Header: Visible only on small screens -->
@@ -128,33 +128,63 @@
 
     </div>
 }
+else if (checkedAuthTwice && !isAuthenticated)
+{
+    _Nav.NavigateTo("/Auth/Login", true);
+}
 else
 {
-    @*   _nav.navigateto("/auth/login"); *@
+    <!-- Optionally show a loading spinner or blank layout while checking -->
+    <div>Checking authentication...</div>
 }
 
 @code {
-    private bool isAuthenticated;
+    private bool isAuthenticated = false;
+    private int checkCount = 0;
+    private bool checkedAuthTwice = false;
 
     protected override async Task OnInitializedAsync()
     {
+        // First check
         string token = AuthStateProvider.token;
-        if (!string.IsNullOrEmpty(AuthStateProvider.token))
+        if (!string.IsNullOrEmpty(token))
         {
             isAuthenticated = true;
         }
+        checkCount++;
     }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (checkCount < 2)
+        {
+            string userType = await JS.InvokeAsync<string?>("localStorage.getItem", "UserType");
+            if (!string.IsNullOrEmpty(userType) && userType == "Admin")
+            {
+                isAuthenticated = true;
+            }
+            checkCount++;
+
+            if (checkCount >= 2)
+            {
+                checkedAuthTwice = true;
+                StateHasChanged(); // Force re-render after second check
+            }
+        }
+    }
+
     private async Task Logout()
     {
         await JS.InvokeVoidAsync("localStorage.removeItem", "Token");
         await JS.InvokeVoidAsync("localStorage.removeItem", "UserId");
         await JS.InvokeVoidAsync("localStorage.removeItem", "UserType");
+        await JS.InvokeVoidAsync("localStorage.removeItem", "FullName");
 
         await Task.Delay(200);
         await AuthStateProvider.LogoutAsync();
         isAuthenticated = false;
+
         StateHasChanged();
         _Nav.NavigateTo("/");
-        StateHasChanged();
     }
 }

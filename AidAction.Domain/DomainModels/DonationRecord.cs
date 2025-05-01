@@ -10,6 +10,7 @@ namespace AidAction.Domain.DomainModels
     public class DonationRecord
     {
         public int? DonorId { get; set; }
+        public string? DonorName { get; set; }
         public int? DonationId { get; set; }
         public decimal? Amount { get; set; }
         public DateTime? DonationDate { get; set; }

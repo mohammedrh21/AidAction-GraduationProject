@@ -31,7 +31,7 @@
             </p>
             <div class="progress mb-2">
                 <div class="progress-bar bg-success" style="width: @(CampaignModel.TotalFundCollected / (CampaignModel.TargetAmount ?? 1) * 100)%">
-                    @(CampaignModel.TotalFundCollected / (CampaignModel.TargetAmount ?? 1) * 100)%
+                    @Math.Round(((CampaignModel.TotalFundCollected ?? 0) / (CampaignModel.TargetAmount ?? 1)) * 100, 1)%
                 </div>
             </div>
 

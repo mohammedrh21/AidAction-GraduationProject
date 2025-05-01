@@ -2,167 +2,144 @@
 @rendermode InteractiveServer
 @layout ControlPanelLayout
 @inject IJSRuntime JSRuntime
+@inject IControlPanel _Control
+
 <div class="controlpanel-body">
-<h3 class="mb-3 fw-semibold border-bottom pb-2">
-    <i class="fas fa-hand-holding-heart text-primary me-2"></i>Donation Records
-</h3>
-<br/>
-<EditForm Model="@filterModel" OnValidSubmit="OnFilterSubmit" FormName="RecordsFilter">
-    <div class="d-flex flex-wrap align-items-end gap-3">
+    <h3 class="mb-3 fw-semibold border-bottom pb-2">
+        <i class="fas fa-hand-holding-heart text-primary me-2"></i>Donation Records
+    </h3>
+    <br />
 
-        <!-- Donor -->
-        <div class="d-flex flex-column">
-            <label for="donorName" class="form-label form-label-sm mb-1 text-muted">
-                <i class="fas fa-user me-1"></i>Donor
-            </label>
-            <InputText id="donorName" class="form-control form-control-sm" style="width: 140px;" @bind-Value="filterModel.DonorName" />
-        </div>
+    <EditForm Model="@filterModel" OnValidSubmit="OnFilterSubmit" FormName="RecordsFilter">
+        <div class="d-flex flex-wrap align-items-end gap-3">
 
-        <!-- From -->
-        <div class="d-flex flex-column">
-            <label for="fromDate" class="form-label form-label-sm mb-1 text-muted">
-                <i class="fas fa-calendar-alt me-1"></i>From
-            </label>
-            <InputDate id="fromDate" class="form-control form-control-sm" style="width: 130px;" @bind-Value="filterModel.FromDate" />
-        </div>
+            <!-- Donor -->
+            <div class="d-flex flex-column">
+                <label for="donorName" class="form-label form-label-sm mb-1 text-muted">
+                    <i class="fas fa-user me-1"></i>Donor
+                </label>
+                <InputText id="donorName" class="form-control form-control-sm" style="width: 140px;" @bind-Value="filterModel.DonorName" />
+            </div>
 
-        <!-- To -->
-        <div class="d-flex flex-column">
-            <label for="toDate" class="form-label form-label-sm mb-1 text-muted">
-                <i class="fas fa-calendar-check me-1"></i>To
-            </label>
-            <InputDate id="toDate" class="form-control form-control-sm" style="width: 130px;" @bind-Value="filterModel.ToDate" />
-        </div>
+            <!-- From -->
+            <div class="d-flex flex-column">
+                <label for="fromDate" class="form-label form-label-sm mb-1 text-muted">
+                    <i class="fas fa-calendar-alt me-1"></i>From
+                </label>
+                <InputDate id="fromDate" class="form-control form-control-sm" style="width: 130px;" @bind-Value="filterModel.FromDate" />
+            </div>
 
-        <!-- Targeted -->
-        <div class="d-flex flex-column">
-            <label for="donationTargeted" class="form-label form-label-sm mb-1 text-muted">
-                <i class="fas fa-bullseye me-1"></i>Targeted
-            </label>
-            <select id="donationTargeted" class="form-select form-select-sm" style="width: 130px;" @bind="filterModel.DonationTargeted">
-                <option value="All">All</option>
-                <option value="Need">Need</option>
-                <option value="Campaign">Campaign</option>
-            </select>
-        </div>
+            <!-- To -->
+            <div class="d-flex flex-column">
+                <label for="toDate" class="form-label form-label-sm mb-1 text-muted">
+                    <i class="fas fa-calendar-check me-1"></i>To
+                </label>
+                <InputDate id="toDate" class="form-control form-control-sm" style="width: 130px;" @bind-Value="filterModel.ToDate" />
+            </div>
 
-        <!-- Amount -->
-        <div class="d-flex flex-column">
-            <label class="form-label form-label-sm mb-1 text-muted">
-                <i class="fas fa-dollar-sign me-1"></i>Amount
-            </label>
-            <div class="d-flex gap-2">
-                <InputNumber class="form-control form-control-sm" style="width: 80px;" @bind-Value="filterModel.MinAmount" min="0" />
-                <span class="small fw-semibold text-muted">-</span>
-                <InputNumber class="form-control form-control-sm" style="width: 80px;" @bind-Value="filterModel.MaxAmount" min="0" />
+            <!-- Targeted -->
+            <div class="d-flex flex-column">
+                <label for="donationTargeted" class="form-label form-label-sm mb-1 text-muted">
+                    <i class="fas fa-bullseye me-1"></i>Targeted
+                </label>
+                <select id="donationTargeted" class="form-select form-select-sm" style="width: 130px;" @bind="filterModel.DonationTargeted">
+                    <option value="All">All</option>
+                    <option value="Need">Need</option>
+                    <option value="Campaign">Campaign</option>
+                </select>
+            </div>
+
+            <!-- Amount -->
+            <div class="d-flex flex-column">
+                <label class="form-label form-label-sm mb-1 text-muted">
+                    <i class="fas fa-dollar-sign me-1"></i>Amount
+                </label>
+                <div class="d-flex gap-2">
+                    <InputNumber class="form-control form-control-sm" style="width: 80px;" @bind-Value="filterModel.MinAmount" min="0" />
+                    <span class="small fw-semibold text-muted">-</span>
+                    <InputNumber class="form-control form-control-sm" style="width: 80px;" @bind-Value="filterModel.MaxAmount" min="0" />
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Second Line: Filter Button -->
-    <div class="mt-3">
-        <button type="submit" class="btn btn-sm btn-primary px-4">
-            <i class="fas fa-filter me-1"></i>Apply Filter
-        </button>
-    </div>
-    <br/>
-</EditForm>
+        <div class="mt-3">
+            <button type="submit" class="btn btn-sm btn-primary px-4">
+                <i class="fas fa-filter me-1"></i>Apply Filter
+            </button>
+        </div>
+        <br />
+    </EditForm>
 
-
-
-
-
-
-
-<!-- Donation Table -->
-<table class="table table-bordered table-striped mt-3">
-    <thead>
-        <tr>
-            <th>Donation ID</th>
-            <th>Donor Name</th>
-            <th>Amount</th>
-            <th>Donation Date</th>
-            <th>Donation Targeted</th>
-            <th>Stripe Transaction ID</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var donation in filteredDonations)
-        {
+    <!-- Donation Table -->
+    <table class="table table-bordered table-striped mt-3">
+        <thead>
             <tr>
-                <td>@donation.DonationId</td>
-                <td>@donation.DonorName</td>
-                <td>@donation.Amount</td>
-                <td>@donation.DonationDate</td>
-                <td>@donation.DonationTargeted</td>
-                <td>@donation.StripeTransactionId</td>
+                <th>Donation ID</th>
+                <th>Donor Name</th>
+                <th>Amount</th>
+                <th>Donation Date</th>
+                <th>Donation Targeted</th>
+                <th>Donation Targeted Title</th>
+                <th>Stripe Transaction ID</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var donation in filteredDonations)
+            {
+                <tr>
+                    <td>@donation.DonationId</td>
+                    <td>@donation.DonorName</td>
+                    <td>@donation.Amount</td>
+                    <td>@donation.DonationDate</td>
+                    <td>@(donation.IsNeed ? "Need" : "Campaign")</td>
+                    <td>@(donation.IsNeed ? donation.DonationNTitle : donation.DonationCTitle)</td>
+                    <td>
+                        <span title="@donation.SessionId">
+                            @donation.SessionId?.Substring(0, Math.Min(10, donation.SessionId.Length))...
+                        </span>
+                        <button class="btn btn-sm btn-outline-secondary ms-2" type="button" @onclick="() => CopyToClipboard(donation.SessionId)">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
 </div>
+
 @code {
-    // Filter Model
-    private DonationFilterModel filterModel = new DonationFilterModel();
-
-    // Sample Donation Records (Replace with actual data)
-    private List<DonationRecord> allDonations = new List<DonationRecord>
+    private async Task CopyToClipboard(string text)
     {
-        new DonationRecord { DonationId = 1, DonorName = "John Doe", Amount = 100, DonationDate = new DateTime(2025, 3, 25), DonationTargeted = "Need", StripeTransactionId = "txn_1234" },
-        new DonationRecord { DonationId = 2, DonorName = "Jane Smith", Amount = 150, DonationDate = new DateTime(2025, 1, 1), DonationTargeted = "Campaign", StripeTransactionId = "txn_5678" },
-        new DonationRecord { DonationId = 3, DonorName = "Mohammed Hamdan", Amount = 250, DonationDate = new DateTime(2025, 3, 2), DonationTargeted = "Campaign", StripeTransactionId = "txn_5678" },
-        new DonationRecord { DonationId = 4, DonorName = "Medhat Rafat", Amount = 120, DonationDate = new DateTime(2025, 5, 13), DonationTargeted = "Campaign", StripeTransactionId = "txn_5678" },
-        new DonationRecord { DonationId = 5, DonorName = "moly bateekh", Amount = 30, DonationDate = new DateTime(2025, 3, 23), DonationTargeted = "Campaign", StripeTransactionId = "txn_5678" },
-        new DonationRecord { DonationId = 6, DonorName = "Newton Jibril", Amount = 290, DonationDate = new DateTime(2025, 7, 22), DonationTargeted = "Campaign", StripeTransactionId = "txn_5678" },
-        new DonationRecord { DonationId = 8, DonorName = "Harry Kean", Amount = 1025, DonationDate = new DateTime(2025, 9, 14), DonationTargeted = "Campaign", StripeTransactionId = "txn_5678" },
-        new DonationRecord { DonationId = 9, DonorName = "Rami Salhi", Amount = 843, DonationDate = new DateTime(2024, 7, 29), DonationTargeted = "Campaign", StripeTransactionId = "txn_5678" },
-        new DonationRecord { DonationId = 10, DonorName = "Semsem Abu Mughaseeb", Amount = 84, DonationDate = new DateTime(2023, 9, 21), DonationTargeted = "Campaign", StripeTransactionId = "txn_5678" },
-        new DonationRecord { DonationId = 11, DonorName = "Mohammed Oun", Amount = 646, DonationDate = new DateTime(2023, 5, 13), DonationTargeted = "Campaign", StripeTransactionId = "txn_5678" }
+        await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", text);
+    }
 
-        // Add more sample data as needed
-    };
 
-    // Filtered Donation Records based on criteria
+    private DonationFilterModel filterModel = new DonationFilterModel();
+    private List<DonationRecord> allDonations = new List<DonationRecord>();
     private List<DonationRecord> filteredDonations = new List<DonationRecord>();
 
-    // Donation Filter Model
-    public class DonationFilterModel
+    protected override async Task OnInitializedAsync()
     {
-        public string DonorName { get; set; }
-        public DateTime? FromDate { get; set; }
-        public DateTime? ToDate { get; set; }
-        public string DonationTargeted { get; set; } = "All";
-        public decimal? MinAmount { get; set; }
-        public decimal? MaxAmount { get; set; }
+        var result = await _Control.DonationRecordsSelectAsync();
+        var resultData = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Result<List<DonationRecord>>>>(result.ToString());
+        if (resultData != null && resultData.Any())
+        {
+            allDonations = resultData.FirstOrDefault()?.Data;
+            filteredDonations = allDonations;
+        }
     }
 
-    // Donation Record Model
-    public class DonationRecord
-    {
-        public int DonationId { get; set; }
-        public string DonorName { get; set; }
-        public decimal Amount { get; set; }
-        public DateTime DonationDate { get; set; }
-        public string DonationTargeted { get; set; }
-        public string StripeTransactionId { get; set; }
-    }
-
-    // Handle Filter Submit
     private void OnFilterSubmit()
     {
         filteredDonations = allDonations
-            .Where(d => (string.IsNullOrEmpty(filterModel.DonorName) || d.DonorName.Contains(filterModel.DonorName, StringComparison.OrdinalIgnoreCase)) &&
-                        (!filterModel.FromDate.HasValue || d.DonationDate >= filterModel.FromDate) &&
-                        (!filterModel.ToDate.HasValue || d.DonationDate <= filterModel.ToDate) &&
-                        (filterModel.DonationTargeted == "All" || d.DonationTargeted.Equals(filterModel.DonationTargeted, StringComparison.OrdinalIgnoreCase)) &&
-                        (!filterModel.MinAmount.HasValue || d.Amount >= filterModel.MinAmount) &&
-                        (!filterModel.MaxAmount.HasValue || d.Amount <= filterModel.MaxAmount))
-            .ToList();
-    }
-
-    // Initialize Filtered Donations (Optional: Load All Donations Initially)
-    protected override void OnInitialized()
-    {
-        filteredDonations = allDonations;
+            .Where(d =>
+                (string.IsNullOrEmpty(filterModel.DonorName) || d.DonorName.Contains(filterModel.DonorName, StringComparison.OrdinalIgnoreCase)) &&
+                (!filterModel.FromDate.HasValue || d.DonationDate >= filterModel.FromDate) &&
+                (!filterModel.ToDate.HasValue || d.DonationDate <= filterModel.ToDate) &&
+                (filterModel.DonationTargeted == "All" || (filterModel.DonationTargeted == "Need" && d.IsNeed) || (filterModel.DonationTargeted == "Campaign" && !d.IsNeed)) &&
+                (!filterModel.MinAmount.HasValue || d.Amount >= filterModel.MinAmount) &&
+                (!filterModel.MaxAmount.HasValue || d.Amount <= filterModel.MaxAmount)
+            ).ToList();
     }
 }
