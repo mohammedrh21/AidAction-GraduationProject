@@ -27,3 +27,27 @@ Separate views for admins and donors.
 📱 Responsive UI
 
 Built with Blazor, Bootstrap, and CSS.
+
+🏗️ Project Structure
+
+Web (Blazor Project) – UI & frontend logic
+
+Domain (Library Project) – Entities & models
+
+Repository (Library Project) – Dapper-based database access
+
+Service (Library Project) – Business logic & services
+
+🛠️ Tech Stack
+
+Blazor – Frontend framework
+
+.NET 6/7 – Backend framework
+
+Dapper – Lightweight ORM for SQL
+
+SQL Server – Database
+
+JWT – Authentication & Authorization
+
+Bootstrap / CSS / JavaScript – Styling & interactivity
