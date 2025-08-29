@@ -51,3 +51,9 @@ SQL Server – Database
 JWT – Authentication & Authorization
 
 Bootstrap / CSS / JavaScript – Styling & interactivity
+
+👥 User Roles
+
+Admin – Manage needs, view donations, post news & events.
+
+Donor – Browse needs, donate directly, view updates.
